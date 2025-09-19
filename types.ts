@@ -32,6 +32,16 @@ export interface Achievement {
     progress?: number;
 }
 
+export interface Reward {
+  id: string;
+  name: string;
+  cost: number;
+}
+
+export interface ClaimedReward extends Reward {
+    claimedDate: number;
+}
+
 export type Mood = 'awful' | 'bad' | 'okay' | 'good' | 'great';
 
 export interface MoodEntry {

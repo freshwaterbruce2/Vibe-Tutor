@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Sidebar from './components/Sidebar';
-import HomeworkDashboard from './components/HomeworkDashboard';
-import ChatWindow from './components/ChatWindow';
-import FocusTimer from './components/FocusTimer';
-import ParentDashboard from './components/ParentDashboard';
-import AchievementCenter from './components/AchievementCenter';
 import AchievementPopup from './components/AchievementPopup';
-import type { View, HomeworkItem, ParsedHomework, Achievement } from './types';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner';
+import OfflineIndicator from './components/OfflineIndicator';
+import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward } from './types';
 import { sendMessageToBuddy } from './services/buddyService';
 import { getAchievements, checkAndUnlockAchievements, AchievementEvent } from './services/achievementService';
+import { triggerVibration } from './services/uiService';
 import { AI_TUTOR_PROMPT } from './constants';
 import { GoogleGenAI, Chat } from "@google/genai";
+
+// Lazy-loaded components
+const HomeworkDashboard = lazy(() => import('./components/HomeworkDashboard'));
+const ChatWindow = lazy(() => import('./components/ChatWindow'));
+const FocusTimer = lazy(() => import('./components/FocusTimer'));
+const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
+const AchievementCenter = lazy(() => import('./components/AchievementCenter'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -66,11 +72,40 @@ const App: React.FC = () => {
   });
   const [achievements, setAchievements] = useState<Achievement[]>(getAchievements);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement | null>(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [points, setPoints] = useState<number>(() => Number(localStorage.getItem('studentPoints') || '0'));
+  const [rewards, setRewards] = useState<Reward[]>(() => JSON.parse(localStorage.getItem('parentRewards') || '[]'));
+  const [claimedRewards, setClaimedRewards] = useState<ClaimedReward[]>(() => JSON.parse(localStorage.getItem('claimedRewards') || '[]'));
 
 
   useEffect(() => {
     localStorage.setItem('homeworkItems', JSON.stringify(homeworkItems));
   }, [homeworkItems]);
+
+  useEffect(() => {
+      localStorage.setItem('studentPoints', String(points));
+  }, [points]);
+
+  useEffect(() => {
+      localStorage.setItem('parentRewards', JSON.stringify(rewards));
+  }, [rewards]);
+  
+  useEffect(() => {
+    localStorage.setItem('claimedRewards', JSON.stringify(claimedRewards));
+  }, [claimedRewards]);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleAchievementEvent = (event: AchievementEvent) => {
     const previousAchievements = [...achievements];
@@ -99,6 +134,7 @@ const App: React.FC = () => {
 
   const handleToggleComplete = (id: string) => {
     let taskWasJustCompleted = false;
+    triggerVibration(50); // Haptic feedback
     const updatedItems = homeworkItems.map(item => {
       if (item.id === id) {
         if (!item.completed) { // If it was incomplete before clicking
@@ -111,38 +147,73 @@ const App: React.FC = () => {
     setHomeworkItems(updatedItems);
     if (taskWasJustCompleted) {
         handleAchievementEvent({ type: 'TASK_COMPLETED' });
+        setPoints(p => p + 10);
     }
     handleAchievementEvent({ type: 'HOMEWORK_UPDATE', payload: { items: updatedItems }});
   };
 
   const handleSessionComplete = () => {
       handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED' });
+      setPoints(p => p + 25);
+  };
+
+  const handleClaimReward = (rewardId: string) => {
+    const reward = rewards.find(r => r.id === rewardId);
+    if (reward && points >= reward.cost) {
+      setPoints(p => p - reward.cost);
+      const newClaimedReward: ClaimedReward = { ...reward, claimedDate: Date.now() };
+      setClaimedRewards(prev => [...prev, newClaimedReward]);
+      return true;
+    }
+    return false;
+  };
+
+  const handleRewardApproval = (claimedRewardId: string, isApproved: boolean) => {
+    const rewardToHandle = claimedRewards.find(r => r.id === claimedRewardId);
+    if (!rewardToHandle) return;
+
+    if (!isApproved) { // Denied
+        setPoints(p => p + rewardToHandle.cost); // Refund points
+    }
+    // Remove from claimed list in both cases
+    setClaimedRewards(prev => prev.filter(r => r.id !== claimedRewardId));
   };
   
   const renderView = () => {
-    switch (view) {
-      case 'dashboard':
-        return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
-      case 'tutor':
-        return <ChatWindow title="AI Tutor" description="Get help with your homework concepts." onSendMessage={sendMessageToTutor} />;
-      case 'friend':
-        return <ChatWindow title="AI Buddy" description="Chat about anything on your mind." onSendMessage={sendMessageToBuddy} />;
-      case 'focus':
-        return <FocusTimer onSessionComplete={handleSessionComplete}/>;
-      case 'achievements':
-        return <AchievementCenter achievements={achievements} />;
-      case 'parent':
-          return <ParentDashboard items={homeworkItems} />;
-      default:
-        return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
-    }
+    const currentViewComponent = () => {
+        switch (view) {
+            case 'dashboard':
+                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
+            case 'tutor':
+                return <ChatWindow title="AI Tutor" description="Get help with your homework concepts." onSendMessage={sendMessageToTutor} />;
+            case 'friend':
+                return <ChatWindow title="AI Buddy" description="Chat about anything on your mind." onSendMessage={sendMessageToBuddy} />;
+            case 'focus':
+                return <FocusTimer onSessionComplete={handleSessionComplete}/>;
+            case 'achievements':
+                return <AchievementCenter achievements={achievements} points={points} rewards={rewards} onClaimReward={handleClaimReward} claimedRewards={claimedRewards} />;
+            case 'parent':
+                return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} />;
+            default:
+                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
+        }
+    };
+    
+    return (
+        <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+                {currentViewComponent()}
+            </Suspense>
+        </ErrorBoundary>
+    )
   };
 
   return (
     <div className="h-screen w-screen bg-background-main text-text-primary flex font-sans">
       <Sidebar currentView={view} onNavigate={setView} />
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden relative">
         {renderView()}
+        {!isOnline && <OfflineIndicator />}
       </main>
       {newlyUnlocked && <AchievementPopup achievement={newlyUnlocked} />}
     </div>

@@ -50,7 +50,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
         <p className="text-text-secondary mt-1">{description}</p>
       </header>
 
-      <div className="flex-1 overflow-y-auto mb-4 p-4 bg-slate-800/50 rounded-lg space-y-4">
+      <div aria-live="polite" className="flex-1 overflow-y-auto mb-4 p-4 bg-slate-800/50 rounded-lg space-y-4">
         {messages.map((msg) => (
           <div key={msg.timestamp} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-xl p-3 rounded-2xl ${msg.role === 'user' ? 'bg-[var(--primary-accent)] text-background-main' : 'bg-background-surface text-text-primary'}`}>
@@ -82,8 +82,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
             placeholder="Type your message..."
             className="flex-1 bg-transparent px-4 py-2 text-text-primary outline-none"
             disabled={isLoading}
+            aria-label="Chat input"
           />
-          <button onClick={handleSend} disabled={isLoading || !input.trim()} className="p-3 bg-[var(--primary-accent)] rounded-lg disabled:opacity-50 hover:opacity-80 transition-opacity">
+          <button onClick={handleSend} disabled={isLoading || !input.trim()} className="p-3 bg-[var(--primary-accent)] rounded-lg disabled:opacity-50 hover:opacity-80 transition-opacity" aria-label="Send message">
             <SendIcon className="w-5 h-5 text-background-main" />
           </button>
         </div>

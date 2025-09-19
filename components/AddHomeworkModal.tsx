@@ -68,7 +68,6 @@ const AddHomeworkModal: React.FC<AddHomeworkModalProps> = ({ onClose, onAdd }) =
   
   const handleListen = () => {
     if (!recognition) {
-        alert("Sorry, your browser doesn't support voice recognition.");
         return;
     }
     if (isListening) {
@@ -104,10 +103,14 @@ const AddHomeworkModal: React.FC<AddHomeworkModalProps> = ({ onClose, onAdd }) =
                 <span className="mx-2 text-slate-500 text-sm">OR</span>
                 <hr className="flex-grow border-slate-700"/>
             </div>
-            <button type="button" onClick={handleListen} className={`px-6 py-3 rounded-full flex items-center justify-center mx-auto transition-all duration-300 font-semibold ${isListening ? 'bg-red-500 text-white w-full' : 'bg-transparent border-2 border-[var(--primary-accent)] text-[var(--primary-accent)] hover:bg-primary-accent/20'}`} style={!isListening ? {boxShadow: 'var(--neon-glow-primary)'} : {}}>
-              <MicrophoneIcon className="w-6 h-6 mr-2"/>
-              {isListening ? 'Listening...' : 'Add with Voice'}
-            </button>
+            {recognition ? (
+                <button type="button" onClick={handleListen} className={`px-6 py-3 rounded-full flex items-center justify-center mx-auto transition-all duration-300 font-semibold ${isListening ? 'bg-red-500 text-white w-full' : 'bg-transparent border-2 border-[var(--primary-accent)] text-[var(--primary-accent)] hover:bg-primary-accent/20'}`} style={!isListening ? {boxShadow: 'var(--neon-glow-primary)'} : {}}>
+                <MicrophoneIcon className="w-6 h-6 mr-2"/>
+                {isListening ? 'Listening...' : 'Add with Voice'}
+                </button>
+            ) : (
+                <p className="text-sm text-slate-500">Voice input is not supported on this browser.</p>
+            )}
              {(voiceTranscript || isParsing) && (
                 <div className="mt-4 p-3 bg-slate-800/50 rounded-lg text-left border border-slate-700">
                   <p className="text-sm text-slate-400">Transcript:</p>

@@ -46,6 +46,8 @@ export const getMoodAnalysis = async (mood: string, note?: string): Promise<stri
             config: {
                 temperature: 0.7,
                 maxOutputTokens: 100,
+                // FIX: Added thinkingConfig to reserve tokens for the output, preventing an empty response.
+                thinkingConfig: { thinkingBudget: 50 },
             }
         });
         return response.text;

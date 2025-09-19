@@ -8,18 +8,19 @@ interface NotificationPanelProps {
 }
 
 const formatDateGroup = (dateString: string): 'Due Today' | 'Due Tomorrow' => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // FIX: Use UTC for date comparisons to avoid timezone-related bugs.
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    
+    const itemDate = new Date(dateString); // 'YYYY-MM-DD' is parsed as UTC
 
-    const itemDate = new Date(dateString);
-    const itemDateAtLocalMidnight = new Date(itemDate.getUTCFullYear(), itemDate.getUTCMonth(), itemDate.getUTCDate());
-
-    const diffTime = itemDateAtLocalMidnight.getTime() - today.getTime();
+    const diffTime = itemDate.getTime() - todayUTC.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
       return 'Due Today';
     }
+    // Items passed to this component are pre-filtered to be due today or tomorrow.
     return 'Due Tomorrow';
 };
 

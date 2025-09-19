@@ -20,6 +20,17 @@ const breakdownSchema = {
 };
 
 export const breakDownTask = async (taskTitle: string, subject: string): Promise<string[]> => {
+    const cacheKey = `breakdown_${subject}_${taskTitle}`.toLowerCase().replace(/\s/g, '');
+    
+    try {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
+    } catch (e) {
+        console.error("Error reading from sessionStorage", e);
+    }
+    
     try {
         const prompt = `Break down the following homework task into a series of small, manageable steps.
         Task: "${taskTitle}"
@@ -38,7 +49,15 @@ export const breakDownTask = async (taskTitle: string, subject: string): Promise
         const jsonString = response.text.trim();
         if (jsonString) {
             const parsed = JSON.parse(jsonString);
-            return parsed.steps || [];
+            const steps = parsed.steps || [];
+            if (steps.length > 0) {
+                 try {
+                    sessionStorage.setItem(cacheKey, JSON.stringify(steps));
+                 } catch (e) {
+                     console.error("Error writing to sessionStorage", e);
+                 }
+            }
+            return steps;
         }
         return [];
 

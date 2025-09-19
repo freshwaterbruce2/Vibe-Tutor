@@ -1,15 +1,47 @@
-import React, { useState } from 'react';
-import type { HomeworkItem } from '../types';
+import React, { useState, useEffect, useRef } from 'react';
+import type { HomeworkItem, Reward, ClaimedReward } from '../types';
 import PinLock from './PinLock';
 import ProgressReports from './ProgressReports';
 import RewardSettings from './RewardSettings';
+import DataManagement from './DataManagement';
 
 interface ParentDashboardProps {
   items: HomeworkItem[];
+  rewards: Reward[];
+  claimedRewards: ClaimedReward[];
+  onUpdateRewards: React.Dispatch<React.SetStateAction<Reward[]>>;
+  onApproval: (claimedRewardId: string, isApproved: boolean) => void;
 }
 
-const ParentDashboard: React.FC<ParentDashboardProps> = ({ items }) => {
+const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
+const ParentDashboard: React.FC<ParentDashboardProps> = ({ items, rewards, claimedRewards, onUpdateRewards, onApproval }) => {
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const activityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const resetInactivityTimer = () => {
+      if (activityTimeoutRef.current) {
+        clearTimeout(activityTimeoutRef.current);
+      }
+      activityTimeoutRef.current = setTimeout(() => {
+        setIsUnlocked(false);
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    if (isUnlocked) {
+      const events: (keyof WindowEventMap)[] = ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll'];
+      events.forEach(event => window.addEventListener(event, resetInactivityTimer));
+      resetInactivityTimer();
+
+      return () => {
+        events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+        if (activityTimeoutRef.current) {
+          clearTimeout(activityTimeoutRef.current);
+        }
+      };
+    }
+  }, [isUnlocked]);
 
   if (!isUnlocked) {
     return <PinLock onUnlock={() => setIsUnlocked(true)} />;
@@ -29,7 +61,8 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({ items }) => {
 
       <div className="space-y-8">
         <ProgressReports items={items} />
-        <RewardSettings />
+        <RewardSettings rewards={rewards} onUpdateRewards={onUpdateRewards} claimedRewards={claimedRewards} onApproval={onApproval} />
+        <DataManagement />
       </div>
     </div>
   );

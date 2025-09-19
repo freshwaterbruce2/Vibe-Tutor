@@ -19,16 +19,16 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
   const [breakdownItem, setBreakdownItem] = useState<HomeworkItem | null>(null);
 
   const upcomingItems = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // FIX: Use UTC dates for comparison to avoid timezone issues.
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
     return items.filter(item => {
       if (item.completed) return false;
-      const itemDate = new Date(item.dueDate);
-      const itemDateUTC = new Date(Date.UTC(itemDate.getUTCFullYear(), itemDate.getUTCMonth(), itemDate.getUTCDate()));
-      return itemDateUTC.getTime() === today.getTime() || itemDateUTC.getTime() === tomorrow.getTime();
+      const itemDate = new Date(item.dueDate); // 'YYYY-MM-DD' is parsed as UTC
+      return itemDate.getTime() === today.getTime() || itemDate.getTime() === tomorrow.getTime();
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   }, [items]);
 
