@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { HomeworkItem, Reward, ClaimedReward } from '../types';
-import PinLock from './PinLock';
+import SecurePinLock from './SecurePinLock';
 import ProgressReports from './ProgressReports';
 import RewardSettings from './RewardSettings';
 import DataManagement from './DataManagement';
@@ -44,14 +44,14 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({ items, rewards, claim
   }, [isUnlocked]);
 
   if (!isUnlocked) {
-    return <PinLock onUnlock={() => setIsUnlocked(true)} />;
+    return <SecurePinLock onUnlock={() => setIsUnlocked(true)} />;
   }
 
   return (
     <div className="h-full flex flex-col p-8 overflow-y-auto">
       <header className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-text-primary">Parent Dashboard</h1>
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] neon-text-primary glow-on-hover">Parent Dashboard</h1>
           <p className="text-text-secondary mt-1">An overview of your child's progress.</p>
         </div>
         <button onClick={() => setIsUnlocked(false)} className="px-5 py-3 font-semibold text-background-main bg-slate-600 rounded-lg hover:bg-slate-700 transition-colors">

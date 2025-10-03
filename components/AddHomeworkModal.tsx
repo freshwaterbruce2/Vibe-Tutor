@@ -93,9 +93,9 @@ const AddHomeworkModal: React.FC<AddHomeworkModalProps> = ({ onClose, onAdd }) =
         <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[var(--secondary-accent)] to-[var(--primary-accent)]">New Assignment</h2>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <input type="text" placeholder="Subject (e.g., Math)" value={subject} onChange={e => setSubject(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" required />
-            <input type="text" placeholder="Title (e.g., Complete worksheet)" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" required />
-            <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" required />
+            <input type="text" placeholder="Subject (e.g., Math)" value={subject} onChange={e => setSubject(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary text-base focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" style={{ fontSize: '16px' }} required />
+            <input type="text" placeholder="Title (e.g., Complete worksheet)" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary text-base focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" style={{ fontSize: '16px' }} required />
+            <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-text-primary text-base focus:ring-2 focus:ring-[var(--primary-accent)] focus:border-transparent outline-none" style={{ fontSize: '16px' }} required />
           </div>
           <div className="mt-6 text-center">
             <div className="flex items-center my-2">
@@ -120,8 +120,8 @@ const AddHomeworkModal: React.FC<AddHomeworkModalProps> = ({ onClose, onAdd }) =
             )}
           </div>
           <div className="mt-8 flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-6 py-2 rounded-lg text-slate-300 bg-slate-700/50 hover:bg-slate-700">Cancel</button>
-            <button type="submit" className="px-6 py-2 rounded-lg bg-[var(--primary-accent)] text-background-main font-semibold hover:opacity-80">Add Assignment</button>
+            <button type="button" onClick={onClose} className="px-6 py-2 rounded-lg text-slate-300 bg-slate-700/50 hover:bg-slate-700 transition-all duration-300 hover:scale-105">Cancel</button>
+            <button type="submit" className="glass-button px-6 py-2 rounded-lg text-white font-semibold hover:scale-105 transition-all duration-300 shadow-lg">Add Assignment</button>
           </div>
         </form>
       </div>

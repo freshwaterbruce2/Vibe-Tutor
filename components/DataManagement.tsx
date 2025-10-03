@@ -94,7 +94,7 @@ const DataManagement: React.FC = () => {
 
   return (
     <div className="p-6 bg-background-surface border border-[var(--border-color)] rounded-2xl">
-      <h3 className="text-2xl font-bold text-text-primary mb-4">Data Management</h3>
+      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] mb-4">Data Management</h3>
        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button onClick={handleExport} className="px-5 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
                 Export Data

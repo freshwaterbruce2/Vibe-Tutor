@@ -4,8 +4,8 @@ import HomeworkItemComponent from './HomeworkItem';
 import AddHomeworkModal from './AddHomeworkModal';
 import NotificationPanel from './NotificationPanel';
 import BreakdownModal from './BreakdownModal';
-import { PlusIcon } from './icons/PlusIcon';
-import { BellIcon } from './icons/BellIcon';
+import { GradientIcon } from './icons/GradientIcon';
+import { Plus, Bell } from 'lucide-react';
 
 interface HomeworkDashboardProps {
   items: HomeworkItem[];
@@ -41,55 +41,116 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
   };
 
   return (
-    <div className="h-full flex flex-col p-8 overflow-y-auto">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-text-primary">Homework Dashboard</h1>
-          <p className="text-text-secondary mt-1">Stay on top of your tasks and deadlines.</p>
-        </div>
-        <div className="flex items-center gap-4">
-            <div className="relative">
-                <button onClick={() => setIsNotifPanelOpen(prev => !prev)} className="relative p-2 rounded-full hover:bg-slate-700/50 transition-colors">
-                    <BellIcon className="w-6 h-6 text-slate-400" />
-                    {upcomingItems.length > 0 && (
-                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background-main" />
-                    )}
-                </button>
-                {isNotifPanelOpen && <NotificationPanel items={upcomingItems} onClose={() => setIsNotifPanelOpen(false)} />}
-            </div>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 font-semibold text-background-main bg-[var(--primary-accent)] rounded-lg hover:opacity-80 transition-opacity"
-          >
-            <PlusIcon className="w-5 h-5" />
-            Add Assignment
-          </button>
+    <div className="h-full flex flex-col p-4 md:p-8 overflow-y-auto relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--glass-surface)] via-transparent to-[var(--glass-surface)] pointer-events-none opacity-30"></div>
+
+      <header className="relative z-10 glass-card p-4 md:p-6 mb-4 md:mb-8 rounded-2xl border border-[var(--glass-border)]">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1 md:space-y-2">
+            <h1 className="text-2xl md:text-4xl font-bold neon-text-primary glow-on-hover">Homework Dashboard</h1>
+            <p className="text-[var(--text-secondary)] text-sm md:text-lg">Stay on top of your tasks</p>
+          </div>
+          <div className="flex items-center gap-2 md:gap-4 w-full sm:w-auto">
+              <div className="relative">
+                  <button
+                    onClick={() => setIsNotifPanelOpen(prev => !prev)}
+                    className="glass-card p-3 md:p-3 min-h-[48px] min-w-[48px] rounded-xl hover:scale-110 transition-all duration-300 group relative overflow-hidden focus-glow flex items-center justify-center"
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                      <GradientIcon Icon={Bell} size={24} gradientId="vibe-gradient-accent" />
+                      {upcomingItems.length > 0 && (
+                          <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--tertiary-accent)] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-5 w-5 bg-[var(--tertiary-accent)] text-xs text-white items-center justify-center font-bold">
+                              {upcomingItems.length}
+                            </span>
+                          </span>
+                      )}
+                  </button>
+                  {isNotifPanelOpen && <NotificationPanel items={upcomingItems} onClose={() => setIsNotifPanelOpen(false)} />}
+              </div>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="glass-button flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 min-h-[48px] font-semibold text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg flex-1 sm:flex-initial"
+              style={{ touchAction: 'manipulation' }}
+            >
+              <GradientIcon Icon={Plus} size={20} gradientId="vibe-gradient-mobile" />
+              <span className="text-sm md:text-base">Add</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="flex-1">
-        <h2 className="text-xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400">To Do ({activeItems.length})</h2>
-        {activeItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeItems.map(item => (
-              <HomeworkItemComponent key={item.id} item={item} onToggleComplete={onToggleComplete} onBreakdownClick={setBreakdownItem} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 border-2 border-dashed border-slate-700/50 rounded-xl">
-            <p className="text-slate-400">No active assignments. Great job!</p>
-          </div>
-        )}
-
-        {completedItems.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">Completed ({completedItems.length})</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completedItems.map(item => (
-                <HomeworkItemComponent key={item.id} item={item} onToggleComplete={onToggleComplete} onBreakdownClick={setBreakdownItem}/>
-              ))}
+      <div className="flex-1 relative z-10 space-y-8">
+        <section className="space-y-6">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold neon-text-secondary">
+              To Do
+            </h2>
+            <div className="glass-card px-4 py-2 rounded-full">
+              <span className="text-sm font-semibold text-[var(--text-primary)]">{activeItems.length}</span>
             </div>
           </div>
+
+          {activeItems.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="transform transition-all duration-500"
+                  style={{
+                    animationDelay: `${index * 0.1}s`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
+                >
+                  <HomeworkItemComponent
+                    item={item}
+                    onToggleComplete={onToggleComplete}
+                    onBreakdownClick={setBreakdownItem}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card text-center py-16 rounded-2xl border-2 border-dashed border-[var(--glass-border)] bg-gradient-to-br from-[var(--glass-surface)] to-transparent">
+              <div className="space-y-4">
+                <div className="text-6xl">🎉</div>
+                <p className="text-xl font-semibold neon-text-primary">No active assignments!</p>
+                <p className="text-[var(--text-secondary)]">You're all caught up. Great job!</p>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {completedItems.length > 0 && (
+          <section className="space-y-6 opacity-80">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--text-secondary)] to-[var(--text-muted)]">
+                Completed
+              </h2>
+              <div className="glass-card px-4 py-2 rounded-full opacity-60">
+                <span className="text-sm font-semibold text-[var(--text-primary)]">{completedItems.length}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {completedItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="transform transition-all duration-500 opacity-75 hover:opacity-100"
+                  style={{
+                    animationDelay: `${(activeItems.length + index) * 0.1}s`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
+                >
+                  <HomeworkItemComponent
+                    item={item}
+                    onToggleComplete={onToggleComplete}
+                    onBreakdownClick={setBreakdownItem}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
         )}
       </div>
 

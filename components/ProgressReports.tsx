@@ -39,7 +39,7 @@ const ProgressReports: React.FC<ProgressReportsProps> = ({ items }) => {
 
   return (
     <div className="p-6 bg-background-surface border border-[var(--border-color)] rounded-2xl">
-      <h3 className="text-2xl font-bold text-text-primary mb-4">Progress Report</h3>
+      <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] mb-4">Progress Report</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="p-4 bg-slate-800/50 rounded-lg">

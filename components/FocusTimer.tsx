@@ -148,7 +148,7 @@ const FocusTimer: React.FC<FocusTimerProps> = ({ onSessionComplete }) => {
     <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-background-main to-slate-900/70">
         <audio ref={audioRef} src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" preload="auto" />
         <div className="mb-4">
-            <h1 className="text-4xl font-bold text-text-primary">Focus Timer</h1>
+            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] neon-text-primary glow-on-hover">Focus Timer</h1>
             <p className="text-text-secondary mt-1">{mode === 'work' ? 'Time to focus on your tasks.' : 'Take a short break.'}</p>
         </div>
 

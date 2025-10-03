@@ -76,12 +76,12 @@ const AchievementCenter: React.FC<AchievementCenterProps> = ({ achievements, poi
   return (
     <div className="h-full flex flex-col p-8 overflow-y-auto">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold text-text-primary">Achievements & Rewards</h1>
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] neon-text-primary glow-on-hover">Achievements & Rewards</h1>
         <p className="text-text-secondary mt-1">Celebrate your victories and claim your rewards.</p>
       </header>
 
       <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg mb-8 border border-[var(--border-color)]">
-        <h2 className="text-xl font-bold">Your Points</h2>
+        <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--tertiary-accent)] to-[var(--quaternary-accent)]">Your Points</h2>
         <span className="text-3xl font-bold text-[var(--primary-accent)] neon-text-primary">{points}</span>
       </div>
       

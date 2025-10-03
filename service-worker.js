@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vibe-tutor-cache-v1';
+const CACHE_NAME = 'vibe-tutor-cache-v6'; // Tailwind v3 + CapacitorHttp - v1.0.5
 const urlsToCache = [
   '/',
   '/index.html',
@@ -14,7 +14,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
+        // Cache opened successfully
         return cache.addAll(urlsToCache);
       })
   );
