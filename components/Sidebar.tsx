@@ -6,12 +6,12 @@ import {
   LayoutDashboard,
   GraduationCap,
   Heart,
-  Timer,
   Trophy,
   Lock,
   Sparkles,
   Bot,
-  Users
+  Users,
+  Music2
 } from 'lucide-react';
 
 
@@ -24,9 +24,9 @@ const navItems = [
   { view: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', gradient: 'vibe-gradient-primary' },
   { view: 'tutor', icon: GraduationCap, label: 'AI Tutor', gradient: 'vibe-gradient-secondary' },
   { view: 'friend', icon: Heart, label: 'AI Buddy', gradient: 'vibe-gradient-accent' },
-  { view: 'focus', icon: Timer, label: 'Focus Timer', gradient: 'vibe-gradient-primary' },
   { view: 'achievements', icon: Trophy, label: 'Achievements', gradient: 'vibe-gradient-secondary' },
-];
+  { view: 'music', icon: Music2, label: 'Music', gradient: 'vibe-gradient-accent' },
+] as const;
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
   return (

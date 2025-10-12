@@ -132,6 +132,149 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 ---
 
+### ⚠️ CRITICAL: Android WebView Cache Busting
+
+**Why This Matters**:
+Android WebView aggressively caches old app versions. After making code changes (including AI prompt updates), the old code will continue to load from cache, making it appear like your changes didn't work. This can waste 1+ hours of debugging time.
+
+**Symptoms**:
+- "I fixed it but the bug is still there"
+- "The new AI prompts aren't showing up"
+- "It works in browser but not on Android"
+- Code changes in JavaScript/TypeScript don't appear in installed app
+- Old behavior persists after rebuild
+
+**Complete Cache Busting Workflow**:
+
+```bash
+# STEP 1: Increment versionCode (REQUIRED)
+# Edit android/app/build.gradle
+versionCode {CURRENT} + 1  # e.g., 6 → 7
+versionName "1.0.{NEW}"    # e.g., "1.0.5" → "1.0.6"
+
+# STEP 2: Build fresh web assets
+npm run build
+
+# STEP 3: Sync to Android
+npx cap sync android
+
+# STEP 4: Clean rebuild (removes cached build files)
+cd android
+./gradlew.bat clean assembleDebug
+
+# STEP 5: Completely uninstall old app from device
+adb uninstall com.vibetech.tutor
+
+# STEP 6: Install fresh APK
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**Why Each Step is Necessary**:
+
+1. **versionCode increment**: Forces Android to recognize it as a new version
+   - Without this, Android treats it as the same app and keeps cache
+   - This is THE most important step
+
+2. **npm run build**: Compiles your latest code changes into JavaScript bundles
+   - Prompt changes in `constants.ts` are compiled into the bundle
+   - Without this, old prompts are in the bundle
+
+3. **npx cap sync**: Copies new web assets to `android/www/`
+   - Without this, Android builds with old assets
+
+4. **clean assembleDebug**: Removes all cached build artifacts
+   - Prevents gradle from using cached outputs
+   - Ensures fresh compilation
+
+5. **adb uninstall**: Removes ALL cached data from device
+   - WebView cache is tied to the app installation
+   - This is the nuclear option that guarantees fresh state
+
+6. **adb install**: Installs the new APK with incremented versionCode
+   - Fresh installation = fresh cache
+
+**Shortcuts DON'T WORK**:
+
+❌ **Just reinstalling without uninstalling first**
+- Android keeps WebView cache from previous install
+- Old JavaScript still loads
+
+❌ **Incrementing versionCode without clean rebuild**
+- Gradle may use cached build outputs
+- APK has old code
+
+❌ **Skipping `npx cap sync`**
+- Android builds with old assets from previous sync
+- Your new code never makes it to `android/www/`
+
+❌ **Just clearing app data from device settings**
+- WebView cache persists beyond app data
+- Must fully uninstall
+
+**Real-World Example (v1.0.6)**:
+
+```bash
+# Changed AI prompts in constants.ts for neurodivergent support
+# Without cache busting, user would still see old emoji-heavy responses
+# With proper cache busting, new structured responses appear
+
+# Bad workflow:
+npm run build
+npx cap sync android
+cd android && ./gradlew.bat assembleDebug
+adb install -r app-debug.apk
+# Result: OLD prompts still load from cache
+
+# Good workflow:
+# Edit build.gradle: versionCode 6 → 7, versionName "1.0.5" → "1.0.6"
+npm run build
+npx cap sync android
+cd android && ./gradlew.bat clean assembleDebug
+adb uninstall com.vibetech.tutor
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+# Result: NEW prompts load successfully
+```
+
+**When to Apply This**:
+
+✅ **Always cache bust for**:
+- AI prompt changes (constants.ts)
+- Service worker updates
+- Major bug fixes
+- New features
+- Styling changes
+- Any JavaScript/TypeScript code changes
+
+❌ **Don't need full cache bust for**:
+- Android-only changes (build.gradle, manifest.xml)
+- Native plugin updates (may just need `npx cap sync`)
+- Documentation updates (README.md, etc.)
+
+**Verification**:
+
+After installing, verify the new version is running:
+
+```javascript
+// In Chrome DevTools (chrome://inspect)
+console.log("App version:", "1.0.6"); // Your new version
+localStorage.getItem('lastAppVersion'); // Check if updated
+```
+
+Or add version display in app UI:
+```typescript
+// App.tsx
+<div className="version-tag">v1.0.6</div>
+```
+
+**Pro Tip**: Tag your git commits with version numbers for easy rollback:
+
+```bash
+git tag -a v1.0.6 -m "Neurodivergent-friendly AI prompts"
+git push origin v1.0.6
+```
+
+---
+
 ### Issue 4: Media Queries Not Working
 
 **Symptoms**:
@@ -312,6 +455,7 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 ---
 
-**Last Updated**: October 3, 2025
+**Last Updated**: October 4, 2025
 **Tested On**: Samsung Galaxy A54 (Android 15)
 **Capacitor Version**: 7.4.3
+**Latest Version**: v1.0.6 (Neurodivergent-Friendly AI Prompts)

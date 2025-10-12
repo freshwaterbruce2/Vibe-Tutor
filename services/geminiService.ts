@@ -1,17 +1,13 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { createChatCompletion } from './secureClient';
+import { usageMonitor } from './usageMonitor';
 import type { ParsedHomework } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const parsingSchema = {
-    type: Type.OBJECT,
+    type: "object",
     properties: {
-        subject: { type: Type.STRING, description: 'The subject of the homework, e.g., Math, Science.' },
-        title: { type: Type.STRING, description: 'The specific assignment title, e.g., "Chapter 5 Reading", "Algebra Worksheet".' },
-        dueDate: { type: Type.STRING, description: 'The due date in YYYY-MM-DD format.' },
+        subject: { type: "string", description: 'The subject of the homework, e.g., Math, Science.' },
+        title: { type: "string", description: 'The specific assignment title, e.g., "Chapter 5 Reading", "Algebra Worksheet".' },
+        dueDate: { type: "string", description: 'The due date in YYYY-MM-DD format.' },
     },
     required: ['subject', 'title', 'dueDate']
 };
@@ -20,33 +16,68 @@ export const parseHomeworkFromVoice = async (transcript: string): Promise<Parsed
     try {
         const today = new Date().toISOString().split('T')[0];
         const prompt = `Parse the following user transcript to extract homework details. The current date is ${today}.
-        - The subject should be a school subject.
-        - The title is the description of the task.
-        - The due date must be converted to YYYY-MM-DD format. "Tomorrow" means one day after today. "Next Friday" means the upcoming Friday.
-        
+        - The subject should be a school subject (e.g., "math", "science", "english", "history").
+        - The title is the description of the task (e.g., "10 problems", "complete worksheet", "chapter 5 reading").
+        - The due date must be converted to YYYY-MM-DD format.
+        - Common date formats to handle:
+          - "0925 2025" or "09/25/2025" means September 25, 2025 (convert to 2025-09-25)
+          - "tomorrow" means one day after today
+          - "next friday" means the upcoming Friday
+          - Dates in MMDD YYYY format should be parsed as month-day year
+
+        Important: When you see patterns like "it's due on 0925 2025" or "due 0925 2025", interpret 0925 as September 25th (09/25).
+
         Transcript: "${transcript}"`;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: parsingSchema,
+        // Add system message to ensure JSON response
+        const systemPrompt = `You must respond ONLY with valid JSON matching this schema:
+        {
+            "subject": "string - school subject",
+            "title": "string - assignment description",
+            "dueDate": "string - YYYY-MM-DD format"
+        }
+        No other text, just the JSON object.`;
+
+        const response = await createChatCompletion([
+            {
+                role: "system",
+                content: systemPrompt
             },
+            {
+                role: "user",
+                content: prompt
+            }
+        ], {
+            model: "deepseek-chat",
+            temperature: 0.3,
         });
-        
-        const jsonString = response.text.trim();
-        if (jsonString) {
-            const parsed = JSON.parse(jsonString);
-            return {
-                subject: parsed.subject || '',
-                title: parsed.title || '',
-                dueDate: parsed.dueDate || '',
-            };
+
+        if (response) {
+            try {
+                // Try to extract JSON from the response
+                let jsonStr = response;
+
+                // If response contains extra text, extract JSON
+                const jsonMatch = response.match(/\{[^}]*\}/);
+                if (jsonMatch) {
+                    jsonStr = jsonMatch[0];
+                }
+
+                const parsed = JSON.parse(jsonStr);
+                return {
+                    subject: parsed.subject || '',
+                    title: parsed.title || '',
+                    dueDate: parsed.dueDate || '',
+                };
+            } catch (parseError) {
+                console.error("Failed to parse homework response:", parseError);
+                // Fallback: try to extract info manually
+                return null;
+            }
         }
         return null;
     } catch (error) {
-        console.error("Error parsing homework with Gemini:", error);
+        console.error("Error parsing homework with DeepSeek:", error);
         return null;
     }
 };

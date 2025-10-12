@@ -7,8 +7,8 @@ android {
         applicationId "com.vibetech.tutor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6  // Tailwind v3 + CapacitorHttp fixes
-        versionName "1.0.5"  // FIXED: Duplicate buttons + chat working
+        versionCode 9  // Achievement system fixes: Streak Master, bonus points, toast notifications
+        versionName "1.0.8"  // FEATURE: Fixed achievement system with bonus points and visual celebrations
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

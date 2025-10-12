@@ -4,204 +4,127 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Vibe-Tutor is a Progressive Web App (PWA) designed as an AI-powered homework manager and tutor for high school students. Built with React, TypeScript, and DeepSeek AI (90% cheaper than competitors), it features offline capabilities, achievements, focus timers, and parental controls.
+Vibe-Tutor is a Progressive Web App (PWA) and native Android app for high school students. It combines AI-powered homework management, tutoring, and gamification with offline-first architecture and neurodivergent-friendly design.
+
+**Tech Stack:** React 19, TypeScript 5.8, Vite 6, Tailwind CSS 3, Capacitor 7.4.3, DeepSeek AI
+
+**Package Manager:** pnpm (for faster installs and disk space efficiency)
 
 ## Development Commands
 
 ```bash
-# Development
-npm run dev          # Start Vite dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-
 # Installation
-npm install          # Install dependencies
+pnpm install             # Install all dependencies
+
+# Web Development
+pnpm run dev             # Start Vite dev server (localhost:5173)
+pnpm run build           # Production build
+pnpm run preview         # Preview production build
+pnpm start               # Start backend proxy server (port 3001)
+
+# Android Development
+pnpm run android:full-build    # Build web → sync → build APK
+pnpm run android:deploy        # Full build → uninstall → install
+pnpm run android:sync          # Copy web assets to android/
+pnpm run android:build         # Build APK only (cd android && gradlew.bat assembleDebug)
+pnpm run android:build:clean   # Clean build APK
+pnpm run android:open          # Open Android Studio
+pnpm run android:install       # Install APK on connected device
+pnpm run android:uninstall     # Uninstall app from device
+pnpm run android:logs          # View Capacitor logs via adb
+pnpm run android:doctor        # Check Capacitor environment
 ```
-
-## Environment Setup
-
-**Required Environment Variables:**
-- `DEEPSEEK_API_KEY`: DeepSeek API key (set in `.env.local`)
-
-The Vite config automatically maps `DEEPSEEK_API_KEY` to `process.env.API_KEY` for the application.
 
 ## Architecture Overview
 
-### Core Application Structure
-- **App.tsx**: Main application component with view routing, state management, and AI service integration
-- **Lazy Loading**: All major views (HomeworkDashboard, ChatWindow, FocusTimer, etc.) are lazy-loaded for performance
-- **PWA Features**: Service worker, manifest.json, and offline capabilities
-- **Modern UI System**: Glassmorphism design with Vibe-Tech branding and 2025 design trends
+### Core Application (App.tsx)
+- **Single-file routing**: View state machine (dashboard | tutor | friend | achievements | parent | music)
+- **Lazy loading**: All major views lazy-loaded with Suspense boundaries
+- **Inlined AI tutor**: `tutorService` embedded directly in App.tsx to avoid file proliferation
+- **LocalStorage-first**: All state (homework, achievements, rewards, playlists) persists client-side
+- **Separate AI contexts**: Independent message histories for AI Tutor vs AI Buddy
 
-### UI/UX Design System (2025 Update)
-- **Vibe-Tech Brand Integration**: Custom SVG logo with neon gradients and glow effects
-- **Glassmorphism Architecture**: Semi-transparent surfaces with backdrop blur effects
-- **Color Palette**: Electric purple (#8B5CF6), neon cyan (#06B6D4), hot pink (#EC4899)
-- **Animation System**: Float, pulse, fade-in-up, and shimmer effects
-- **Typography**: Neon text effects with gradient backgrounds and glow states
+### Services Architecture
 
-### Key Services (services/)
-- **geminiService.ts**: Voice-to-homework parsing using structured DeepSeek AI responses
-- **achievementService.ts**: Achievement system with localStorage persistence and progress tracking
-- **buddyService.ts**: AI companion chat functionality
-- **focusService.ts**: Pomodoro timer with wake lock and background accuracy
-- **uiService.ts**: Haptic feedback and UI utilities
+**AI Integration (services/)**
+- `secureClient.ts` - **Backend proxy pattern**: No API keys in client code, session token auth
+- `geminiService.ts` - Voice-to-homework parsing using DeepSeek structured outputs
+- `buddyService.ts` - AI companion chat with emotional support personality
+- `usageMonitor.ts` - Rate limiting for API calls
 
-### State Management
-- **Local Storage Persistence**: All data (homework, achievements, focus stats, rewards) persists in localStorage
-- **Event-Driven Achievements**: Achievement system responds to user actions (task completion, focus sessions)
-- **Separate AI Chats**: Independent Chat instances for AI Tutor and AI Buddy to maintain conversation context
+**Feature Services**
+- `achievementService.ts` - Event-driven achievement system with localStorage persistence
+- `breakdownService.ts` - Task decomposition using AI
+- `musicService.ts` - Playlist management (Spotify/YouTube embeds)
+- `downloadService.ts` - Local music downloads using Capacitor FileTransfer
+- `audioPlayerService.ts` - Native audio playback
+- `analyticsService.ts` - Usage tracking
+- `uiService.ts` - Haptic feedback utilities
+
+### Backend Proxy (server.mjs)
+- **Purpose**: Secure DeepSeek API key storage, prevents client-side exposure
+- **Session auth**: Token-based authentication with expiry
+- **CORS handling**: Enables mobile/web cross-origin requests
+- **Endpoints**: `/api/init-session`, `/api/chat` (proxies DeepSeek chat completions)
 
 ### Component Organization
-- **Modular Components**: Each major feature is a separate component (HomeworkDashboard, ChatWindow, FocusTimer, etc.)
-- **Error Boundaries**: Granular error handling to prevent cascading failures
-- **Icons**: Custom SVG icon components in components/icons/ with VibeTechLogo featuring brand gradients
-- **Progressive Enhancement**: Features gracefully degrade when offline or when APIs fail
-- **Glass Components**: Standardized glassmorphism classes (.glass-card, .glass-button) with consistent styling
 
-## Key Technical Patterns
+**Core Components (components/)**
+- `HomeworkDashboard.tsx` - Main dashboard with voice input and task grid
+- `ChatWindow.tsx` - Shared chat UI for AI Tutor and AI Buddy
+- `ParentDashboard.tsx` - PIN-locked parental controls (progress, rewards, data export)
+- `AchievementCenter.tsx` - Gamification badges and progress tracking
+- `MusicLibrary.tsx` - Playlist manager with download support
+- `Sidebar.tsx` - Navigation with VibeTechLogo
+- `ErrorBoundary.tsx` - Granular error handling
+- `OfflineIndicator.tsx` - Network status monitoring
 
-### AI Integration
-- **Tutor Service Inlined**: The tutorService is directly embedded in App.tsx to avoid file proliferation
-- **Structured AI Responses**: Uses DeepSeek's structured output for homework parsing with JSON schema validation
-- **Context Preservation**: Separate Chat instances maintain conversation history for different AI personalities
+**UI Components**
+- `AchievementPopup.tsx` - Toast notification for unlocked achievements
+- `AddHomeworkModal.tsx` - Voice/text homework input with AI parsing
+- `BreakdownModal.tsx` - AI-powered task decomposition
+- `NotificationPanel.tsx` - Notification center
+- `SecurePinLock.tsx` - PIN authentication for parent dashboard
 
-### PWA Implementation
-- **Service Worker**: Caches assets for offline functionality
-- **Manifest**: Configures app installation and theming (Vibe-Tech branding with cyan/black theme)
-- **Offline Detection**: Real-time network status monitoring with visual indicators
-
-### Data Architecture
-- **Homework Items**: Core data structure with id, subject, title, dueDate, completed fields
-- **Achievement Events**: Type-safe event system for triggering achievement checks
-- **Rewards System**: Parent-configured rewards with point costs and approval workflow
-
-## Development Guidelines
-
-### Adding New Features
-1. Create components in `components/` directory
-2. Add services to `services/` directory for business logic
-3. Update types in `types.ts` for TypeScript interfaces
-4. Add achievement events to `achievementService.ts` if applicable
-5. Update App.tsx view routing if adding new views
-
-### AI Service Integration
-- All DeepSeek AI calls should handle errors gracefully with user-friendly fallbacks
-- Use structured outputs when possible for consistent parsing
-- Maintain separate chat contexts for different AI personalities (tutor vs buddy)
-
-### Testing Approach
-Reference TESTING_CHECKLIST.md for comprehensive testing scenarios including:
-- PWA installation and offline functionality
-- Voice input on mobile devices
-- Achievement triggering and persistence
-- Parent dashboard PIN security
-- Cross-browser compatibility
-
-### Build and Deployment
-- No bundler complexity - uses Vite with minimal configuration
-- API keys must be injected via environment variables (never hardcoded)
-- See DEPLOYMENT_GUIDE.md for PWA deployment on Android devices
-- All assets should be optimized for mobile performance
-
-## Notable Implementation Details
-
-### Focus Timer
-- Uses `targetTime` approach for background accuracy instead of interval-based counting
-- Implements wake lock to prevent screen sleep during focus sessions
-- Audio context unlocking required for mobile browser compatibility
-
-### Voice Input
-- Integrated with Web Speech API for homework voice-to-text
-- Graceful fallback messaging for unsupported browsers
-- Structured parsing through DeepSeek AI converts natural language to homework data
-
-### Parent Dashboard
-- PIN-locked access to progress reports and reward management
-- Data export/import functionality for backup and restore
-- AI-generated progress summaries for parental insights
-
-## Modern UI Implementation (2025 Enhancement)
-
-### Glassmorphism Design System
-The application features a cutting-edge glassmorphism design implementing 2025 UI trends:
-
-**CSS Architecture:**
-- Custom CSS variables in `index.html` define the complete design system
-- Glass effects using `backdrop-filter: blur()` and semi-transparent backgrounds
-- Neon glow effects with CSS `box-shadow` and `text-shadow` properties
-- Smooth animations with CSS transitions and keyframe animations
-
-**Key Classes:**
-```css
-.glass-card       - Semi-transparent surfaces with backdrop blur
-.glass-button     - Interactive buttons with gradient backgrounds and shimmer effects
-.neon-text-primary - Purple neon text with glow effects
-.pulse-glow       - Pulsing glow animation for emphasis
-.float-animation  - Subtle floating animation for logos and icons
+### State Management Pattern
+```typescript
+// LocalStorage keys used throughout app:
+homeworkItems           // HomeworkItem[]
+studentPoints          // number (achievement points)
+parentRewards          // Reward[] (parent-configured rewards)
+claimedRewards         // ClaimedReward[]
+achievements           // { id, unlocked, progress }[]
+homeworkStats          // { completedTasks: number }
+musicPlaylists         // MusicPlaylist[]
+vibetutor_session      // Session token (sessionStorage)
+vibetutor_expiry       // Token expiry timestamp (sessionStorage)
 ```
 
-**Component Enhancements:**
-- **Sidebar**: Floating logo, glassmorphic nav buttons with scale animations
-- **HomeworkDashboard**: Glass header, animated card grid with staggered entrance
-- **HomeworkItem**: Glass cards with gradient overlays and hover transformations
-- **Buttons**: Shimmer effects, scale transforms, and neon glow states
+## Critical Technical Patterns
 
-### Animation System
-- **Entrance Animations**: fadeInUp for dashboard cards with staggered delays
-- **Hover Effects**: Scale transforms, glow intensification, and color transitions
-- **Loading States**: Pulse animations for notifications and status indicators
-- **Focus States**: Enhanced accessibility with neon outline effects
-
-### Brand Integration
-- **VibeTechLogo**: Custom SVG with multi-stop gradients and filter effects
-- **Color Harmony**: Split-complementary purple-cyan scheme with pink accents
-- **Typography**: Inter font with variable weights and neon text treatments
-
-This architecture prioritizes user experience, offline functionality, and educational value while maintaining clean separation of concerns and type safety throughout the application. The 2025 UI update brings modern visual appeal that matches current design trends while preserving full functionality.
-
----
-
-## Mobile Development (Capacitor + Android)
-
-### Capacitor Configuration
-This app uses **Capacitor 7.4.3** to deploy as a native Android app alongside the PWA version.
-
-**Key Files**:
-- `capacitor.config.ts` - Main Capacitor configuration
-- `android/app/build.gradle` - Android version management
-- `android/app/src/main/AndroidManifest.xml` - Android permissions
-
-### Android Build Commands
-```bash
-# Development workflow
-npm run build                    # Build web assets
-npx cap sync android             # Copy to android/ and update plugins
-npx cap open android             # Open in Android Studio
-
-# Direct APK build (faster)
-cd android
-./gradlew.bat assembleDebug      # Build debug APK
-./gradlew.bat clean assembleDebug # Clean build
-
-# Install on connected device
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-adb uninstall com.vibetech.tutor # Uninstall old version
-```
-
-### Critical Capacitor Patterns
-
-#### 1. Use CapacitorHttp Explicitly
-**DO NOT** rely on automatic fetch() patching. It's unreliable in Capacitor 7.
+### 1. Secure API Key Management
+**Never expose DeepSeek API key in client code**
 
 ```typescript
-// ❌ WRONG - May not work on Android
-const response = await fetch(url, options);
+// ❌ WRONG - Exposes API key in client bundle
+const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+  headers: { 'Authorization': `Bearer ${API_KEY}` }
+});
 
-// ✅ CORRECT - Always works
+// ✅ CORRECT - Use backend proxy
+import { createChatCompletion } from './services/secureClient';
+const response = await createChatCompletion(messages, options);
+```
+
+### 2. Capacitor HTTP (Mobile Only)
+**Always use CapacitorHttp for network requests on Android**
+
+```typescript
 import { CapacitorHttp } from '@capacitor/core';
+
+// ✅ Works reliably on Android
 const response = await CapacitorHttp.request({
-  url: url,
+  url: API_CONFIG.baseURL + endpoint,
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   data: requestBody,
@@ -211,116 +134,180 @@ const response = await CapacitorHttp.request({
 const result = response.data; // Already parsed JSON
 ```
 
-#### 2. Tailwind CSS Compatibility
-**DO NOT** use Tailwind CSS from CDN. Android WebView requires v3 with build pipeline.
+**Why:** Capacitor 7's fetch() patching is unreliable. Explicit `CapacitorHttp` ensures native networking.
+
+### 3. Tailwind CSS Version Lock
+**Use Tailwind CSS v3.4.15 (not v4, not CDN)**
 
 ```bash
-# ❌ WRONG - Doesn't work on Android WebView
-<script src="https://cdn.tailwindcss.com"></script>
+# ✅ CORRECT - Installed via pnpm with PostCSS
+pnpm add -D tailwindcss@3.4.15 postcss autoprefixer
 
-# ✅ CORRECT - Install v3 with PostCSS
-npm install -D tailwindcss@3.4.15 postcss autoprefixer
-npx tailwindcss init -p
+# ❌ WRONG - CDN breaks on Android WebView
+<script src="https://cdn.tailwindcss.com"></script>
 ```
 
-**Why**: Tailwind v4 uses `@property` and `color-mix()` which require Chrome 111+. Many Android devices have older WebView versions.
+**Why:** Tailwind v4 uses CSS features (`@property`, `color-mix()`) requiring Chrome 111+. Many Android devices use older WebView versions (74+).
 
-#### 3. Version Management
-**Always increment** `versionCode` on each build to force cache clear.
+### 4. Version Management
+**Increment versionCode on every Android build**
 
 ```gradle
 // android/app/build.gradle
 defaultConfig {
-    versionCode 6     // Increment on each release
-    versionName "1.0.5" // Semantic version
+    versionCode 6      // ← Increment to force cache clear
+    versionName "1.0.5"
 }
 ```
 
-### Debugging Tools
+### 5. AI Prompt Architecture (Neurodivergent Support)
+AI prompts optimized for ADHD/autism (see `constants.ts`):
+- Bullet points over paragraphs (working memory support)
+- 2-3 sentence chunks (cognitive load management)
+- One question at a time (executive function support)
+- Limited emojis (sensory awareness)
+- Direct language (no idioms/sarcasm)
 
-#### Chrome Remote Debugging
+## PWA + Capacitor Dual Deployment
+
+This app runs as both a **Progressive Web App** (installable in browsers) and a **native Android app** (via Capacitor).
+
+### PWA Features
+- Service worker for offline caching
+- `manifest.json` for installation
+- Responsive design with glassmorphism UI
+- Network status detection (`OfflineIndicator`)
+
+### Capacitor Native Features
+- File system access (music downloads)
+- Haptic feedback
+- Native HTTP (bypasses CORS)
+- Wake lock (focus timer)
+
+### Build Pipeline
 ```bash
-# 1. Enable USB debugging on device
-# 2. Connect via USB
-# 3. Open chrome://inspect/#devices
-# 4. Click "Inspect" under Vibe Tutor
+# Web → Android workflow
+pnpm run build                   # 1. Build web assets (dist/)
+pnpm exec cap sync android       # 2. Copy dist/ → android/app/src/main/assets/public/
+cd android && ./gradlew.bat assembleDebug  # 3. Build APK
+
+# Shortcut (does all above + install)
+pnpm run android:deploy
 ```
 
-#### Capacitor Doctor
+## Development Guidelines
+
+### Adding New Features
+1. **Components**: Add to `components/` (lazy load if new view)
+2. **Services**: Add to `services/` for business logic
+3. **Types**: Update `types.ts` with TypeScript interfaces
+4. **State**: Use localStorage for persistence
+5. **Achievements**: Add events to `achievementService.ts` if applicable
+6. **AI Context**: Use `secureClient.ts` for DeepSeek API calls
+
+### AI Service Integration
+- All DeepSeek calls must go through `secureClient.ts` (backend proxy)
+- Use structured outputs for parsing (homework voice input)
+- Handle errors gracefully with fallback messages (see `tutorService` in App.tsx)
+- Separate chat contexts for different personalities (tutor/buddy)
+
+### Testing Mobile Builds
 ```bash
-npx cap doctor        # Check environment setup
-npx cap ls            # List installed plugins
-npx cap sync --dry-run # Preview sync changes
+# Full test workflow
+pnpm run android:full-build      # Build fresh APK
+adb uninstall com.vibetech.tutor # Remove old version
+pnpm run android:install         # Install new APK
+# Open chrome://inspect/#devices to debug
 ```
 
-#### ADB Logcat
-```bash
-adb logcat | grep -i capacitor   # Filter Capacitor logs
-adb logcat | grep -i vibetutor   # Filter app logs
-adb logcat -c && adb logcat      # Clear and watch
+**Common Issues:** See [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md)
+- Duplicate nav buttons → Tailwind v4 incompatibility
+- Chat not working → Missing CapacitorHttp
+- Stale code → Cache issues (increment versionCode)
+
+### UI/UX Design System (Glassmorphism)
+**Key CSS Classes** (defined in `index.html`):
+```css
+.glass-card          /* Semi-transparent surfaces with backdrop-filter blur */
+.glass-button        /* Interactive buttons with gradient + shimmer effects */
+.neon-text-primary   /* Purple neon text with glow */
+.pulse-glow          /* Pulsing glow animation */
+.float-animation     /* Subtle floating for logos */
 ```
 
-### Common Android Issues
+**Color Palette**:
+- Primary: `#8B5CF6` (electric purple)
+- Accent: `#06B6D4` (neon cyan)
+- Highlight: `#EC4899` (hot pink)
 
-See **[MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md)** for detailed solutions to:
-- Duplicate navigation buttons (Tailwind v4 compatibility)
-- Chat not working (CapacitorHttp required)
-- Stale code after rebuild (cache issues)
-- Media queries not working (WebView compatibility)
+**Animation Patterns**:
+- Entrance: `fadeInUp` with staggered delays
+- Hover: Scale transforms + glow intensification
+- Loading: Pulse animations
 
-### Testing on Real Devices
+## Notable Implementation Details
 
-**Minimum Requirements**:
-- Android 10+ (API 29+)
-- WebView version 74+
-- Samsung Galaxy A54 recommended for testing
+### Focus Timer Accuracy
+- Uses `targetTime` approach (not interval-based) for background accuracy
+- Wake lock prevents screen sleep during sessions
+- Audio context unlocking required for mobile browser compatibility
 
-**Testing Checklist**:
-```bash
-# 1. Build fresh APK
-npm run build && npx cap sync android
-cd android && ./gradlew.bat clean assembleDebug
+### Voice Input (Web Speech API)
+- Integrated in `AddHomeworkModal.tsx`
+- Sends natural language to `geminiService.ts` for parsing
+- DeepSeek returns structured JSON: `{ subject, title, dueDate }`
+- Graceful fallback for unsupported browsers
 
-# 2. Uninstall old version
-adb uninstall com.vibetech.tutor
+### Parent Dashboard Security
+- PIN-locked access (SHA-256 hashed PIN in localStorage)
+- Data export/import (backup/restore entire app state)
+- AI-generated progress summaries
 
-# 3. Install new version
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+### Achievement System
+- Event-driven: `checkAndUnlockAchievements(event)` after user actions
+- Progress tracking with goals
+- Toast notifications via `AchievementPopup.tsx`
 
-# 4. Open Chrome DevTools
-# Navigate to chrome://inspect/#devices
+## Environment Setup
 
-# 5. Test all features
-# - Navigation (only bottom nav should show)
-# - Chat (send/receive messages)
-# - Offline mode
-# - Responsive design
-```
+**Required:**
+- Node.js (for npm)
+- `.env.local` file with `DEEPSEEK_API_KEY=your_api_key` (backend only)
 
-### Version History
+**Optional (for Android):**
+- Android Studio (for APK builds)
+- ADB (for device installation)
+- Java 17+ (for Gradle)
 
-Current stable version: **v1.0.5**
-- APK: `vibe-tutor-v1.0.5-STABLE.apk`
-- Git tag: `v1.0.5`
-- See [VERSION.md](./VERSION.md) for full history
-
-### Recovery
-
-If build breaks, rollback to last working version:
-```bash
-git checkout v1.0.5
-npm install
-npm run build
-npx cap sync android
-cd android && ./gradlew.bat assembleDebug
-```
-
----
+**Configuration Files:**
+- `capacitor.config.ts` - Capacitor settings, app ID
+- `vite.config.ts` - Dev server proxy (`/api` → `localhost:3001`)
+- `tailwind.config.js` - Tailwind v3 configuration
+- `android/app/build.gradle` - Android version management
+- `server.mjs` - Backend proxy server
 
 ## Additional Resources
 
-- **Troubleshooting**: See [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md)
-- **Release Notes**: See [RELEASE-NOTES-v1.0.5.md](./RELEASE-NOTES-v1.0.5.md)
-- **Version History**: See [VERSION.md](./VERSION.md)
-- **Capacitor Docs**: https://capacitorjs.com/docs
-- **Android WebView**: https://developer.android.com/reference/android/webkit/WebView
+- **Kiosk Mode**: [KIOSK_MODE_SETUP.md](./KIOSK_MODE_SETUP.md) - Single-app lockdown for dedicated study devices
+- **Troubleshooting**: [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md) - Android WebView issues
+- **Version History**: [VERSION.md](./VERSION.md) - Release notes and changelog
+- **Neurodivergent Support**: [NEURODIVERGENT-SUPPORT.md](./NEURODIVERGENT-SUPPORT.md) - ADHD/autism accommodations
+- **Testing**: [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
+- **Parent Guide**: [PARENT_GUIDE.md](./PARENT_GUIDE.md) - User documentation
+- **UI Design**: [GLASSMORPHISM_GUIDE.md](./GLASSMORPHISM_GUIDE.md) - Design system details
+
+## Current Stable Version
+
+**v1.0.5** (versionCode 6)
+- APK: `vibe-tutor-v1.0.5-STABLE.apk`
+- Git tag: `v1.0.5`
+
+### Recovery Procedure
+If build breaks, rollback:
+```bash
+git checkout v1.0.5
+pnpm install
+pnpm run build
+pnpm exec cap sync android
+cd android && ./gradlew.bat assembleDebug
+```

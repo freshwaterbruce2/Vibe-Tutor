@@ -1,18 +1,14 @@
-import { GoogleGenAI, Type } from "@google/genai";
-
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+import { createChatCompletion } from './secureClient';
+import { usageMonitor } from './usageMonitor';
 
 const breakdownSchema = {
-    type: Type.OBJECT,
+    type: "object",
     properties: {
         steps: {
-            type: Type.ARRAY,
+            type: "array",
             description: "A list of actionable, small steps to complete the homework task.",
             items: {
-                type: Type.STRING
+                type: "string"
             }
         }
     },
@@ -31,38 +27,54 @@ export const breakDownTask = async (taskTitle: string, subject: string): Promise
         console.error("Error reading from sessionStorage", e);
     }
     
+    const fallbackSteps = [
+        `Start by reading and understanding the ${subject} topic`,
+        "Gather all necessary materials and resources",
+        "Break the work into 25-minute focused sessions",
+        "Take notes on key concepts as you work",
+        "Review and organize your completed work",
+        "Double-check for accuracy and completion"
+    ];
+
     try {
         const prompt = `Break down the following homework task into a series of small, manageable steps.
         Task: "${taskTitle}"
         Subject: "${subject}"
         Provide the steps as a simple list of strings.`;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: breakdownSchema,
-            },
+        const response = await createChatCompletion([
+            {
+                role: 'user',
+                content: prompt
+            }
+        ], {
+            model: "deepseek-chat",
+            temperature: 0.3,
+            retryCount: 2,
         });
 
-        const jsonString = response.text.trim();
+        const jsonString = response?.trim();
         if (jsonString) {
-            const parsed = JSON.parse(jsonString);
-            const steps = parsed.steps || [];
-            if (steps.length > 0) {
-                 try {
-                    sessionStorage.setItem(cacheKey, JSON.stringify(steps));
-                 } catch (e) {
-                     console.error("Error writing to sessionStorage", e);
-                 }
+            try {
+                const parsed = JSON.parse(jsonString);
+                const steps = parsed.steps || fallbackSteps;
+                if (steps.length > 0) {
+                     try {
+                        sessionStorage.setItem(cacheKey, JSON.stringify(steps));
+                     } catch (e) {
+                         console.error("Error writing to sessionStorage", e);
+                     }
+                }
+                return steps;
+            } catch (parseError) {
+                console.error("Error parsing JSON response:", parseError);
+                return fallbackSteps;
             }
-            return steps;
         }
-        return [];
+        return fallbackSteps;
 
     } catch (error) {
-        console.error("Error breaking down task with Gemini:", error);
-        return [];
+        console.error("Error breaking down task with DeepSeek:", error);
+        return fallbackSteps;
     }
 };

@@ -1,0 +1,62 @@
+name = "vibe-tutor-api"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+
+# Account details
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# Routes for this worker
+routes = [
+  { pattern = "vibe-api.yourdomain.com/*", zone_name = "yourdomain.com" }
+]
+
+# Environment variables (non-sensitive)
+[vars]
+NODE_ENV = "production"
+API_VERSION = "1.0.0"
+
+# Secrets (set via wrangler secret put)
+# DEEPSEEK_API_KEY - Set via: wrangler secret put DEEPSEEK_API_KEY
+# DATABASE_URL - Set via: wrangler secret put DATABASE_URL
+
+# D1 Database bindings (optional - for future cloud migration)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "vibe-tutor-db"
+# database_id = "YOUR_DATABASE_ID"
+
+# Durable Objects (for WebSocket connections)
+[[durable_objects.bindings]]
+name = "SESSIONS"
+class_name = "SessionManager"
+script_name = "vibe-tutor-api"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SessionManager"]
+
+# KV Namespaces for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_KV_NAMESPACE_ID"
+preview_id = "YOUR_KV_PREVIEW_ID"
+
+# Service bindings for other workers
+# [[services]]
+# binding = "CRYPTO_API"
+# service = "crypto-trading-api"
+
+# Development settings
+[dev]
+port = 8787
+local_protocol = "http"
+
+# Tail consumers for logging
+[[tail_consumers]]
+service = "logging-worker"
+
+# Build configuration
+[build]
+command = "npm run build"
+upload_format = "modules"
+main = "./dist/worker.js"

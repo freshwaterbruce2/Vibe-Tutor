@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(ngrok http:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run preview:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap add:*)",
+      "Bash(npx cap sync:*)",
+      "Bash(where magick)",
+      "Bash(./gradlew:*)",
+      "Bash(git -C C:devVibe-Tutor status --short)",
+      "Bash(./gradlew.bat clean:*)",
+      "Bash(adb:*)",
+      "Bash(where pnpm)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run:*)",
+      "Bash(findstr:*)",
+      "Bash(./gradlew.bat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

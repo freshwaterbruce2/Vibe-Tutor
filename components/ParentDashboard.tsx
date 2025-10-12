@@ -3,6 +3,7 @@ import type { HomeworkItem, Reward, ClaimedReward } from '../types';
 import SecurePinLock from './SecurePinLock';
 import ProgressReports from './ProgressReports';
 import RewardSettings from './RewardSettings';
+import ScreenTimeSettings from './ScreenTimeSettings';
 import DataManagement from './DataManagement';
 
 interface ParentDashboardProps {
@@ -61,6 +62,7 @@ const ParentDashboard: React.FC<ParentDashboardProps> = ({ items, rewards, claim
 
       <div className="space-y-8">
         <ProgressReports items={items} />
+        <ScreenTimeSettings />
         <RewardSettings rewards={rewards} onUpdateRewards={onUpdateRewards} claimedRewards={claimedRewards} onApproval={onApproval} />
         <DataManagement />
       </div>
