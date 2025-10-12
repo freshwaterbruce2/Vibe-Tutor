@@ -1,33 +1,128 @@
 /**
  * Curated Music Library
  * Pre-selected royalty-free music for study sessions
- * All tracks are from legal, free sources (Bensound, Incompetech, FMA)
+ * Anime-themed music and Christian worship songs
+ * All tracks are from legal, free sources (Incompetech, Bensound, Public Domain)
  */
 
 import type { CuratedTrack, RadioStation } from '../types';
 
 export const CURATED_MUSIC: CuratedTrack[] = [
-  // Lo-fi / Chill Beats
+  // Anime-Themed Music
   {
-    id: 'lofi-1',
-    name: 'Sunny',
-    artist: 'Bensound',
-    category: 'lofi',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-sunny.mp3',
-    description: 'Upbeat acoustic guitar, perfect for focus',
+    id: 'anime-1',
+    name: 'Sakura Girl',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sakura%20Girl.mp3',
+    description: 'Upbeat Japanese-style instrumental',
+    estimatedSize: '3.8 MB'
+  },
+  {
+    id: 'anime-2',
+    name: 'Destiny Day',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Destiny%20Day.mp3',
+    description: 'Epic anime-style orchestral',
+    estimatedSize: '4.2 MB'
+  },
+  {
+    id: 'anime-3',
+    name: 'Senbazuru',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Senbazuru.mp3',
+    description: 'Traditional Japanese melody',
+    estimatedSize: '3.5 MB'
+  },
+  {
+    id: 'anime-4',
+    name: 'Koto',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Koto.mp3',
+    description: 'Peaceful koto instrumental',
+    estimatedSize: '2.9 MB'
+  },
+  {
+    id: 'anime-5',
+    name: 'Carefree',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3',
+    description: 'Light and cheerful anime vibe',
+    estimatedSize: '3.1 MB'
+  },
+  {
+    id: 'anime-6',
+    name: 'Enchanted Journey',
+    artist: 'Kevin MacLeod',
+    category: 'anime',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Enchanted%20Journey.mp3',
+    description: 'Fantasy adventure theme',
+    estimatedSize: '4.5 MB'
+  },
+
+  // Christian Worship Songs
+  {
+    id: 'christian-1',
+    name: 'Amazing Grace',
+    artist: 'Traditional Hymn',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Amazing%20Grace.mp3',
+    description: 'Classic worship hymn',
     estimatedSize: '3.2 MB'
   },
   {
-    id: 'lofi-2',
-    name: 'Better Days',
-    artist: 'Bensound',
-    category: 'lofi',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-betterdays.mp3',
-    description: 'Relaxed beats for studying',
-    estimatedSize: '4.1 MB'
+    id: 'christian-2',
+    name: 'Prelude and Action',
+    artist: 'Kevin MacLeod',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Prelude%20and%20Action.mp3',
+    description: 'Inspiring worship instrumental',
+    estimatedSize: '4.8 MB'
   },
   {
-    id: 'lofi-3',
+    id: 'christian-3',
+    name: 'Meditation',
+    artist: 'Kevin MacLeod',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Meditation.mp3',
+    description: 'Peaceful prayer music',
+    estimatedSize: '3.6 MB'
+  },
+  {
+    id: 'christian-4',
+    name: 'Peaceful',
+    artist: 'Kevin MacLeod',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Peaceful.mp3',
+    description: 'Calm worship atmosphere',
+    estimatedSize: '3.9 MB'
+  },
+  {
+    id: 'christian-5',
+    name: 'Heartwarming',
+    artist: 'Kevin MacLeod',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Heartwarming.mp3',
+    description: 'Uplifting praise music',
+    estimatedSize: '3.4 MB'
+  },
+  {
+    id: 'christian-6',
+    name: 'Hope',
+    artist: 'Kevin MacLeod',
+    category: 'christian',
+    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Gregorian%20Chant.mp3',
+    description: 'Sacred choral arrangement',
+    estimatedSize: '4.1 MB'
+  },
+
+  // Lo-fi Study Music (keeping a few)
+  {
+    id: 'lofi-1',
     name: 'Cute',
     artist: 'Bensound',
     category: 'lofi',
@@ -36,27 +131,18 @@ export const CURATED_MUSIC: CuratedTrack[] = [
     estimatedSize: '2.8 MB'
   },
   {
-    id: 'lofi-4',
+    id: 'lofi-2',
     name: 'Ukulele',
     artist: 'Bensound',
     category: 'lofi',
     downloadUrl: 'https://www.bensound.com/bensound-music/bensound-ukulele.mp3',
-    description: 'Happy and light ukulele melody',
+    description: 'Happy and light melody',
     estimatedSize: '2.5 MB'
   },
 
-  // Classical / Instrumental
+  // Classical / Instrumental (keeping a few)
   {
     id: 'classical-1',
-    name: 'Cipher',
-    artist: 'Kevin MacLeod',
-    category: 'classical',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cipher.mp3',
-    description: 'Mysterious instrumental',
-    estimatedSize: '3.6 MB'
-  },
-  {
-    id: 'classical-2',
     name: 'Gymnopedie No 1',
     artist: 'Kevin MacLeod',
     category: 'classical',
@@ -65,113 +151,64 @@ export const CURATED_MUSIC: CuratedTrack[] = [
     estimatedSize: '4.2 MB'
   },
   {
-    id: 'classical-3',
-    name: 'Meditation Impromptu 01',
+    id: 'classical-2',
+    name: 'Meditation Impromptu',
     artist: 'Kevin MacLeod',
     category: 'classical',
     downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Meditation%20Impromptu%2001.mp3',
     description: 'Peaceful meditation music',
     estimatedSize: '3.8 MB'
-  },
-
-  // Ambient / Electronic
-  {
-    id: 'ambient-1',
-    name: 'Creative Minds',
-    artist: 'Bensound',
-    category: 'ambient',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-creativeminds.mp3',
-    description: 'Inspiring ambient background',
-    estimatedSize: '3.4 MB'
-  },
-  {
-    id: 'ambient-2',
-    name: 'Acousticbreeze',
-    artist: 'Bensound',
-    category: 'ambient',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3',
-    description: 'Soft ambient soundscape',
-    estimatedSize: '3.9 MB'
-  },
-  {
-    id: 'ambient-3',
-    name: 'Relaxing',
-    artist: 'Bensound',
-    category: 'ambient',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-relaxing.mp3',
-    description: 'Calm and soothing',
-    estimatedSize: '3.2 MB'
-  },
-
-  // Nature Sounds (via royalty-free sources)
-  {
-    id: 'nature-1',
-    name: 'Tenderness',
-    artist: 'Bensound',
-    category: 'nature',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-tenderness.mp3',
-    description: 'Gentle nature-inspired melody',
-    estimatedSize: '2.7 MB'
-  },
-  {
-    id: 'nature-2',
-    name: 'A Day To Remember',
-    artist: 'Bensound',
-    category: 'nature',
-    downloadUrl: 'https://www.bensound.com/bensound-music/bensound-adaytoremember.mp3',
-    description: 'Peaceful acoustic',
-    estimatedSize: '3.5 MB'
   }
 ];
 
 export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radio-1',
-    name: 'Lofi Girl Radio',
-    genre: 'Lo-fi Hip Hop',
-    streamUrl: 'https://streams.fluxfm.de/lofi/mp3-320/streams.fluxfm.de/',
-    description: '24/7 chill beats to study/relax to'
+    name: 'Anime Music Radio',
+    genre: 'Anime / J-Pop',
+    streamUrl: 'https://stream.zeno.fm/f6d6hnm6k18uv',
+    description: '24/7 anime soundtracks and J-pop'
   },
   {
     id: 'radio-2',
-    name: 'Chillout Radio',
-    genre: 'Ambient / Chillout',
-    streamUrl: 'https://cast.radiogroup.com.ua:8000/chillout320',
-    description: 'Relaxing electronic music'
+    name: 'Christian Radio',
+    genre: 'Christian Worship',
+    streamUrl: 'https://stream.zeno.fm/3akvtnb9gg8uv',
+    description: 'Contemporary Christian music and worship'
   },
   {
     id: 'radio-3',
-    name: 'Classical Radio',
-    genre: 'Classical',
-    streamUrl: 'https://stream.zeno.fm/f3wvbbqmdg8uv',
-    description: 'Classic compositions for focus'
+    name: 'K-Love Radio',
+    genre: 'Christian Contemporary',
+    streamUrl: 'https://emf.streamguys1.com/klove_aac',
+    description: 'Positive, encouraging Christian hits'
   },
   {
     id: 'radio-4',
-    name: 'Jazz Cafe',
-    genre: 'Smooth Jazz',
-    streamUrl: 'https://live.amperwave.net/direct/ppm-smooth64-ibc1',
-    description: 'Smooth jazz for background study'
+    name: 'Anime Lounge',
+    genre: 'Anime Instrumental',
+    streamUrl: 'https://stream.zeno.fm/7aq3nbdwg18uv',
+    description: 'Chill anime OST instrumentals'
   },
   {
     id: 'radio-5',
-    name: 'Nature Sounds',
-    genre: 'Ambient Nature',
-    streamUrl: 'https://streaming.radionomy.com/NatureSounds',
-    description: 'Calming nature soundscapes'
+    name: 'Praise & Worship',
+    genre: 'Christian Worship',
+    streamUrl: 'https://stream.zeno.fm/t54v2rfvgg8uv',
+    description: 'Uplifting worship songs'
   },
   {
     id: 'radio-6',
-    name: 'Study Beats',
-    genre: 'Instrumental',
-    streamUrl: 'https://stream.zeno.fm/y8mb4bmtgg8uv',
-    description: 'Instrumental beats perfect for studying'
+    name: 'Classical Piano',
+    genre: 'Classical',
+    streamUrl: 'https://stream.zeno.fm/f3wvbbqmdg8uv',
+    description: 'Peaceful piano for studying'
   }
 ];
 
 export const MUSIC_CATEGORIES = [
+  { id: 'anime', name: 'Anime Music', icon: '🎌' },
+  { id: 'christian', name: 'Christian Worship', icon: '✝️' },
   { id: 'lofi', name: 'Lo-fi / Chill', icon: '🎵' },
-  { id: 'classical', name: 'Classical / Instrumental', icon: '🎹' },
-  { id: 'ambient', name: 'Ambient / Electronic', icon: '🌊' },
-  { id: 'nature', name: 'Nature Sounds', icon: '🌿' }
+  { id: 'classical', name: 'Classical / Instrumental', icon: '🎹' }
 ] as const;

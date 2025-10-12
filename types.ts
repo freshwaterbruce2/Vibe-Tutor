@@ -92,7 +92,7 @@ export interface CuratedTrack {
   id: string;
   name: string;
   artist: string;
-  category: 'lofi' | 'classical' | 'ambient' | 'nature';
+  category: 'anime' | 'christian' | 'lofi' | 'classical';
   downloadUrl: string;
   description?: string;
   estimatedSize?: string; // Human-readable (e.g., "3.5 MB")
