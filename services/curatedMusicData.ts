@@ -164,45 +164,45 @@ export const CURATED_MUSIC: CuratedTrack[] = [
 export const RADIO_STATIONS: RadioStation[] = [
   {
     id: 'radio-1',
-    name: 'Anime Music Radio',
+    name: 'LISTEN.moe - Anime Radio',
     genre: 'Anime / J-Pop',
-    streamUrl: 'https://stream.zeno.fm/f6d6hnm6k18uv',
-    description: '24/7 anime soundtracks and J-pop'
+    streamUrl: 'https://listen.moe/stream',
+    description: '24/7 anime soundtracks and J-pop hits (128kbps)'
   },
   {
     id: 'radio-2',
-    name: 'Christian Radio',
-    genre: 'Christian Worship',
-    streamUrl: 'https://stream.zeno.fm/3akvtnb9gg8uv',
-    description: 'Contemporary Christian music and worship'
+    name: 'BigB Radio - JPOP',
+    genre: 'Japanese Pop / Anime',
+    streamUrl: 'http://82.145.63.122:9700/s',
+    description: 'High quality J-Pop and anime music (192kbps)'
   },
   {
     id: 'radio-3',
-    name: 'K-Love Radio',
-    genre: 'Christian Contemporary',
-    streamUrl: 'https://emf.streamguys1.com/klove_aac',
-    description: 'Positive, encouraging Christian hits'
+    name: 'BigB Radio - KPOP',
+    genre: 'Korean Pop',
+    streamUrl: 'http://82.145.63.122:9600/s',
+    description: 'K-Pop hits and Korean music (192kbps)'
   },
   {
     id: 'radio-4',
-    name: 'Anime Lounge',
-    genre: 'Anime Instrumental',
-    streamUrl: 'https://stream.zeno.fm/7aq3nbdwg18uv',
-    description: 'Chill anime OST instrumentals'
+    name: 'RadioMv - Christian Worship',
+    genre: 'Christian Contemporary',
+    streamUrl: 'http://stream.radiomv.com/english/stream.mp3',
+    description: 'Contemporary Christian worship music'
   },
   {
     id: 'radio-5',
-    name: 'Praise & Worship',
-    genre: 'Christian Worship',
-    streamUrl: 'https://stream.zeno.fm/t54v2rfvgg8uv',
-    description: 'Uplifting worship songs'
+    name: 'RadioMv - New Testament',
+    genre: 'Christian Bible Audio',
+    streamUrl: 'http://stream.radiomv.com/english-nt/stream.mp3',
+    description: 'New Testament Bible audio readings'
   },
   {
     id: 'radio-6',
-    name: 'Classical Piano',
-    genre: 'Classical',
-    streamUrl: 'https://stream.zeno.fm/f3wvbbqmdg8uv',
-    description: 'Peaceful piano for studying'
+    name: 'LISTEN.moe - Opus (HQ)',
+    genre: 'Anime / J-Pop (High Quality)',
+    streamUrl: 'https://listen.moe/opus',
+    description: 'Higher quality anime radio stream (Opus format)'
   }
 ];
 
