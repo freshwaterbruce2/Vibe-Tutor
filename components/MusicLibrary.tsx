@@ -21,6 +21,8 @@ import {
 } from '../services/downloadService';
 import { audioPlayer, type PlaybackStatus } from '../services/audioPlayerService';
 import { CURATED_MUSIC, RADIO_STATIONS, MUSIC_CATEGORIES } from '../services/curatedMusicData';
+import { audioStream, type RadioStatus } from '../services/audioStreamService';
+import { downloadQueue, type QueueStatus } from '../services/downloadQueueManager';
 
 interface MusicLibraryProps {
   playlists: MusicPlaylist[];
@@ -48,14 +50,27 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
   const [downloadError, setDownloadError] = useState('');
   const [storageUsed, setStorageUsed] = useState(0);
   const [playbackStatus, setPlaybackStatus] = useState<PlaybackStatus | null>(null);
+  const [trackSortBy, setTrackSortBy] = useState<'name' | 'size' | 'lastPlayed' | 'date'>('date');
+  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
 
   // Curated Music State
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Radio Streaming State
-  const [currentStation, setCurrentStation] = useState<RadioStation | null>(null);
-  const [isRadioPlaying, setIsRadioPlaying] = useState(false);
-  const radioRef = useRef<HTMLAudioElement | null>(null);
+  // Radio Streaming State (using native audio)
+  const [radioStatus, setRadioStatus] = useState<RadioStatus>({
+    isPlaying: false,
+    station: null,
+    error: null
+  });
+
+  // Download Queue State
+  const [queueStatus, setQueueStatus] = useState<QueueStatus>({
+    queueLength: 0,
+    activeDownload: null,
+    isPaused: false,
+    totalCompleted: 0,
+    totalFailed: 0
+  });
 
   // Load local tracks from localStorage
   useEffect(() => {
@@ -73,7 +88,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
   // Subscribe to playback status
   useEffect(() => {
     audioPlayer.onStatusChange(setPlaybackStatus);
-    
+
     // Load downloaded tracks into playlist
     const downloadedTracks = localTracks.filter(t => t.downloadStatus === 'completed');
     if (downloadedTracks.length > 0) {
@@ -83,6 +98,16 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     // Update storage used
     updateStorageUsed();
   }, [localTracks]);
+
+  // Subscribe to radio status
+  useEffect(() => {
+    audioStream.onStatusChange(setRadioStatus);
+  }, []);
+
+  // Subscribe to download queue status
+  useEffect(() => {
+    downloadQueue.onStatusChange(setQueueStatus);
+  }, []);
 
   const updateStorageUsed = async () => {
     const used = await getStorageUsed();
@@ -132,7 +157,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     setError('');
   };
 
-  // ===== LOCAL MUSIC HANDLERS =====
+  // ===== LOCAL MUSIC HANDLERS (using download queue) =====
   const handleDownloadTrack = async () => {
     setDownloadError('');
 
@@ -160,36 +185,39 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     setDownloadUrl('');
     setTrackName('');
 
-    // Start download
-    try {
-      updateTrackStatus(newTrack.id, 'downloading', 0);
-
-      const result = await downloadMusicFile(newTrack, (progress: DownloadProgress) => {
+    // Add to download queue
+    await downloadQueue.addToQueue(
+      newTrack,
+      // Progress callback
+      (progress: DownloadProgress) => {
         updateTrackStatus(progress.trackId, 'downloading', progress.percentage);
-      });
-
-      // Download complete - update with metadata and album art
-      setLocalTracks(prev =>
-        prev.map(t =>
-          t.id === newTrack.id
-            ? {
-                ...t,
-                downloadStatus: 'completed',
-                downloadProgress: 100,
-                localPath: result.filePath,
-                fileSize: result.fileSize,
-                metadata: result.metadata,
-                duration: result.metadata?.duration,
-                albumArt: result.albumArt
-              }
-            : t
-        )
-      );
-      await updateStorageUsed();
-    } catch (err: any) {
-      updateTrackStatus(newTrack.id, 'failed', 0);
-      setDownloadError(err.message || 'Download failed');
-    }
+      },
+      // Complete callback
+      (result) => {
+        setLocalTracks(prev =>
+          prev.map(t =>
+            t.id === newTrack.id
+              ? {
+                  ...t,
+                  downloadStatus: 'completed',
+                  downloadProgress: 100,
+                  localPath: result.filePath,
+                  fileSize: result.fileSize,
+                  metadata: result.metadata,
+                  duration: result.metadata?.duration,
+                  albumArt: result.albumArt
+                }
+              : t
+          )
+        );
+        updateStorageUsed();
+      },
+      // Error callback
+      (error) => {
+        updateTrackStatus(newTrack.id, 'failed', 0);
+        setDownloadError(error.message || 'Download failed');
+      }
+    );
   };
 
   const updateTrackStatus = (
@@ -219,25 +247,131 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     }
   };
 
+  const handleRetryDownload = async (track: LocalTrack) => {
+    setDownloadError('');
+
+    // Reset track status to pending
+    setLocalTracks(prev =>
+      prev.map(t =>
+        t.id === track.id
+          ? { ...t, downloadStatus: 'pending', downloadProgress: 0 }
+          : t
+      )
+    );
+
+    // Retry download using queue manager
+    await downloadQueue.retryDownload(
+      track,
+      // Progress callback
+      (progress) => {
+        updateTrackStatus(progress.trackId, 'downloading', progress.percentage);
+      },
+      // Complete callback
+      (result) => {
+        setLocalTracks(prev =>
+          prev.map(t =>
+            t.id === track.id
+              ? {
+                  ...t,
+                  downloadStatus: 'completed',
+                  downloadProgress: 100,
+                  localPath: result.filePath,
+                  fileSize: result.fileSize,
+                  metadata: result.metadata,
+                  duration: result.metadata?.duration,
+                  albumArt: result.albumArt
+                }
+              : t
+          )
+        );
+        updateStorageUsed();
+      },
+      // Error callback
+      (error) => {
+        updateTrackStatus(track.id, 'failed', 0);
+        setDownloadError(error.message || 'Retry failed');
+      }
+    );
+  };
+
+  // Toggle track selection for bulk delete
+  const toggleTrackSelection = (trackId: string) => {
+    setSelectedTracks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(trackId)) {
+        newSet.delete(trackId);
+      } else {
+        newSet.add(trackId);
+      }
+      return newSet;
+    });
+  };
+
+  // Delete selected tracks in bulk
+  const handleBulkDelete = async () => {
+    if (selectedTracks.size === 0) return;
+
+    try {
+      const tracksToDelete = localTracks.filter(t => selectedTracks.has(t.id));
+
+      for (const track of tracksToDelete) {
+        if (track.localPath) {
+          await deleteTrack(track.localPath);
+        }
+      }
+
+      setLocalTracks(prev => prev.filter(t => !selectedTracks.has(t.id)));
+      setSelectedTracks(new Set());
+      await updateStorageUsed();
+    } catch (err: any) {
+      setDownloadError(err.message || 'Bulk delete failed');
+    }
+  };
+
+  // Sort tracks based on selected criteria
+  const getSortedTracks = (): LocalTrack[] => {
+    const tracks = [...localTracks];
+
+    switch (trackSortBy) {
+      case 'name':
+        return tracks.sort((a, b) =>
+          getTrackDisplayTitle(a).localeCompare(getTrackDisplayTitle(b))
+        );
+      case 'size':
+        return tracks.sort((a, b) => (b.fileSize || 0) - (a.fileSize || 0));
+      case 'lastPlayed':
+        return tracks.sort((a, b) => (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0));
+      case 'date':
+      default:
+        return tracks.sort((a, b) => b.createdAt - a.createdAt);
+    }
+  };
+
   const handlePlayTrack = async (track: LocalTrack) => {
     if (track.downloadStatus !== 'completed' || !track.localPath) {
       return;
     }
 
     const currentTrack = audioPlayer.getCurrentTrack();
-    
+
     if (currentTrack?.id === track.id && audioPlayer.isPlaying()) {
       audioPlayer.pause();
     } else {
-      await audioPlayer.loadTrack(track);
-      await audioPlayer.play();
-      
-      // Update lastPlayedAt
-      setLocalTracks(prev =>
-        prev.map(t =>
-          t.id === track.id ? { ...t, lastPlayedAt: Date.now() } : t
-        )
-      );
+      // Load full playlist with correct start index for seamless track navigation
+      const downloadedTracks = localTracks.filter(t => t.downloadStatus === 'completed');
+      const trackIndex = downloadedTracks.findIndex(t => t.id === track.id);
+
+      if (trackIndex !== -1) {
+        audioPlayer.loadPlaylist(downloadedTracks, trackIndex);
+        await audioPlayer.play();
+
+        // Update lastPlayedAt
+        setLocalTracks(prev =>
+          prev.map(t =>
+            t.id === track.id ? { ...t, lastPlayedAt: Date.now() } : t
+          )
+        );
+      }
     }
   };
 
@@ -277,54 +411,36 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     }
   };
 
-  // ===== RADIO STREAMING HANDLERS =====
-  const handlePlayRadio = (station: RadioStation) => {
-    if (!radioRef.current) {
-      radioRef.current = new Audio();
-    }
+  // ===== RADIO STREAMING HANDLERS (using HTML5 Audio) =====
+  const handlePlayRadio = async (station: RadioStation) => {
+    try {
+      // Stop local track if playing
+      if (audioPlayer.isPlaying()) {
+        audioPlayer.stop();
+      }
 
-    const radio = radioRef.current;
-
-    // Stop local track if playing
-    if (audioPlayer.isPlaying()) {
-      audioPlayer.stop();
-    }
-
-    if (currentStation?.id === station.id && isRadioPlaying) {
-      // Pause current station
-      radio.pause();
-      setIsRadioPlaying(false);
-    } else {
-      // Stop any currently playing radio station first
-      radio.pause();
-      radio.currentTime = 0;
-
-      // Load and play new station
-      radio.src = station.streamUrl;
-      radio.load(); // Force reload
-
-      radio.play().catch(err => {
-        console.error('Radio playback failed:', err);
-        setDownloadError(`Failed to start ${station.name}. Try another station.`);
-        setIsRadioPlaying(false);
-        setCurrentStation(null);
-      });
-
-      setCurrentStation(station);
-      setIsRadioPlaying(true);
+      // If same station is playing, stop it
+      if (radioStatus.station?.id === station.id && radioStatus.isPlaying) {
+        audioStream.stop();
+      } else {
+        // Play new station
+        await audioStream.play(station);
+      }
+    } catch (err: any) {
+      console.error('Radio playback failed:', err);
+      setDownloadError(err.message || `Failed to start ${station.name}. Try another station.`);
     }
   };
 
-  const handleStopRadio = () => {
-    if (radioRef.current) {
-      radioRef.current.pause();
-      radioRef.current.src = '';
+  const handleStopRadio = async () => {
+    try {
+      await audioStream.stop();
+    } catch (err: any) {
+      console.error('Radio stop failed:', err);
     }
-    setCurrentStation(null);
-    setIsRadioPlaying(false);
   };
 
-  // ===== CURATED MUSIC HANDLERS =====
+  // ===== CURATED MUSIC HANDLERS (using download queue) =====
   const handleDownloadCuratedTrack = async (curatedTrack: CuratedTrack) => {
     setDownloadError('');
 
@@ -347,38 +463,39 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
 
     setLocalTracks(prev => [...prev, newTrack]);
 
-    try {
-      // Set status to downloading
-      updateTrackStatus(newTrack.id, 'downloading', 0);
-
-      // Download with proper progress callback
-      const result = await downloadMusicFile(newTrack, (progress: DownloadProgress) => {
+    // Add to download queue
+    await downloadQueue.addToQueue(
+      newTrack,
+      // Progress callback
+      (progress: DownloadProgress) => {
         updateTrackStatus(progress.trackId, 'downloading', progress.percentage);
-      });
-
-      // Download complete - update with all metadata
-      setLocalTracks(prev =>
-        prev.map(t =>
-          t.id === newTrack.id
-            ? {
-                ...t,
-                localPath: result.filePath,
-                fileSize: result.fileSize,
-                duration: result.metadata?.duration,
-                metadata: result.metadata,
-                albumArt: result.albumArt,
-                downloadStatus: 'completed',
-                downloadProgress: 100
-              }
-            : t
-        )
-      );
-
-      await updateStorageUsed();
-    } catch (err: any) {
-      setDownloadError(err.message || 'Download failed');
-      updateTrackStatus(newTrack.id, 'failed', 0);
-    }
+      },
+      // Complete callback
+      (result) => {
+        setLocalTracks(prev =>
+          prev.map(t =>
+            t.id === newTrack.id
+              ? {
+                  ...t,
+                  localPath: result.filePath,
+                  fileSize: result.fileSize,
+                  duration: result.metadata?.duration,
+                  metadata: result.metadata,
+                  albumArt: result.albumArt,
+                  downloadStatus: 'completed',
+                  downloadProgress: 100
+                }
+              : t
+          )
+        );
+        updateStorageUsed();
+      },
+      // Error callback
+      (error) => {
+        setDownloadError(error.message || 'Download failed');
+        updateTrackStatus(newTrack.id, 'failed', 0);
+      }
+    );
   };
 
   // Filter curated music by category
@@ -568,7 +685,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
         {/* Radio Station List */}
         <div className="space-y-3">
           {RADIO_STATIONS.map(station => {
-            const isActive = currentStation?.id === station.id && isRadioPlaying;
+            const isActive = radioStatus.station?.id === station.id && radioStatus.isPlaying;
             return (
               <div
                 key={station.id}
@@ -607,7 +724,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
         </div>
 
         {/* Radio Mini Player */}
-        {currentStation && isRadioPlaying && (
+        {radioStatus.station && radioStatus.isPlaying && (
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -616,7 +733,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
                 </div>
                 <div>
                   <p className="text-white font-medium">Now Playing</p>
-                  <p className="text-gray-400 text-sm">{currentStation.name}</p>
+                  <p className="text-gray-400 text-sm">{radioStatus.station.name}</p>
                 </div>
               </div>
               <button
@@ -628,19 +745,92 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
             </div>
           </div>
         )}
+
+        {/* Radio Error Display */}
+        {radioStatus.error && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            {radioStatus.error}
+          </div>
+        )}
       </div>
 
       {/* LOCAL MUSIC SECTION */}
       <div className="space-y-4 pt-6 border-t border-white/10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-xl font-semibold text-gray-200 flex items-center gap-2">
             <HardDrive className="w-5 h-5 text-green-400" />
-            Downloaded Music
+            Downloaded Music ({localTracks.filter(t => t.downloadStatus === 'completed').length})
           </h2>
-          <span className="text-sm text-gray-400">
-            Storage: {formatBytes(storageUsed)}
-          </span>
+          <div className="flex items-center gap-3">
+            {selectedTracks.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm hover:bg-red-500/20 transition-colors"
+              >
+                Delete {selectedTracks.size} tracks
+              </button>
+            )}
+            <span className={`text-sm ${storageUsed > 80 * 1024 * 1024 ? 'text-orange-400' : 'text-gray-400'}`}>
+              Storage: {formatBytes(storageUsed)}
+            </span>
+          </div>
         </div>
+
+        {/* Storage Warning (>80MB) */}
+        {storageUsed > 80 * 1024 * 1024 && (
+          <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="text-orange-300 font-medium mb-1">Storage Alert</h4>
+                <p className="text-sm text-gray-300 mb-2">
+                  You've used {formatBytes(storageUsed)} of storage. Consider deleting old tracks to free up space.
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => setTrackSortBy('lastPlayed')}
+                    className="px-3 py-1 bg-orange-500/20 border border-orange-500/40 rounded-lg text-orange-300 text-xs hover:bg-orange-500/30 transition-colors"
+                  >
+                    Sort by Last Played
+                  </button>
+                  <button
+                    onClick={() => setTrackSortBy('size')}
+                    className="px-3 py-1 bg-orange-500/20 border border-orange-500/40 rounded-lg text-orange-300 text-xs hover:bg-orange-500/30 transition-colors"
+                  >
+                    Sort by Size
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Download Queue Status */}
+        {queueStatus.queueLength > 0 && (
+          <div className="bg-purple-500/10 border border-purple-500/30 rounded-2xl p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Loader className="w-5 h-5 text-purple-400 animate-spin" />
+                <div>
+                  <p className="text-white font-medium">
+                    {queueStatus.activeDownload
+                      ? `Downloading: ${queueStatus.activeDownload.name}`
+                      : 'Processing queue...'}
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    {queueStatus.queueLength} {queueStatus.queueLength === 1 ? 'track' : 'tracks'} in queue
+                  </p>
+                </div>
+              </div>
+              <div className="text-right text-sm text-gray-400">
+                <p>Completed: {queueStatus.totalCompleted}</p>
+                {queueStatus.totalFailed > 0 && (
+                  <p className="text-red-400">Failed: {queueStatus.totalFailed}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Download Form */}
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
@@ -710,9 +900,26 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
 
         {/* Downloaded Tracks List */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-200 mb-3">
-            Downloaded Tracks ({localTracks.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold text-gray-200">
+              Downloaded Tracks
+            </h3>
+            {localTracks.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-400">Sort by:</span>
+                <select
+                  value={trackSortBy}
+                  onChange={(e) => setTrackSortBy(e.target.value as any)}
+                  className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                >
+                  <option value="date">Newest First</option>
+                  <option value="name">Name A-Z</option>
+                  <option value="size">Largest First</option>
+                  <option value="lastPlayed">Recently Played</option>
+                </select>
+              </div>
+            )}
+          </div>
 
           {localTracks.length === 0 ? (
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
@@ -724,17 +931,29 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
             </div>
           ) : (
             <div className="space-y-2">
-              {localTracks.map((track) => (
+              {getSortedTracks().map((track) => (
                 <div
                   key={track.id}
                   className={`bg-white/5 backdrop-blur-xl border ${
-                    currentlyPlayingTrack?.id === track.id 
-                      ? 'border-purple-500/50' 
+                    currentlyPlayingTrack?.id === track.id
+                      ? 'border-purple-500/50'
+                      : selectedTracks.has(track.id)
+                      ? 'border-blue-500/50'
                       : 'border-white/10'
                   } rounded-xl p-4 hover:border-purple-500/30 transition-all duration-200`}
                 >
                   <div className="flex items-center gap-4">
-                    {/* Album Art / Play Button */}
+                    {/* Selection Checkbox (only for completed tracks) */}
+                    {track.downloadStatus === 'completed' && (
+                      <input
+                        type="checkbox"
+                        checked={selectedTracks.has(track.id)}
+                        onChange={() => toggleTrackSelection(track.id)}
+                        className="w-5 h-5 rounded border-2 border-white/20 bg-white/5 checked:bg-purple-500 checked:border-purple-500 cursor-pointer"
+                      />
+                    )}
+
+                    {/* Album Art / Play Button / Status Icon */}
                     {track.downloadStatus === 'completed' && track.localPath ? (
                       <div className="relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden group">
                         {track.albumArt ? (
@@ -760,6 +979,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
                     ) : track.downloadStatus === 'downloading' ? (
                       <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-white/5 rounded-lg">
                         <Loader className="w-6 h-6 text-purple-400 animate-spin" />
+                      </div>
+                    ) : track.downloadStatus === 'failed' ? (
+                      <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-red-500/10 rounded-lg border border-red-500/30">
+                        <AlertCircle className="w-6 h-6 text-red-400" />
                       </div>
                     ) : (
                       <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-white/5 rounded-lg">
@@ -812,14 +1035,28 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
                       )}
                     </div>
 
-                    {/* Delete Button */}
-                    <button
-                      onClick={() => handleDeleteTrack(track)}
-                      className="flex-shrink-0 p-2 hover:bg-red-500/10 rounded-lg transition-colors group"
-                      title="Delete track"
-                    >
-                      <Trash2 className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* Retry Button (only for failed downloads) */}
+                      {track.downloadStatus === 'failed' && (
+                        <button
+                          onClick={() => handleRetryDownload(track)}
+                          className="p-2 hover:bg-green-500/10 rounded-lg transition-colors group"
+                          title="Retry download"
+                        >
+                          <Download className="w-5 h-5 text-gray-400 group-hover:text-green-400" />
+                        </button>
+                      )}
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDeleteTrack(track)}
+                        className="p-2 hover:bg-red-500/10 rounded-lg transition-colors group"
+                        title="Delete track"
+                      >
+                        <Trash2 className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

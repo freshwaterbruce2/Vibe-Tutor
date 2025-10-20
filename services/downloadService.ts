@@ -19,6 +19,9 @@ export type DownloadProgressCallback = (progress: DownloadProgress) => void;
 
 const MUSIC_DIR = 'VibeTutor/Music';
 
+// Global singleton progress listener to prevent multiple active listeners
+let globalProgressListener: any = null;
+
 /**
  * Initialize music directory
  */
@@ -59,8 +62,18 @@ export const downloadMusicFile = async (
       directory: Directory.Documents
     });
 
-    // Setup progress listener
-    const progressListener = await FileTransfer.addListener('progress', (progress) => {
+    // Remove existing listener if any (singleton pattern)
+    if (globalProgressListener) {
+      try {
+        await globalProgressListener.remove();
+      } catch (error) {
+        console.warn('Failed to remove previous listener:', error);
+      }
+      globalProgressListener = null;
+    }
+
+    // Setup new progress listener (only ONE active at a time)
+    globalProgressListener = await FileTransfer.addListener('progress', (progress) => {
       if (onProgress) {
         onProgress({
           trackId: track.id,
@@ -78,8 +91,15 @@ export const downloadMusicFile = async (
       progress: true
     });
 
-    // Cleanup listener
-    await progressListener.remove();
+    // Cleanup listener after download completes
+    if (globalProgressListener) {
+      try {
+        await globalProgressListener.remove();
+      } catch (error) {
+        console.warn('Failed to remove listener:', error);
+      }
+      globalProgressListener = null;
+    }
 
     // Get file size
     const stat = await Filesystem.stat({
@@ -99,6 +119,16 @@ export const downloadMusicFile = async (
   } catch (error: any) {
     console.error('Download failed:', error);
 
+    // Cleanup listener on error
+    if (globalProgressListener) {
+      try {
+        await globalProgressListener.remove();
+      } catch (cleanupError) {
+        console.warn('Failed to remove listener after error:', cleanupError);
+      }
+      globalProgressListener = null;
+    }
+
     // Provide user-friendly error messages
     let errorMessage = 'Download failed';
 
@@ -117,6 +147,20 @@ export const downloadMusicFile = async (
     }
 
     throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Cleanup global progress listener (call on app shutdown)
+ */
+export const cleanupDownloadService = async (): Promise<void> => {
+  if (globalProgressListener) {
+    try {
+      await globalProgressListener.remove();
+    } catch (error) {
+      console.warn('Failed to cleanup download service:', error);
+    }
+    globalProgressListener = null;
   }
 };
 

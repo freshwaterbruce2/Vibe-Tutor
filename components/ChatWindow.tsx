@@ -10,6 +10,24 @@ interface ChatWindowProps {
   type?: 'tutor' | 'friend';
 }
 
+const formatAIResponse = (text: string): string => {
+  // Ensure proper spacing
+  let formatted = text.replace(/\n{3,}/g, '\n\n'); // Max 2 newlines
+
+  // Limit emojis (keep first 2, remove rest)
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}]/gu;
+  const emojis = formatted.match(emojiRegex) || [];
+  if (emojis.length > 2) {
+    let count = 0;
+    formatted = formatted.replace(emojiRegex, (match) => {
+      count++;
+      return count > 2 ? '' : match;
+    });
+  }
+
+  return formatted;
+};
+
 const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessage, type = 'tutor' }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     // Load chat history from localStorage
@@ -46,7 +64,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
         if (!responseContent) {
           throw new Error('No response received');
         }
-        const modelMessage: ChatMessage = { role: 'model', content: responseContent, timestamp: Date.now() };
+        const formattedResponse = formatAIResponse(responseContent);
+        const modelMessage: ChatMessage = { role: 'model', content: formattedResponse, timestamp: Date.now() };
         setMessages(prev => [...prev, modelMessage]);
     } catch (error) {
         console.error('Chat error:', error);

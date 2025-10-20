@@ -68,7 +68,36 @@ This document outlines the test plan for the Vibe-Tutor application to ensure it
 | Touch Targets | All buttons and interactive elements are at least 44x44px. | PASS | |
 | Keyboard Behavior | On-screen keyboard does not cover input fields. | PASS | Modern browsers handle this well with flexbox layouts. |
 
-## 7. Error Handling & Stability
+## 7. Music Library (v1.0.12)
+| Test Scenario | Expected Result | Status | Notes |
+|---|---|---|---|
+| **Radio Streams** | | | |
+| LISTEN.moe - Anime (JPOP) | Stream starts playing, no errors. | ⏳ PENDING | Verify on device |
+| LISTEN.moe - KPOP | Stream starts playing, no errors. | ⏳ PENDING | Verify on device |
+| R/a/dio - Anime Radio | Stream starts playing, no errors. | ⏳ PENDING | Verify on device |
+| Moody Radio - Praise & Worship | Stream starts playing, no errors. K-LOVE alternative. | ⏳ PENDING | NEW in v1.0.12 |
+| SomaFM - Groove Salad | Stream starts playing, no errors. HTTPS AAC stream. | ⏳ PENDING | FIXED in v1.0.12 |
+| Radio Error Handling | Clear error message shown if stream fails to load. | ⏳ PENDING | |
+| **Download Queue** | | | |
+| Queue Multiple Tracks | 5 tracks added to queue simultaneously. | ⏳ PENDING | Test with curated tracks |
+| Sequential Processing | Tracks download one at a time (500ms delay between). | ⏳ PENDING | Check logs in chrome://inspect |
+| Queue Progress | Progress bars update for each download. | ⏳ PENDING | |
+| All Downloads Complete | All 5 tracks complete successfully without deletion. | ⏳ PENDING | Main test case |
+| Download Logs | Detailed logs visible in console with success/failure indicators. | ⏳ PENDING | Enhanced logging in v1.0.12 |
+| **Track Playback** | | | |
+| Select First Track | Track plays when tapped. | ⏳ PENDING | |
+| Select Middle Track | Playlist loads from that track forward. | ⏳ PENDING | FIXED in v1.0.12 |
+| Next Button | Plays next track in downloaded list. | ⏳ PENDING | Full playlist navigation |
+| Previous Button | Returns to previous track or restarts current (>3s). | ⏳ PENDING | |
+| Pause/Resume | Playback pauses and resumes correctly. | ⏳ PENDING | |
+| Track Progress | Seek bar and time display update correctly. | ⏳ PENDING | |
+| **Storage & Management** | | | |
+| View Downloaded Tracks | All completed downloads appear in "Your Music" list. | ⏳ PENDING | |
+| Delete Track | Track removed from list and storage freed. | ⏳ PENDING | |
+| Storage Display | Accurate display of used storage (MB). | ⏳ PENDING | |
+| Album Art Display | Album art loads for tracks with metadata. | ⏳ PENDING | |
+
+## 8. Error Handling & Stability
 | Test Scenario | Expected Result | Status | Notes |
 |---|---|---|---|
 | Component Crash | A crashed view (e.g., chat) shows an error message but allows navigation to other views. | PASS | Granular Error Boundaries implemented. |

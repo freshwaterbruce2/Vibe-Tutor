@@ -4,6 +4,7 @@ import HomeworkItemComponent from './HomeworkItem';
 import AddHomeworkModal from './AddHomeworkModal';
 import NotificationPanel from './NotificationPanel';
 import BreakdownModal from './BreakdownModal';
+import WeekProgress from './WeekProgress';
 import { GradientIcon } from './icons/GradientIcon';
 import { Plus, Bell } from 'lucide-react';
 
@@ -82,6 +83,8 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
       </header>
 
       <div className="flex-1 relative z-10 space-y-8">
+        <WeekProgress homeworkItems={items} />
+
         <section className="space-y-6">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold neon-text-secondary">

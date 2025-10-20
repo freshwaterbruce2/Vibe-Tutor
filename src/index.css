@@ -2,4 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* OpenDyslexic Font for accessibility */
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
+
+.dyslexia-font {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+}
+
+/* Animation controls for sensory preferences */
+[data-animation-speed="none"] * {
+  animation: none !important;
+  transition: none !important;
+}
+
+[data-animation-speed="reduced"] * {
+  animation-duration: 0.3s !important;
+  transition-duration: 0.15s !important;
+}
+
+/* Font size controls */
+[data-font-size="small"] {
+  font-size: 14px;
+}
+
+[data-font-size="medium"] {
+  font-size: 16px;
+}
+
+[data-font-size="large"] {
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+/* Color mode controls for sensory preferences */
+[data-color-mode="high-contrast"] {
+  --background-main: #000000;
+  --text-primary: #FFFFFF;
+  --primary-accent: #FFFF00;
+}
+
+[data-color-mode="warm"] {
+  filter: sepia(0.2) saturate(1.1);
+}
+
+[data-color-mode="cool"] {
+  filter: hue-rotate(180deg) saturate(0.8);
+}
+
 /* Custom CSS variables and styles will be in index.html */

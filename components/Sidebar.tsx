@@ -11,7 +11,9 @@ import {
   Sparkles,
   Bot,
   Users,
-  Music2
+  Music2,
+  Eye,
+  Timer
 } from 'lucide-react';
 
 
@@ -26,6 +28,8 @@ const navItems = [
   { view: 'friend', icon: Heart, label: 'AI Buddy', gradient: 'vibe-gradient-accent' },
   { view: 'achievements', icon: Trophy, label: 'Achievements', gradient: 'vibe-gradient-secondary' },
   { view: 'music', icon: Music2, label: 'Music', gradient: 'vibe-gradient-accent' },
+  { view: 'sensory', icon: Eye, label: 'Sensory', gradient: 'vibe-gradient-primary' },
+  { view: 'focus', icon: Timer, label: 'Focus', gradient: 'vibe-gradient-secondary' },
 ] as const;
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
