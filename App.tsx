@@ -18,6 +18,8 @@ const ChatWindow = lazy(() => import('./components/ChatWindow'));
 const ParentDashboard = lazy(() => import('./components/ParentDashboard'));
 const AchievementCenter = lazy(() => import('./components/AchievementCenter'));
 const MusicLibrary = lazy(() => import('./components/MusicLibrary').then(m => ({ default: m.MusicLibrary })));
+const SensorySettings = lazy(() => import('./components/SensorySettings'));
+const FocusTimer = lazy(() => import('./components/FocusTimer'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -221,6 +223,13 @@ const App: React.FC = () => {
                 return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} />;
             case 'music':
                 return <MusicLibrary playlists={playlists} onAddPlaylist={handleAddPlaylist} onRemovePlaylist={handleRemovePlaylist} />;
+            case 'sensory':
+                return <SensorySettings />;
+            case 'focus':
+                return <FocusTimer onSessionComplete={(mins) => {
+                    setPoints(p => p + mins);
+                    handleAchievementEvent({ type: 'TASK_COMPLETED' });
+                }} />;
             default:
                 return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
         }

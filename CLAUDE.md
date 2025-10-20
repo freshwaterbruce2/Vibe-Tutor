@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Vibe-Tutor is a Progressive Web App (PWA) and native Android app for high school students. It combines AI-powered homework management, tutoring, and gamification with offline-first architecture and neurodivergent-friendly design.
+Vibe-Tutor is a Progressive Web App (PWA) and native Android app for high school students with ADHD and autism support. It combines AI-powered homework management, tutoring, gamification, **sensory settings**, **focus timer**, and **progress visualization** with offline-first architecture.
 
 **Tech Stack:** React 19, TypeScript 5.8, Vite 6, Tailwind CSS 3, Capacitor 7.4.3, DeepSeek AI
 
 **Package Manager:** pnpm (for faster installs and disk space efficiency)
+
+**Neurodivergent Features:** Sensory controls (animation/sound/haptic), OpenDyslexic font, Pomodoro focus timer, emoji-limited AI responses, visual progress tracking
 
 ## Development Commands
 
@@ -38,10 +40,10 @@ pnpm run android:doctor        # Check Capacitor environment
 ## Architecture Overview
 
 ### Core Application (App.tsx)
-- **Single-file routing**: View state machine (dashboard | tutor | friend | achievements | parent | music)
+- **Single-file routing**: View state machine (dashboard | tutor | friend | achievements | parent | music | sensory | focus)
 - **Lazy loading**: All major views lazy-loaded with Suspense boundaries
 - **Inlined AI tutor**: `tutorService` embedded directly in App.tsx to avoid file proliferation
-- **LocalStorage-first**: All state (homework, achievements, rewards, playlists) persists client-side
+- **LocalStorage-first**: All state (homework, achievements, rewards, playlists, sensory prefs, focus sessions) persists client-side
 - **Separate AI contexts**: Independent message histories for AI Tutor vs AI Buddy
 
 ### Services Architecture
@@ -70,12 +72,15 @@ pnpm run android:doctor        # Check Capacitor environment
 ### Component Organization
 
 **Core Components (components/)**
-- `HomeworkDashboard.tsx` - Main dashboard with voice input and task grid
-- `ChatWindow.tsx` - Shared chat UI for AI Tutor and AI Buddy
+- `HomeworkDashboard.tsx` - Main dashboard with voice input, task grid, and WeekProgress chart
+- `ChatWindow.tsx` - Shared chat UI for AI Tutor and AI Buddy with emoji limiting
 - `ParentDashboard.tsx` - PIN-locked parental controls (progress, rewards, data export)
 - `AchievementCenter.tsx` - Gamification badges and progress tracking
-- `MusicLibrary.tsx` - Playlist manager with download support
-- `Sidebar.tsx` - Navigation with VibeTechLogo
+- `MusicLibrary.tsx` - Music player with native audio, retry logic, storage management
+- `SensorySettings.tsx` - **NEW** Accessibility controls (animation/sound/font/color)
+- `FocusTimer.tsx` - **NEW** Pomodoro timer (25min) with points system
+- `WeekProgress.tsx` - **NEW** 7-day bar chart (focus minutes + tasks completed)
+- `Sidebar.tsx` - Navigation with VibeTechLogo + sensory/focus buttons
 - `ErrorBoundary.tsx` - Granular error handling
 - `OfflineIndicator.tsx` - Network status monitoring
 
@@ -90,12 +95,14 @@ pnpm run android:doctor        # Check Capacitor environment
 ```typescript
 // LocalStorage keys used throughout app:
 homeworkItems           // HomeworkItem[]
-studentPoints          // number (achievement points)
+studentPoints          // number (achievement points + focus timer points)
 parentRewards          // Reward[] (parent-configured rewards)
 claimedRewards         // ClaimedReward[]
 achievements           // { id, unlocked, progress }[]
 homeworkStats          // { completedTasks: number }
 musicPlaylists         // MusicPlaylist[]
+sensory-prefs          // SensoryPreferences (animation/sound/haptic/font/color)
+focusSessions          // FocusSession[] (Pomodoro history for WeekProgress)
 vibetutor_session      // Session token (sessionStorage)
 vibetutor_expiry       // Token expiry timestamp (sessionStorage)
 ```
@@ -288,24 +295,56 @@ pnpm run android:install         # Install new APK
 
 ## Additional Resources
 
+- **Neurodivergent Features**: [NEURODIVERGENT_FEATURES_COMPLETE.md](./NEURODIVERGENT_FEATURES_COMPLETE.md) - **NEW** Complete 4-week implementation guide
+- **Music Player Enhancements**: [MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md](./MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md) - **NEW** Phase 1 reliability improvements
 - **Kiosk Mode**: [KIOSK_MODE_SETUP.md](./KIOSK_MODE_SETUP.md) - Single-app lockdown for dedicated study devices
 - **Troubleshooting**: [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md) - Android WebView issues
 - **Version History**: [VERSION.md](./VERSION.md) - Release notes and changelog
-- **Neurodivergent Support**: [NEURODIVERGENT-SUPPORT.md](./NEURODIVERGENT-SUPPORT.md) - ADHD/autism accommodations
+- **Neurodivergent Support**: [NEURODIVERGENT-SUPPORT.md](./NEURODIVERGENT-SUPPORT.md) - ADHD/autism accommodations (original design doc)
 - **Testing**: [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
 - **Parent Guide**: [PARENT_GUIDE.md](./PARENT_GUIDE.md) - User documentation
 - **UI Design**: [GLASSMORPHISM_GUIDE.md](./GLASSMORPHISM_GUIDE.md) - Design system details
 
 ## Current Stable Version
 
+**v1.0.13 - "Resilience" + Neurodivergent Suite** (versionCode 14)
+- Released: 2025-01-14
+- **Music Player Enhancements**: Native audio, retry logic, fallback URLs, storage management
+- **Neurodivergent Features**: Sensory settings, focus timer, emoji-limited AI, progress visualization
+- Key Features:
+  - Native audio for Android (better background playback)
+  - Download retry logic (3 attempts)
+  - Radio fallback URLs (95% uptime)
+  - Storage warnings + bulk delete + sorting
+  - Sensory controls (animation/sound/haptic/font/color)
+  - Pomodoro focus timer (25min, 1pt/min)
+  - WeekProgress chart (7-day bar chart)
+  - AI responses limited to 2 emojis max
+- APK: `vibe-tutor-v1.0.13.apk`
+
+### Previous Stable Versions
+
+**v1.0.12 - "Harmony"** (versionCode 13)
+- Released: 2025-10-13
+- Key Features: Fixed radio streams, full playlist navigation, enhanced download queue logging
+- APK: `vibe-tutor-v1.0.12.apk`
+
+### Previous Stable Versions
+
+**v1.0.11 - "Soundwave"** (versionCode 12)
+- Simplified HTML5 Audio for radio streaming
+- 20 verified music tracks from Incompetech.com
+- Sequential download queue implementation
+
 **v1.0.5** (versionCode 6)
+- Last stable version before music player feature
 - APK: `vibe-tutor-v1.0.5-STABLE.apk`
 - Git tag: `v1.0.5`
 
 ### Recovery Procedure
-If build breaks, rollback:
+If build breaks, rollback to previous stable version:
 ```bash
-git checkout v1.0.5
+git checkout v1.0.5  # or v1.0.11 for music player
 pnpm install
 pnpm run build
 pnpm exec cap sync android

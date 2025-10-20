@@ -21,7 +21,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music';
+export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus';
 
 export interface Achievement {
     id: string;
@@ -104,6 +104,26 @@ export interface RadioStation {
   name: string;
   genre: string;
   streamUrl: string;
+  fallbackUrls?: string[]; // Alternative stream URLs to try if primary fails
   description?: string;
   isPlaying?: boolean;
+}
+
+// Sensory preferences for neurodivergent support
+export interface SensoryPreferences {
+  animationSpeed: 'none' | 'reduced' | 'normal';
+  soundEnabled: boolean;
+  hapticEnabled: boolean;
+  fontSize: 'small' | 'medium' | 'large';
+  dyslexiaFont: boolean;
+  colorMode: 'default' | 'high-contrast' | 'warm' | 'cool';
+}
+
+// Focus Timer / Pomodoro
+export interface FocusSession {
+  id: string;
+  startTime: number;
+  endTime?: number;
+  duration: number; // minutes
+  completed: boolean;
 }
