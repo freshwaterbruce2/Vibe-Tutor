@@ -5,6 +5,7 @@ import AddHomeworkModal from './AddHomeworkModal';
 import NotificationPanel from './NotificationPanel';
 import BreakdownModal from './BreakdownModal';
 import WeekProgress from './WeekProgress';
+import GoalsPanel from './GoalsPanel';
 import { GradientIcon } from './icons/GradientIcon';
 import { Plus, Bell } from 'lucide-react';
 
@@ -12,9 +13,10 @@ interface HomeworkDashboardProps {
   items: HomeworkItem[];
   onAdd: (item: ParsedHomework) => void;
   onToggleComplete: (id: string) => void;
+  points: number;
 }
 
-const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onToggleComplete }) => {
+const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onToggleComplete, points }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isNotifPanelOpen, setIsNotifPanelOpen] = useState(false);
   const [breakdownItem, setBreakdownItem] = useState<HomeworkItem | null>(null);
@@ -83,7 +85,10 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
       </header>
 
       <div className="flex-1 relative z-10 space-y-8">
-        <WeekProgress homeworkItems={items} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <WeekProgress homeworkItems={items} />
+          <GoalsPanel homeworkItems={items} points={points} />
+        </div>
 
         <section className="space-y-6">
           <div className="flex items-center gap-4">

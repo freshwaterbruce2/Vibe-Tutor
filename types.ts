@@ -127,3 +127,15 @@ export interface FocusSession {
   duration: number; // minutes
   completed: boolean;
 }
+
+// Daily/Weekly Goals
+export interface Goal {
+  id: string;
+  type: 'daily' | 'weekly';
+  category: 'focus' | 'tasks' | 'points';
+  target: number;
+  current: number;
+  startDate: number;
+  endDate: number;
+  completed: boolean;
+}

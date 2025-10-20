@@ -1,5 +1,97 @@
 # Version History
 
+## v1.0.14 - GOALS & GROWTH (2025-10-20) ✅
+**Status**: Goal Tracking Feature - Production Ready
+
+### Goals Panel System
+- ✅ **Daily Goals**: Automatic daily targets with auto-reset
+  - Daily Focus: 50 minutes target
+  - Daily Tasks: 3 completed homework items
+  - Resets automatically at midnight
+  - Visual progress bars with percentage indicators
+- ✅ **Weekly Goals**: Week-long progress tracking
+  - Weekly Focus: 300 minutes target (5 hours total)
+  - Weekly Points: 500 points target
+  - Resets automatically at start of week (Sunday)
+  - Achievement integration for bonus points
+- ✅ **Auto-Reset Behavior**: Goals reset when period expires
+  - Daily goals: Reset at midnight each day
+  - Weekly goals: Reset at start of week (Sunday 00:00)
+  - Progress resets to 0, targets remain constant
+  - LocalStorage persistence across sessions
+- ✅ **Visual Design**: Integrated with existing UI
+  - Grid layout with WeekProgress chart
+  - Color-coded progress (green when completed, gradient when in progress)
+  - Time remaining indicator (hours/days left)
+  - Icon-based category identification (Target, CheckCircle, Trophy)
+
+### Focus Achievements Expansion
+- ✅ **5 New Focus Achievements**: Reward consistent focus sessions
+  - FIRST_FOCUS (25 points) - Complete your first focus session
+  - FOCUS_FIVE (50 points) - Complete 5 focus sessions
+  - FOCUS_TEN (100 points) - Complete 10 focus sessions
+  - FOCUS_MARATHON (150 points) - Focus for 100 minutes total
+  - DAILY_FOCUS (200 points) - Focus for 3 days in a row
+- ✅ **Focus Stats Tracking**: New localStorage key for focus metrics
+  - `focusStats.completedSessions` - Total number of completed sessions
+  - `focusStats.totalMinutes` - Cumulative focus time
+  - Streak calculation for consecutive focus days
+- ✅ **Achievement Integration**: Focus events trigger achievement checks
+  - FOCUS_SESSION_COMPLETED event added
+  - Focus streak calculation (separate from homework streak)
+  - Progress bars show real-time updates
+
+### Technical Implementation
+- ✅ **New Components**:
+  - `GoalsPanel.tsx` - Standalone goals tracking component
+  - Accepts `homeworkItems` and `points` props for data integration
+  - Uses `useMemo` for efficient recalculation
+  - Auto-creates default goals if none exist
+- ✅ **State Management Enhancements**:
+  - New localStorage key: `user-goals` (stores Goal[])
+  - New localStorage key: `focusStats` (stores completedSessions, totalMinutes)
+  - Existing `focusSessions` used for date-based calculations
+- ✅ **Type Definitions**: New Goal interface
+  - id, type (daily/weekly), category (focus/tasks/points)
+  - target, current, startDate, endDate, completed
+- ✅ **Integration Points**:
+  - HomeworkDashboard: Grid layout with GoalsPanel + WeekProgress
+  - App.tsx: Points passed to HomeworkDashboard, focus events fired
+  - achievementService.ts: Focus achievements logic added
+
+### User Experience
+- ✅ **Motivation System**: Visualize progress toward tangible goals
+  - See exactly how many tasks/minutes needed to hit daily targets
+  - Weekly goals provide longer-term motivation
+  - Automatic resets prevent stale goals
+- ✅ **Progress Visibility**: Clear indicators at all times
+  - Current vs target display (e.g., "35 / 50 min")
+  - Percentage-based progress bars
+  - Completion checkmarks when goals achieved
+  - Time remaining for urgency awareness
+- ✅ **Neurodivergent Support**: Aligns with existing ADHD/autism features
+  - Visual progress aids executive function
+  - Clear targets reduce decision paralysis
+  - Time-based resets provide structure and predictability
+  - Celebrates small wins through achievements
+
+### Build Configuration
+- ✅ **Version Updates**:
+  - versionCode: 14 → 15
+  - versionName: "1.0.13" → "1.0.14"
+  - Release name: "Goals & Growth"
+
+### Testing Recommendations
+- Daily goal reset: Wait until next day, verify progress resets to 0
+- Weekly goal reset: Wait until next Sunday, verify reset
+- Complete homework: Verify "Daily Tasks" increments
+- Complete focus session: Verify "Daily Focus" and "Weekly Focus" increment
+- Earn points: Verify "Weekly Points" updates
+- Achievement unlocks: Complete 1st, 5th, 10th focus sessions
+- LocalStorage persistence: Close app, reopen, verify goals still present
+
+---
+
 ## v1.0.8 - REWARDS & ACHIEVEMENTS + MUSIC LIBRARY (2025-10-12) ✅
 **Status**: Major Feature Release - Production Ready
 

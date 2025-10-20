@@ -212,7 +212,7 @@ const App: React.FC = () => {
     const currentViewComponent = () => {
         switch (view) {
             case 'dashboard':
-                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
+                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
             case 'tutor':
                 return <ChatWindow title="AI Tutor" description="Get help with your homework concepts." onSendMessage={sendMessageToTutor} type="tutor" />;
             case 'friend':
@@ -228,10 +228,10 @@ const App: React.FC = () => {
             case 'focus':
                 return <FocusTimer onSessionComplete={(mins) => {
                     setPoints(p => p + mins);
-                    handleAchievementEvent({ type: 'TASK_COMPLETED' });
+                    handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED', payload: { duration: mins } });
                 }} />;
             default:
-                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} />;
+                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
         }
     };
     
