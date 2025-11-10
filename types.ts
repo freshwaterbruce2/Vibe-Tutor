@@ -140,9 +140,11 @@ export interface Goal {
   completed: boolean;
 }
 
-// Subject Cards (Gamification)
-export type SubjectType = 'Math' | 'Science' | 'English' | 'History';
+// Subject Cards (Gamification) - Enhanced with Worksheet System
+export type SubjectType = 'Math' | 'Science' | 'History' | 'Bible' | 'Language Arts';
 export type CardLevel = 'Basic' | 'Advanced' | 'Master';
+export type DifficultyLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert' | 'Master';
+export type QuestionType = 'multiple-choice' | 'fill-blank' | 'true-false' | 'matching';
 
 export interface SubjectCard {
   id: string;
@@ -154,6 +156,43 @@ export interface SubjectCard {
   shiny: boolean;
   unlockedAt: number;
   lastEvolved?: number;
+}
+
+// Interactive Worksheet System
+export interface WorksheetQuestion {
+  id: string;
+  subject: SubjectType;
+  difficulty: DifficultyLevel;
+  type: QuestionType;
+  question: string;
+  options?: string[]; // For multiple-choice
+  correctAnswer: string | number; // Index for multiple-choice, string for fill-blank
+  explanation?: string;
+  points?: number; // Optional: points for this question
+}
+
+export interface WorksheetSession {
+  id: string;
+  subject: SubjectType;
+  difficulty: DifficultyLevel;
+  questions: WorksheetQuestion[];
+  answers: (string | number | null)[]; // Student's answers
+  score?: number; // Percentage (0-100)
+  starsEarned?: number; // 0-5 stars
+  completedAt?: number; // Timestamp
+  timeSpent?: number; // Seconds
+}
+
+export interface SubjectProgress {
+  subject: SubjectType;
+  currentDifficulty: DifficultyLevel;
+  starsCollected: number; // 0-4 (5th star triggers level up)
+  totalWorksheetsCompleted: number;
+  averageScore: number;
+  bestScore: number;
+  currentStreak: number; // Consecutive worksheets with 3+ stars
+  history: WorksheetSession[];
+  unlockedAt: number;
 }
 
 // Roblox-style Obbies (Daily Challenges)

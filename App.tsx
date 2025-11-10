@@ -4,7 +4,7 @@ import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import OfflineIndicator from './components/OfflineIndicator';
-import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType } from './types';
+import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType, WorksheetSession, DifficultyLevel } from './types';
 import { sendMessageToBuddy } from './services/buddyService';
 import { getAchievements, checkAndUnlockAchievements, AchievementEvent } from './services/achievementService';
 import { triggerVibration } from './services/uiService';
@@ -22,6 +22,8 @@ const SensorySettings = lazy(() => import('./components/SensorySettings'));
 const FocusTimer = lazy(() => import('./components/FocusTimer'));
 const SubjectCards = lazy(() => import('./components/SubjectCards'));
 const RobloxObbies = lazy(() => import('./components/RobloxObbies'));
+const WorksheetView = lazy(() => import('./components/WorksheetView'));
+const WorksheetResults = lazy(() => import('./components/WorksheetResults'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -90,6 +92,13 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('musicPlaylists');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Worksheet state
+  const [worksheetSubject, setWorksheetSubject] = useState<SubjectType | null>(null);
+  const [worksheetSession, setWorksheetSession] = useState<WorksheetSession | null>(null);
+  const [worksheetLeveledUp, setWorksheetLeveledUp] = useState(false);
+  const [worksheetNewDifficulty, setWorksheetNewDifficulty] = useState<DifficultyLevel | undefined>();
+  const [worksheetStarsToNextLevel, setWorksheetStarsToNextLevel] = useState(0);
 
 
   useEffect(() => {
@@ -209,6 +218,45 @@ const App: React.FC = () => {
   const handleRemovePlaylist = (id: string) => {
     setPlaylists(prev => prev.filter(p => p.id !== id));
   };
+
+  const handleStartWorksheet = (subject: SubjectType) => {
+    setWorksheetSubject(subject);
+    setWorksheetSession(null);
+  };
+
+  const handleWorksheetComplete = (session: WorksheetSession) => {
+    // Import progression service to handle level up logic
+    import('./services/progressionService').then(({ completeWorksheet }) => {
+      const result = completeWorksheet(session);
+
+      setWorksheetSession(session);
+      setWorksheetLeveledUp(result.leveledUp);
+      setWorksheetNewDifficulty(result.newDifficulty);
+      setWorksheetStarsToNextLevel(result.starsToNextLevel);
+
+      // Award points (1 point per star earned)
+      setPoints(p => p + (session.starsEarned || 0));
+
+      // Achievement event for completing worksheet
+      if (session.starsEarned && session.starsEarned >= 3) {
+        handleAchievementEvent({ type: 'TASK_COMPLETED' });
+      }
+    });
+  };
+
+  const handleWorksheetCancel = () => {
+    setWorksheetSubject(null);
+    setWorksheetSession(null);
+  };
+
+  const handleWorksheetTryAgain = () => {
+    setWorksheetSession(null);
+  };
+
+  const handleWorksheetContinue = () => {
+    setWorksheetSubject(null);
+    setWorksheetSession(null);
+  };
   
   const renderView = () => {
     const currentViewComponent = () => {
@@ -233,10 +281,31 @@ const App: React.FC = () => {
                     handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED', payload: { duration: mins } });
                 }} />;
             case 'cards':
-                return <SubjectCards onCardLevelUp={(subject: SubjectType, newLevel: CardLevel) => {
-                    const levelPoints = { Basic: 10, Advanced: 25, Master: 50 };
-                    setPoints(p => p + (levelPoints[newLevel] || 10));
-                }} />;
+                // Worksheet system with three states: card selection, active worksheet, results
+                if (worksheetSession) {
+                    // Show results after completing worksheet
+                    return <WorksheetResults
+                        session={worksheetSession}
+                        leveledUp={worksheetLeveledUp}
+                        newDifficulty={worksheetNewDifficulty}
+                        starsToNextLevel={worksheetStarsToNextLevel}
+                        onTryAgain={handleWorksheetTryAgain}
+                        onContinue={handleWorksheetContinue}
+                    />;
+                } else if (worksheetSubject) {
+                    // Show active worksheet
+                    const progressService = require('./services/progressionService');
+                    const progress = progressService.getSubjectProgress(worksheetSubject);
+                    return <WorksheetView
+                        subject={worksheetSubject}
+                        difficulty={progress.currentDifficulty}
+                        onComplete={handleWorksheetComplete}
+                        onCancel={handleWorksheetCancel}
+                    />;
+                } else {
+                    // Show subject cards (main menu)
+                    return <SubjectCards onStartWorksheet={handleStartWorksheet} />;
+                }
             case 'obbies':
                 return <RobloxObbies onObbyComplete={(type: ObbyType, points: number) => {
                     setPoints(p => p + points);
