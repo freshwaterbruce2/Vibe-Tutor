@@ -13,7 +13,9 @@ import {
   Users,
   Music2,
   Eye,
-  Timer
+  Timer,
+  Layers,
+  Gamepad2
 } from 'lucide-react';
 
 
@@ -26,6 +28,8 @@ const navItems = [
   { view: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', gradient: 'vibe-gradient-primary' },
   { view: 'tutor', icon: GraduationCap, label: 'AI Tutor', gradient: 'vibe-gradient-secondary' },
   { view: 'friend', icon: Heart, label: 'AI Buddy', gradient: 'vibe-gradient-accent' },
+  { view: 'cards', icon: Layers, label: 'Subject Cards', gradient: 'vibe-gradient-primary' },
+  { view: 'obbies', icon: Gamepad2, label: 'Daily Obbies', gradient: 'vibe-gradient-accent' },
   { view: 'achievements', icon: Trophy, label: 'Achievements', gradient: 'vibe-gradient-secondary' },
   { view: 'music', icon: Music2, label: 'Music', gradient: 'vibe-gradient-accent' },
   { view: 'sensory', icon: Eye, label: 'Sensory', gradient: 'vibe-gradient-primary' },

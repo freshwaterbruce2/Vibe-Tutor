@@ -21,7 +21,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus';
+export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus' | 'cards' | 'obbies';
 
 export interface Achievement {
     id: string;
@@ -138,4 +138,43 @@ export interface Goal {
   startDate: number;
   endDate: number;
   completed: boolean;
+}
+
+// Subject Cards (Gamification)
+export type SubjectType = 'Math' | 'Science' | 'English' | 'History';
+export type CardLevel = 'Basic' | 'Advanced' | 'Master';
+
+export interface SubjectCard {
+  id: string;
+  subject: SubjectType;
+  level: CardLevel;
+  xp: number;
+  xpToNextLevel: number;
+  homeworkCompleted: number;
+  shiny: boolean;
+  unlockedAt: number;
+  lastEvolved?: number;
+}
+
+// Roblox-style Obbies (Daily Challenges)
+export type ObbyType = 'math' | 'science' | 'word' | 'history';
+
+export interface ObbyChallenge {
+  id: string;
+  type: ObbyType;
+  question: string;
+  options: string[];
+  correctAnswer: number; // Index of correct option
+  difficulty: 'easy' | 'medium' | 'hard';
+  pointsReward: number;
+}
+
+export interface ObbySession {
+  challenges: ObbyChallenge[];
+  currentIndex: number;
+  score: number;
+  lives: number;
+  completedToday: boolean;
+  startedAt?: number;
+  completedAt?: number;
 }

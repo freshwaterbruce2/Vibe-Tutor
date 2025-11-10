@@ -7,8 +7,8 @@ android {
         applicationId "com.vibetech.tutor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15  // Daily/Weekly goals tracking + focus achievements
-        versionName "1.0.14"  // "Goals & Growth" - Goal tracking system with auto-reset
+        versionCode 16  // v1.1.0 "Adaptive Learning" - Subject cards, daily obbies, anime/Christian music
+        versionName "1.1.0"  // "Adaptive Learning" - Gamification + personalization features
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

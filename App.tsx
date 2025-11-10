@@ -4,7 +4,7 @@ import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import OfflineIndicator from './components/OfflineIndicator';
-import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist } from './types';
+import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType } from './types';
 import { sendMessageToBuddy } from './services/buddyService';
 import { getAchievements, checkAndUnlockAchievements, AchievementEvent } from './services/achievementService';
 import { triggerVibration } from './services/uiService';
@@ -20,6 +20,8 @@ const AchievementCenter = lazy(() => import('./components/AchievementCenter'));
 const MusicLibrary = lazy(() => import('./components/MusicLibrary').then(m => ({ default: m.MusicLibrary })));
 const SensorySettings = lazy(() => import('./components/SensorySettings'));
 const FocusTimer = lazy(() => import('./components/FocusTimer'));
+const SubjectCards = lazy(() => import('./components/SubjectCards'));
+const RobloxObbies = lazy(() => import('./components/RobloxObbies'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -229,6 +231,15 @@ const App: React.FC = () => {
                 return <FocusTimer onSessionComplete={(mins) => {
                     setPoints(p => p + mins);
                     handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED', payload: { duration: mins } });
+                }} />;
+            case 'cards':
+                return <SubjectCards onCardLevelUp={(subject: SubjectType, newLevel: CardLevel) => {
+                    const levelPoints = { Basic: 10, Advanced: 25, Master: 50 };
+                    setPoints(p => p + (levelPoints[newLevel] || 10));
+                }} />;
+            case 'obbies':
+                return <RobloxObbies onObbyComplete={(type: ObbyType, points: number) => {
+                    setPoints(p => p + points);
                 }} />;
             default:
                 return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
