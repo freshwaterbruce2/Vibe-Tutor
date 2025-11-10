@@ -171,7 +171,7 @@ const GoalsPanel: React.FC<GoalsPanelProps> = ({ homeworkItems, points }) => {
   };
 
   return (
-    <div className="glass-panel p-6 space-y-4">
+    <div className="glass-card p-6 space-y-4 border border-[var(--glass-border)]">
       <h3 className="font-bold text-xl flex items-center gap-2">
         <TrendingUp size={20} />
         Goals
@@ -183,7 +183,7 @@ const GoalsPanel: React.FC<GoalsPanelProps> = ({ homeworkItems, points }) => {
           const progress = Math.min((goal.current / goal.target) * 100, 100);
 
           return (
-            <div key={goal.id} className="glass-panel p-4 space-y-2">
+            <div key={goal.id} className="glass-card p-4 space-y-2 border border-[var(--glass-border)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Icon
@@ -210,7 +210,7 @@ const GoalsPanel: React.FC<GoalsPanelProps> = ({ homeworkItems, points }) => {
               </div>
 
               {/* Progress Bar */}
-              <div className="h-2 bg-surface-lighter rounded-full overflow-hidden">
+              <div className="h-2 bg-[var(--background-surface)] rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
                     goal.completed
