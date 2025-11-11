@@ -4,13 +4,14 @@ import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import OfflineIndicator from './components/OfflineIndicator';
-import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType, WorksheetSession, DifficultyLevel } from './types';
+import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType, WorksheetSession, DifficultyLevel, BrainGameType } from './types';
 import { sendMessageToBuddy } from './services/buddyService';
 import { getAchievements, checkAndUnlockAchievements, AchievementEvent } from './services/achievementService';
 import { triggerVibration } from './services/uiService';
 import { AI_TUTOR_PROMPT } from './constants';
 import { createChatCompletion, type DeepSeekMessage } from './services/secureClient';
 import { usageMonitor } from './services/usageMonitor';
+import { getSubjectProgress } from './services/progressionService';
 
 // Lazy-loaded components
 const HomeworkDashboard = lazy(() => import('./components/HomeworkDashboard'));
@@ -21,7 +22,7 @@ const MusicLibrary = lazy(() => import('./components/MusicLibrary').then(m => ({
 const SensorySettings = lazy(() => import('./components/SensorySettings'));
 const FocusTimer = lazy(() => import('./components/FocusTimer'));
 const SubjectCards = lazy(() => import('./components/SubjectCards'));
-const RobloxObbies = lazy(() => import('./components/RobloxObbies'));
+const BrainGames = lazy(() => import('./components/BrainGames'));
 const WorksheetView = lazy(() => import('./components/WorksheetView'));
 const WorksheetResults = lazy(() => import('./components/WorksheetResults'));
 
@@ -294,8 +295,7 @@ const App: React.FC = () => {
                     />;
                 } else if (worksheetSubject) {
                     // Show active worksheet
-                    const progressService = require('./services/progressionService');
-                    const progress = progressService.getSubjectProgress(worksheetSubject);
+                    const progress = getSubjectProgress(worksheetSubject);
                     return <WorksheetView
                         subject={worksheetSubject}
                         difficulty={progress.currentDifficulty}
@@ -306,9 +306,10 @@ const App: React.FC = () => {
                     // Show subject cards (main menu)
                     return <SubjectCards onStartWorksheet={handleStartWorksheet} />;
                 }
-            case 'obbies':
-                return <RobloxObbies onObbyComplete={(type: ObbyType, points: number) => {
-                    setPoints(p => p + points);
+            case 'games':
+                return <BrainGames onGameComplete={(gameType: BrainGameType, score: number, stars: number) => {
+                    setPoints(p => p + stars);
+                    handleAchievementEvent({ type: 'TASK_COMPLETED' });
                 }} />;
             default:
                 return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
@@ -327,7 +328,7 @@ const App: React.FC = () => {
   return (
     <div className="h-screen w-screen bg-background-main text-text-primary flex font-sans">
       <Sidebar currentView={view} onNavigate={setView} />
-      <main className="flex-1 overflow-y-auto relative pb-16 md:pb-0">
+      <main className="flex-1 overflow-y-auto relative pb-52 md:pb-0">
         {renderView()}
         {!isOnline && <OfflineIndicator />}
       </main>

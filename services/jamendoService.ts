@@ -2,25 +2,22 @@
  * Jamendo API Service - Legal music search and download
  * Free Creative Commons music: 500,000+ tracks
  * API Docs: https://developer.jamendo.com/v3.0/docs
+ *
+ * Features optimized for neurodivergent learners:
+ * - Smart genre categorization (anime, EDM, lo-fi study music, etc.)
+ * - Curated playlists for specific activities (homework, breaks, focus)
+ * - Simple search with keyword-to-genre mapping
+ * - Android-optimized with CapacitorHttp
  */
 
-export interface JamendoTrack {
-  id: string;
-  name: string;
-  artist_name: string;
-  artist_id: string;
-  album_name: string;
-  album_id: string;
-  duration: number; // in seconds
-  image: string; // album art URL
-  audio: string; // stream URL (preview)
-  audiodownload: string; // MP3 download URL
-  license_ccurl: string; // Creative Commons license URL
-  releasedate: string;
-}
+import { CapacitorHttp } from '@capacitor/core';
+import type { JamendoTrack as JamendoTrackType, LocalTrack } from '../types';
+
+// Re-export type from types.ts
+export type { JamendoTrackType as JamendoTrack };
 
 export interface JamendoSearchResult {
-  results: JamendoTrack[];
+  results: JamendoTrackType[];
   headers: {
     results_count: number;
     results_fullcount: number;
@@ -29,6 +26,58 @@ export interface JamendoSearchResult {
 }
 
 const JAMENDO_API_BASE = 'https://api.jamendo.com/v3.0';
+
+// Genre/Tag mappings for neurodivergent-friendly music discovery
+export const JAMENDO_GENRES = {
+  anime: ['anime', 'japanese', 'oriental', 'soundtrack', 'instrumental'],
+  edm: ['electronic', 'dance', 'techno', 'trance', 'house', 'dubstep'],
+  lofi: ['chillout', 'lounge', 'ambient', 'downtempo', 'relaxation'],
+  christian: ['world', 'spiritual', 'classical', 'peaceful'], // Note: Limited explicit Christian tagging on Jamendo
+  classical: ['classical', 'piano', 'orchestral', 'instrumental'],
+  study: ['ambient', 'instrumental', 'classical', 'focus', 'concentration'],
+} as const;
+
+export type JamendoGenreCategory = keyof typeof JAMENDO_GENRES;
+
+// Usage tracking for rate limit monitoring (35,000 requests/month)
+let requestCount = 0;
+let requestResetDate = new Date();
+
+// Load saved usage data from localStorage
+try {
+  const savedCount = localStorage.getItem('jamendo_request_count');
+  const savedResetDate = localStorage.getItem('jamendo_request_reset_date');
+
+  if (savedCount) requestCount = parseInt(savedCount, 10);
+  if (savedResetDate) requestResetDate = new Date(savedResetDate);
+
+  // Reset if new month
+  const today = new Date();
+  if (today.getMonth() !== requestResetDate.getMonth()) {
+    requestCount = 0;
+    requestResetDate = today;
+    localStorage.setItem('jamendo_request_count', '0');
+    localStorage.setItem('jamendo_request_reset_date', today.toISOString());
+  }
+} catch (error) {
+  console.warn('[Jamendo] Failed to load usage stats from localStorage');
+}
+
+// Track API usage
+function incrementRequestCount() {
+  requestCount++;
+  localStorage.setItem('jamendo_request_count', requestCount.toString());
+  localStorage.setItem('jamendo_request_reset_date', requestResetDate.toISOString());
+}
+
+export function getUsageStats() {
+  return {
+    requestsThisMonth: requestCount,
+    monthlyLimit: 35000,
+    remainingRequests: 35000 - requestCount,
+    resetDate: requestResetDate,
+  };
+}
 
 // Get client ID from environment variable
 const getClientId = (): string => {
@@ -83,13 +132,22 @@ export const searchTracks = async (
     const apiUrl = `${JAMENDO_API_BASE}/tracks/?${params.toString()}`;
     console.log('[Jamendo] API Request URL:', apiUrl);
 
-    const response = await fetch(apiUrl);
+    incrementRequestCount(); // Track API usage
 
-    if (!response.ok) {
-      throw new Error(`Jamendo API error: ${response.status} ${response.statusText}`);
+    // Use CapacitorHttp for Android compatibility
+    const response = await CapacitorHttp.request({
+      url: apiUrl,
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Jamendo API error: ${response.status}`);
     }
 
-    const data: JamendoSearchResult = await response.json();
+    const data: JamendoSearchResult = response.data;
 
     console.log('[Jamendo] API Response:', data);
     console.log(`[Jamendo] Found ${data.results?.length || 0} tracks for "${query}"`);
@@ -118,7 +176,7 @@ export const searchTracks = async (
  * @param trackId - Jamendo track ID
  * @returns Promise with track details
  */
-export const getTrackById = async (trackId: string): Promise<JamendoTrack | null> => {
+export const getTrackById = async (trackId: string): Promise<JamendoTrackType | null> => {
   const clientId = getClientId();
 
   const params = new URLSearchParams({
@@ -129,14 +187,18 @@ export const getTrackById = async (trackId: string): Promise<JamendoTrack | null
   });
 
   try {
-    const response = await fetch(`${JAMENDO_API_BASE}/tracks/?${params.toString()}`);
+    incrementRequestCount();
+    const response = await CapacitorHttp.request({
+      url: `${JAMENDO_API_BASE}/tracks/?${params.toString()}`,
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`Jamendo API error: ${response.status}`);
     }
 
-    const data: JamendoSearchResult = await response.json();
-
+    const data: JamendoSearchResult = response.data;
     return data.results.length > 0 ? data.results[0] : null;
   } catch (error: any) {
     console.error('[Jamendo] Get track failed:', error);
@@ -179,13 +241,18 @@ export const getPopularTracks = async (
   });
 
   try {
-    const response = await fetch(`${JAMENDO_API_BASE}/tracks/?${params.toString()}`);
+    incrementRequestCount();
+    const response = await CapacitorHttp.request({
+      url: `${JAMENDO_API_BASE}/tracks/?${params.toString()}`,
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+    });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`Jamendo API error: ${response.status}`);
     }
 
-    return await response.json();
+    return response.data;
   } catch (error: any) {
     console.error('[Jamendo] Get popular tracks failed:', error);
     throw new Error(`Failed to get popular tracks: ${error.message}`);
@@ -208,18 +275,131 @@ export const formatDuration = (seconds: number): string => {
  * @param jamendoTrack - Jamendo track object
  * @returns LocalTrack compatible object
  */
-export const convertToLocalTrack = (jamendoTrack: JamendoTrack) => {
+export const convertToLocalTrack = (jamendoTrack: JamendoTrackType): LocalTrack => {
   return {
     id: `jamendo-${jamendoTrack.id}`,
     name: jamendoTrack.name,
     artist: jamendoTrack.artist_name,
-    url: jamendoTrack.audiodownload,
+    downloadUrl: jamendoTrack.audiodownload,
     downloadStatus: 'pending' as const,
     downloadProgress: 0,
     createdAt: Date.now(),
-    source: 'jamendo',
-    albumArt: jamendoTrack.image,
+    albumArt: jamendoTrack.image, // Album art URL
     duration: jamendoTrack.duration,
-    license: jamendoTrack.license_ccurl
+    metadata: {
+      title: jamendoTrack.name,
+      artist: jamendoTrack.artist_name,
+      album: jamendoTrack.album_name,
+      year: parseInt(jamendoTrack.releasedate.split('-')[0]),
+      duration: jamendoTrack.duration,
+    },
   };
+};
+
+/**
+ * Browse tracks by neurodivergent-friendly genre category
+ * @param category - Genre category (anime, edm, lofi, christian, classical, study)
+ * @param limit - Number of results (default: 20)
+ * @returns Promise with tracks
+ */
+export const browseByGenre = async (
+  category: JamendoGenreCategory,
+  limit: number = 20
+): Promise<JamendoSearchResult> => {
+  const tags = JAMENDO_GENRES[category];
+  const tagsQuery = tags.join('+'); // Join with + for OR logic
+
+  console.log(`[Jamendo] Browsing ${category} genre with tags: ${tagsQuery}`);
+
+  return searchTracks('', {
+    tags: tagsQuery,
+    limit,
+  });
+};
+
+/**
+ * Smart search with keyword-to-genre mapping for neurodivergent users
+ * Handles simple queries like "calm music" or "upbeat studying"
+ * @param userQuery - User's search query
+ * @param limit - Number of results (default: 20)
+ * @returns Promise with search results
+ */
+export const smartSearch = async (
+  userQuery: string,
+  limit: number = 20
+): Promise<JamendoSearchResult> => {
+  const query = userQuery.toLowerCase().trim();
+
+  // Keyword-to-genre mapping
+  const keywordMap: Record<string, JamendoGenreCategory> = {
+    'anime': 'anime',
+    'japanese': 'anime',
+    'edm': 'edm',
+    'electronic': 'edm',
+    'techno': 'edm',
+    'dance': 'edm',
+    'chill': 'lofi',
+    'calm': 'lofi',
+    'relax': 'lofi',
+    'study': 'study',
+    'focus': 'study',
+    'concentration': 'study',
+    'homework': 'study',
+    'classical': 'classical',
+    'piano': 'classical',
+    'orchestral': 'classical',
+    'worship': 'christian',
+    'spiritual': 'christian',
+    'christian': 'christian',
+  };
+
+  // Check if query matches a known keyword
+  for (const [keyword, category] of Object.entries(keywordMap)) {
+    if (query.includes(keyword)) {
+      console.log(`[Jamendo] Smart search: "${query}" → ${category} genre`);
+      return browseByGenre(category, limit);
+    }
+  }
+
+  // Otherwise, do a general search
+  console.log(`[Jamendo] Smart search: "${query}" → general search`);
+  return searchTracks(userQuery, { limit });
+};
+
+/**
+ * Get curated playlists for specific activities
+ * Optimized for neurodivergent learning contexts
+ * @param activity - Activity type (homework, break, morning, evening, focus)
+ * @param limit - Number of results (default: 15)
+ * @returns Promise with curated tracks
+ */
+export const getCuratedPlaylist = async (
+  activity: 'homework' | 'break' | 'morning' | 'evening' | 'focus',
+  limit: number = 15
+): Promise<JamendoSearchResult> => {
+  const activityMap: Record<typeof activity, JamendoGenreCategory> = {
+    homework: 'study',
+    break: 'lofi',
+    morning: 'classical',
+    evening: 'lofi',
+    focus: 'study',
+  };
+
+  const category = activityMap[activity];
+  console.log(`[Jamendo] Getting curated playlist for ${activity} activity (${category} genre)`);
+
+  return browseByGenre(category, limit);
+};
+
+/**
+ * Validate Jamendo API configuration
+ * @returns True if API is properly configured
+ */
+export const isJamendoConfigured = (): boolean => {
+  try {
+    const clientId = import.meta.env.VITE_JAMENDO_CLIENT_ID;
+    return clientId && clientId !== 'YOUR_CLIENT_ID' && clientId.length > 0;
+  } catch {
+    return false;
+  }
 };

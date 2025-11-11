@@ -15,7 +15,7 @@ import {
   Eye,
   Timer,
   Layers,
-  Gamepad2
+  Brain
 } from 'lucide-react';
 
 
@@ -29,7 +29,7 @@ const navItems = [
   { view: 'tutor', icon: GraduationCap, label: 'AI Tutor', gradient: 'vibe-gradient-secondary' },
   { view: 'friend', icon: Heart, label: 'AI Buddy', gradient: 'vibe-gradient-accent' },
   { view: 'cards', icon: Layers, label: 'Subject Cards', gradient: 'vibe-gradient-primary' },
-  { view: 'obbies', icon: Gamepad2, label: 'Daily Obbies', gradient: 'vibe-gradient-accent' },
+  { view: 'games', icon: Brain, label: 'Brain Games', gradient: 'vibe-gradient-accent' },
   { view: 'achievements', icon: Trophy, label: 'Achievements', gradient: 'vibe-gradient-secondary' },
   { view: 'music', icon: Music2, label: 'Music', gradient: 'vibe-gradient-accent' },
   { view: 'sensory', icon: Eye, label: 'Sensory', gradient: 'vibe-gradient-primary' },
@@ -100,14 +100,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation - Fixed for Galaxy A54 safe area */}
+      {/* Mobile Bottom Navigation - Two-row grid for all 10 buttons */}
       <nav role="navigation" aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-[var(--glass-border)] z-50" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
-        <div className="flex justify-around items-center px-2 py-2">
-          {navItems.map(({ view, icon: Icon, label, gradient }) => (
+        <div className="grid grid-cols-5 gap-1 px-2 py-2">
+          {/* Top row: First 5 items */}
+          {navItems.slice(0, 5).map(({ view, icon: Icon, label, gradient }) => (
             <button
               key={view}
               onClick={() => onNavigate(view as View)}
-              className={`flex flex-col items-center justify-center min-w-[60px] min-h-[56px] px-2 py-1.5 rounded-lg transition-all duration-200 ${
+              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
                 currentView === view
                   ? 'text-[var(--primary-accent)]'
                   : 'text-[var(--text-secondary)]'
@@ -116,16 +117,38 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
             >
               <GradientIcon
                 Icon={Icon}
-                size={24}
+                size={20}
                 gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
-                className="mb-1"
+                className="mb-0.5"
               />
-              <span className="text-[11px] font-medium leading-tight">{label}</span>
+              <span className="text-[9px] font-medium leading-tight text-center">{label}</span>
+            </button>
+          ))}
+
+          {/* Bottom row: Remaining 4 items + Parent button */}
+          {navItems.slice(5).map(({ view, icon: Icon, label, gradient }) => (
+            <button
+              key={view}
+              onClick={() => onNavigate(view as View)}
+              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
+                currentView === view
+                  ? 'text-[var(--primary-accent)]'
+                  : 'text-[var(--text-secondary)]'
+              }`}
+              style={{ touchAction: 'manipulation' }}
+            >
+              <GradientIcon
+                Icon={Icon}
+                size={20}
+                gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
+                className="mb-0.5"
+              />
+              <span className="text-[9px] font-medium leading-tight text-center">{label}</span>
             </button>
           ))}
           <button
             onClick={() => onNavigate('parent')}
-            className={`flex flex-col items-center justify-center min-w-[60px] min-h-[56px] px-2 py-1.5 rounded-lg transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
               currentView === 'parent'
                 ? 'text-[var(--secondary-accent)]'
                 : 'text-[var(--text-secondary)]'
@@ -134,11 +157,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
           >
             <GradientIcon
               Icon={Lock}
-              size={24}
+              size={20}
               gradientId={currentView === 'parent' ? 'vibe-gradient-mobile' : 'vibe-gradient-secondary'}
-              className="mb-1"
+              className="mb-0.5"
             />
-            <span className="text-[11px] font-medium leading-tight">Parent</span>
+            <span className="text-[9px] font-medium leading-tight text-center">Parent</span>
           </button>
         </div>
       </nav>

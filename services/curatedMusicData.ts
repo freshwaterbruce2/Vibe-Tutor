@@ -236,12 +236,61 @@ export const RADIO_STATIONS: RadioStation[] = [
     streamUrl: 'https://ice1.somafm.com/groovesalad-128-aac',
     fallbackUrls: ['https://ice2.somafm.com/groovesalad-128-aac', 'https://ice4.somafm.com/groovesalad-128-aac'],
     description: 'Ambient/downtempo beats and chillout grooves'
+  },
+  {
+    id: 'radio-6',
+    name: 'Digitally Imported - Trance',
+    genre: 'EDM / Trance',
+    streamUrl: 'https://prem2.di.fm:80/trance',
+    fallbackUrls: ['https://prem1.di.fm:80/trance', 'http://pub1.di.fm:80/di_trance'],
+    description: 'Uplifting trance and progressive EDM beats'
+  },
+  {
+    id: 'radio-7',
+    name: 'Digitally Imported - Techno',
+    genre: 'Techno / Electronic',
+    streamUrl: 'https://prem2.di.fm:80/techno',
+    fallbackUrls: ['https://prem1.di.fm:80/techno', 'http://pub1.di.fm:80/di_techno'],
+    description: 'Hard-hitting techno and underground electronic'
+  },
+  {
+    id: 'radio-8',
+    name: 'SomaFM - Beat Blender',
+    genre: 'EDM / House / Techno',
+    streamUrl: 'https://ice1.somafm.com/beatblender-128-aac',
+    fallbackUrls: ['https://ice2.somafm.com/beatblender-128-aac', 'https://ice4.somafm.com/beatblender-128-aac'],
+    description: 'Deep house, techno, and downtempo EDM mix'
+  },
+  {
+    id: 'radio-9',
+    name: 'SomaFM - DEF CON Radio',
+    genre: 'Electronic / Gaming',
+    streamUrl: 'https://ice1.somafm.com/defcon-128-aac',
+    fallbackUrls: ['https://ice2.somafm.com/defcon-128-aac', 'https://ice4.somafm.com/defcon-128-aac'],
+    description: 'Music for hacking and gaming - electronic and IDM'
+  },
+  {
+    id: 'radio-10',
+    name: 'Digitally Imported - Electro House',
+    genre: 'EDM / Electro House',
+    streamUrl: 'https://prem2.di.fm:80/electrohouse',
+    fallbackUrls: ['https://prem1.di.fm:80/electrohouse', 'http://pub1.di.fm:80/di_electrohouse'],
+    description: 'High-energy electro house and festival EDM'
+  },
+  {
+    id: 'radio-11',
+    name: 'SomaFM - Space Station Soma',
+    genre: 'Ambient / Electronic',
+    streamUrl: 'https://ice1.somafm.com/spacestation-128-aac',
+    fallbackUrls: ['https://ice2.somafm.com/spacestation-128-aac', 'https://ice4.somafm.com/spacestation-128-aac'],
+    description: 'Ambient space music with electronic textures - perfect for studying'
   }
 ];
 
 export const MUSIC_CATEGORIES = [
   { id: 'lofi', name: 'Lo-fi / Chill', icon: '🎵' },
   { id: 'anime', name: 'Anime Music', icon: '🎌' },
+  { id: 'edm', name: 'EDM / Techno', icon: '🎧' },
   { id: 'christian', name: 'Christian Worship', icon: '✝️' },
   { id: 'classical', name: 'Classical / Instrumental', icon: '🎹' }
 ] as const;

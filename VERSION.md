@@ -1,5 +1,175 @@
 # Version History
 
+## v1.3.1 - NAVIGATION FIX (2025-11-10) ✅
+**Status**: Mobile UX Critical Patch - Production Ready
+
+### 🐛 Bug Fixes
+- **Fixed mobile navigation overflow**: Music and Parent buttons were hidden off-screen
+- **Two-row grid layout**: Changed from single-row flex to 5×2 grid (10 buttons total)
+  - Top row: Dashboard, AI Tutor, AI Buddy, Subject Cards, Brain Games
+  - Bottom row: Achievements, **Music**, Sensory, Focus, **Parent**
+- **Increased content padding**: Bottom padding from 64px → 112px to prevent nav blocking content
+- **Reduced button sizing**: Icons 24px → 20px, text 11px → 9px, height 56px → 48px for compact layout
+
+### 📱 Mobile Layout Changes
+| Before | After |
+|--------|-------|
+| Single row, 10 buttons | Two rows, 5 buttons each |
+| Music/Parent hidden | All buttons visible |
+| Content blocked by nav | 112px safe padding |
+
+### 📦 Files Modified
+- `components/Sidebar.tsx`: Two-row mobile navigation grid
+- `App.tsx`: Increased bottom padding (`pb-16` → `pb-28`)
+- `android/app/build.gradle`: versionCode 18 → 19
+
+---
+
+## v1.3.0 - BRAIN GAMES (2025-11-10) ✅
+**Status**: Educational Games Suite - Production Ready
+
+### 🎮 Five Brain-Training Games
+Replaced "Daily Obbies" with comprehensive educational game system inspired by Lumosity and educational game best practices.
+
+#### 1. **Crossword Puzzles** 🧩
+- Educational vocabulary from all subjects
+- Integration with @jaredreisinger/react-crossword library
+- Clue system with across/down format
+- Subject selection: Math, Science, History, Language Arts, Bible, Mixed
+- Timer and scoring system
+
+#### 2. **Word Search** 🔍
+- 12x12 grid with 8 hidden words
+- Directional word placement (horizontal, vertical, diagonal)
+- Click-and-drag selection
+- Visual word list with clues
+- Accuracy-based scoring (time bonus)
+
+#### 3. **Sudoku** 🔢
+- Classic 9x9 number puzzle
+- Generated with sudoku-umd library
+- Touch-friendly number pad interface
+- Reset functionality
+- Completion detection with auto-scoring
+
+#### 4. **Memory Match** 🧠
+- Match words with definitions
+- 6 pairs (12 cards)
+- Card flip animations
+- Move tracking for efficiency scoring
+- Progressive difficulty by subject
+
+#### 5. **Anagrams** 🔄
+- Unscramble educational vocabulary
+- 10 challenges per session
+- Hint system (shows first letter + length)
+- Skip option for difficult words
+- Penalty system for hints used
+
+### 🎵 Enhanced Music Library
+- ✅ **6 New Radio Stations**: EDM, Techno, and Electronic genres
+  - Digitally Imported - Trance
+  - Digitally Imported - Techno
+  - SomaFM - Beat Blender (House/Techno mix)
+  - SomaFM - DEF CON Radio (Gaming/Electronic)
+  - Digitally Imported - Electro House
+  - SomaFM - Space Station Soma (Ambient study music)
+- ✅ **New Music Category**: "EDM / Techno" with headphone icon
+- ✅ **Total Radio Stations**: 11 (5 original + 6 new)
+- ✅ **Maintained**: All anime, lo-fi, Christian, classical stations
+
+### 📚 Educational Word Banks
+- ✅ **150+ Vocabulary Words**: Across all subjects
+  - Math: 27 words (SUM, ALGEBRA, POLYNOMIAL, etc.)
+  - Science: 24 words (ATOM, PHOTOSYNTHESIS, MITOCHONDRIA, etc.)
+  - History: 19 words (WAR, REVOLUTION, RENAISSANCE, etc.)
+  - Language Arts: 23 words (VERB, METAPHOR, ALLITERATION, etc.)
+  - Bible: 20 words (FAITH, COVENANT, RESURRECTION, etc.)
+  - General/Tech: 7 words (COMPUTER, ALGORITHM, INTELLIGENCE)
+- ✅ **Difficulty Levels**: Easy, Medium, Hard for each word
+- ✅ **Clue System**: Educational definitions for learning
+- ✅ **Smart Selection**: Words optimized for each game type
+
+### 🛠️ New Services & Utilities
+- ✅ **wordBanks.ts**: Educational vocabulary management
+  - Functions: `getRandomWords()`, `getCrosswordWords()`, `getAnagramWords()`
+  - Subject filtering and difficulty selection
+  - 190 lines of curated content
+- ✅ **puzzleGenerator.ts**: Game generation algorithms
+  - Word search grid generation with directional placement
+  - Anagram scrambling (Fisher-Yates shuffle)
+  - Memory card pairing and shuffling
+  - Scoring algorithms for all game types
+  - 370+ lines of puzzle logic
+
+### 🎨 New Components
+- ✅ **BrainGames.tsx**: Main game hub (170 lines)
+  - Game selection menu with animated cards
+  - Subject selection for educational games
+  - Points/stars integration
+  - "Why Brain Games?" informational section
+- ✅ **CrosswordGame.tsx**: Crossword puzzle (120 lines)
+- ✅ **WordSearchGame.tsx**: Word search (150 lines)
+- ✅ **SudokuGame.tsx**: Number puzzle (130 lines)
+- ✅ **MemoryMatchGame.tsx**: Card matching (140 lines)
+- ✅ **AnagramsGame.tsx**: Word unscrambling (170 lines)
+
+### 🔧 Bug Fixes
+- ✅ **Critical**: Fixed worksheet system ES6 import (was using `require()`)
+  - Issue: Worksheets not loading due to CommonJS/ES6 module conflict
+  - Fix: Changed `require('./services/progressionService')` to ES6 import
+  - Location: App.tsx:14 (added import), App.tsx:298 (fixed usage)
+  - Impact: Worksheets now load correctly in production builds
+
+### 📦 Dependencies Added
+- ✅ **@jaredreisinger/react-crossword** ^5.2.0: Professional crossword component
+- ✅ **sudoku-umd** ^1.0.1: Sudoku puzzle generation
+
+### 🔄 Updated Files
+- ✅ **types.ts**: Added BrainGameType, BrainGameSession, BrainGameStats
+- ✅ **Sidebar.tsx**: Changed "Daily Obbies" → "Brain Games" with Brain icon
+- ✅ **App.tsx**:
+  - Replaced RobloxObbies with BrainGames component
+  - Updated View type: 'obbies' → 'games'
+  - Added BrainGameType import
+  - Fixed worksheet import bug
+  - Points awarded for game completion (1 point per star)
+- ✅ **curatedMusicData.ts**: Added 6 EDM/techno stations + new category
+- ✅ **android/app/build.gradle**:
+  - versionCode: 17 → 18
+  - versionName: "1.2.0" → "1.3.0"
+
+### 📊 Stats & Metrics
+- **Total Games**: 5 (Crossword, Word Search, Sudoku, Memory, Anagrams)
+- **Total Vocabulary Words**: 150+
+- **New Components**: 7 (1 hub + 5 games + 1 service)
+- **New Services**: 2 (wordBanks.ts, puzzleGenerator.ts)
+- **Lines of Code Added**: ~1,300 lines
+- **Radio Stations**: 11 total (added 6 EDM/techno)
+- **Music Categories**: 5 (added EDM/Techno)
+
+### 🎯 User Experience Improvements
+- ✅ **Engaging Game Selection**: Visual cards with hover effects
+- ✅ **Subject-Based Learning**: Educational content tied to school subjects
+- ✅ **Progress Tracking**: Stars and scoring for each game
+- ✅ **Instant Feedback**: Visual animations and audio cues
+- ✅ **Mobile-Optimized**: Touch-friendly interfaces
+- ✅ **Cognitive Benefits**: Memory, vocabulary, problem-solving focus
+
+### 📱 Technical Details
+- **Build System**: Vite 6 + React 19 + TypeScript 5.8
+- **Styling**: Tailwind CSS 3 + Glassmorphism design
+- **State Management**: React hooks + localStorage
+- **Platform**: PWA + Android (Capacitor 7.4)
+- **Code Quality**: TypeScript strict mode, lazy loading, error boundaries
+
+### 🚀 Deployment
+- **APK**: `vibe-tutor-v1.3.0.apk`
+- **versionCode**: 18
+- **Release Date**: November 10, 2025
+
+---
+
 ## v1.2.0 - INTERACTIVE WORKSHEETS (2025-11-10) ✅
 **Status**: Educational Worksheet System - Production Ready
 

@@ -21,7 +21,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus' | 'cards' | 'obbies';
+export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus' | 'cards' | 'games';
 
 export interface Achievement {
     id: string;
@@ -107,6 +107,43 @@ export interface RadioStation {
   fallbackUrls?: string[]; // Alternative stream URLs to try if primary fails
   description?: string;
   isPlaying?: boolean;
+}
+
+// Jamendo Music API Types
+export interface JamendoTrack {
+  id: string;
+  name: string;
+  artist_name: string;
+  artist_id: string;
+  album_name: string;
+  album_id: string;
+  duration: number; // in seconds
+  releasedate: string; // YYYY-MM-DD
+  image: string; // Album art URL
+  audio: string; // Stream URL for MP3
+  audiodownload: string; // Direct download URL
+  audiodownload_allowed: boolean;
+  license_ccurl: string;
+  tags: string[];
+  musicinfo?: {
+    gender?: string;
+    speed?: string;
+    tags?: {
+      genres?: string[];
+      instruments?: string[];
+      vartags?: string[];
+    };
+  };
+}
+
+export interface JamendoSearchParams {
+  query?: string; // Text search query
+  tags?: string; // Filter by genre/tags (e.g., "electronic+dance")
+  include?: string; // Include additional data (e.g., "musicinfo")
+  limit?: number; // Number of results (default 10, max 200)
+  offset?: number; // Pagination offset
+  order?: 'relevance' | 'popularity_total' | 'popularity_month' | 'popularity_week' | 'releasedate';
+  audioformat?: 'mp31' | 'mp32' | 'ogg'; // Audio quality
 }
 
 // Sensory preferences for neurodivergent support
@@ -216,4 +253,31 @@ export interface ObbySession {
   completedToday: boolean;
   startedAt?: number;
   completedAt?: number;
+}
+
+// Brain Games
+export type BrainGameType = 'crossword' | 'wordsearch' | 'sudoku' | 'memory' | 'anagrams';
+
+export interface BrainGameSession {
+  id: string;
+  gameType: BrainGameType;
+  subject: string;
+  score: number;
+  starsEarned: number;
+  timeSpent: number; // seconds
+  completedAt: number;
+}
+
+export interface BrainGameStats {
+  totalGamesPlayed: number;
+  totalStarsEarned: number;
+  averageScore: number;
+  bestScore: number;
+  favoriteGame: BrainGameType | null;
+  gameStats: Record<BrainGameType, {
+    played: number;
+    averageScore: number;
+    bestScore: number;
+    totalStars: number;
+  }>;
 }

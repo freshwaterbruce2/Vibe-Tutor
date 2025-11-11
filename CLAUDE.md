@@ -35,7 +35,84 @@ pnpm run android:install       # Install APK on connected device
 pnpm run android:uninstall     # Uninstall app from device
 pnpm run android:logs          # View Capacitor logs via adb
 pnpm run android:doctor        # Check Capacitor environment
+
+# ⚠️ CRITICAL: MANDATORY BUILD PROCESS (ALWAYS FOLLOW THIS!)
+# Changes won't apply without these steps!
+
+# BEFORE EVERY BUILD:
+# 1. Increment versionCode in android/app/build.gradle (REQUIRED!)
+# 2. Delete ALL build caches:
+Remove-Item -Recurse -Force dist, android\app\build, android\build, android\.gradle, .capacitor
+
+# THEN BUILD:
+pnpm run build                    # 1. Build web assets (creates dist/)
+pnpm exec cap sync android        # 2. Copy to Android assets
+cd android && .\gradlew.bat clean assembleDebug && cd ..  # 3. Build APK with clean
+adb uninstall com.vibetech.tutor  # 4. MUST uninstall old version
+adb install android\app\build\outputs\apk\debug\app-debug.apk  # 5. Install new
+
+# WHY: versionCode tells Android it's a new app. Without incrementing it, Android uses cached old code!
+# See BUILD_PROCESS_FIX_2025-11-11.md for full explanation.
 ```
+
+## ⚠️ CRITICAL: Regression Prevention Protocol
+
+**When user requests "clean build" or "fresh install":**
+
+### DO NOT assume features are missing! Follow this verification checklist:
+
+1. **Verify components exist:**
+   ```bash
+   # Check critical components
+   Test-Path components\MusicLibrary.tsx
+   Test-Path components\ParentDashboard.tsx
+   Test-Path components\WorksheetView.tsx
+   Test-Path components\SubjectCards.tsx
+   Test-Path components\BrainGames.tsx
+   ```
+
+2. **Check App.tsx imports:**
+   ```bash
+   grep -E "MusicLibrary|ParentDashboard|WorksheetView|BrainGames|SubjectCards" App.tsx
+   ```
+
+3. **Review git history:**
+   ```bash
+   git status
+   git log --oneline -5
+   ```
+
+4. **Verify dependencies:**
+   ```bash
+   cat package.json
+   ```
+
+### Understanding "Clean Build"
+
+**"Clean build" DOES NOT MEAN features are missing!**
+
+It means:
+- Remove old build artifacts (android/app/build/, dist/, .gradle/, etc.)
+- Clean compilation from existing source code
+- Fresh APK installation (uninstall old → install new)
+
+### What to Clean
+
+- ✓ Build directories: `android/app/build/`, `android/build/`, `android/.gradle/`
+- ✓ Web dist: `dist/`
+- ✓ Capacitor cache: `.capacitor/`
+- ✓ Old APKs: `*.apk` files
+- ✓ Test artifacts: `playwright-report/`, `test-results/`, `test_screenshots/`
+- ✗ **DO NOT DELETE**: Source code (`components/`, `services/`, `App.tsx`)
+
+### Only Report Regression If:
+
+- Component files are actually missing from filesystem
+- Git shows deleted files or rollback commits
+- imports in App.tsx reference non-existent files
+- package.json is missing critical dependencies
+
+**See `REGRESSION_PREVENTION_2025-11-11.md` for detailed incident report.**
 
 ## Architecture Overview
 
@@ -220,17 +297,26 @@ pnpm run android:deploy
 
 ### Testing Mobile Builds
 ```bash
-# Full test workflow
-pnpm run android:full-build      # Build fresh APK
-adb uninstall com.vibetech.tutor # Remove old version
-pnpm run android:install         # Install new APK
+# CRITICAL: ALWAYS uninstall before installing to avoid cache issues
+# Full test workflow (REQUIRED PROCESS):
+pnpm run build                    # 1. Build web assets
+pnpm exec cap sync android        # 2. Sync to Android
+cd android && ./gradlew.bat assembleDebug  # 3. Build APK
+cd ..
+adb uninstall com.vibetech.tutor # 4. MUST remove old version first
+adb install android/app/build/outputs/apk/debug/app-debug.apk  # 5. Install new version
 # Open chrome://inspect/#devices to debug
 ```
+
+**⚠️ CRITICAL REQUIREMENT**: Always delete old builds before installing new ones:
+- Delete APK from device: `adb uninstall com.vibetech.tutor`
+- Delete build artifacts: `rm -rf android/app/build/outputs/apk/*`
+- This prevents cache issues and ensures new code runs
 
 **Common Issues:** See [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md)
 - Duplicate nav buttons → Tailwind v4 incompatibility
 - Chat not working → Missing CapacitorHttp
-- Stale code → Cache issues (increment versionCode)
+- Stale code → Cache issues (increment versionCode AND uninstall old version)
 
 ### UI/UX Design System (Glassmorphism)
 **Key CSS Classes** (defined in `index.html`):
