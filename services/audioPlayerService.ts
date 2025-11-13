@@ -32,6 +32,7 @@ class AudioPlayerService {
   constructor() {
     this.audio = new Audio();
     this.setupEventListeners();
+    this.initMediaSession();
   }
 
   /**
@@ -47,6 +48,63 @@ class AudioPlayerService {
     this.audio.addEventListener('timeupdate', () => this.notifyStatus());
     this.audio.addEventListener('volumechange', () => this.notifyStatus());
     this.audio.addEventListener('error', (e) => this.handleError(e));
+  }
+
+  private initMediaSession(): void {
+    if (!('mediaSession' in navigator)) return;
+
+    // Reset
+    navigator.mediaSession.metadata = null;
+    navigator.mediaSession.playbackState = 'none';
+
+    // Metadata on load
+    this.audio.addEventListener('loadedmetadata', () => {
+      if (this.currentTrack && 'mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: this.currentTrack.metadata?.title || this.currentTrack.name || 'Unknown Track',
+          artist: this.currentTrack.metadata?.artist || 'Vibe-Tutor Library',
+          album: this.currentTrack.metadata?.album || 'Local Music',
+          artwork: this.currentTrack.albumArt ? [
+            { src: this.currentTrack.albumArt, sizes: '512x512', type: 'image/png' }
+          ] : [
+            { src: '/default-album.png', sizes: '512x512', type: 'image/png' }  // Add default image if needed
+          ]
+        });
+      }
+    });
+
+    // Action handlers
+    navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
+    navigator.mediaSession.setActionHandler('pause', () => this.pause());
+    navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
+    navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
+    navigator.mediaSession.setActionHandler('seekforward', () => this.skipForward(10));
+    navigator.mediaSession.setActionHandler('seekbackward', () => this.skipBackward(10));
+    navigator.mediaSession.setActionHandler('stop', () => this.stop());
+
+    // Position updates (throttled to ~1s)
+    let lastUpdate = 0;
+    this.audio.addEventListener('timeupdate', () => {
+      if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && this.audio.duration > 0) {
+        const now = Date.now();
+        if (now - lastUpdate > 1000) {
+          navigator.mediaSession.setPositionState({
+            duration: this.audio.duration,
+            position: this.audio.currentTime,
+            playbackRate: this.audio.playbackRate
+          });
+          lastUpdate = now;
+        }
+      }
+    });
+
+    // State updates
+    this.audio.addEventListener('play', () => {
+      if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+    });
+    this.audio.addEventListener('pause', () => {
+      if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+    });
   }
 
   /**
@@ -237,7 +295,7 @@ class AudioPlayerService {
   public loadPlaylist(tracks: LocalTrack[], startIndex: number = 0): void {
     this.playlist = tracks;
     this.currentIndex = startIndex;
-    
+
     if (tracks.length > 0 && startIndex >= 0 && startIndex < tracks.length) {
       this.loadTrack(tracks[startIndex]);
     }
@@ -254,7 +312,7 @@ class AudioPlayerService {
       const availableIndices = this.playlist
         .map((_, i) => i)
         .filter(i => i !== this.currentIndex);
-      
+
       if (availableIndices.length > 0) {
         this.currentIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
       }
@@ -354,6 +412,11 @@ class AudioPlayerService {
     this.currentTrack = null;
     this.playlist = [];
     this.statusCallback = null;
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = 'none';
+      // Clear handlers if needed (optional, as page unload clears)
+    }
   }
 }
 

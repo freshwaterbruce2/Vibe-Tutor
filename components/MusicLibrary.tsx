@@ -1,28 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
-import type { MusicPlaylist, LocalTrack, CuratedTrack, RadioStation } from '../types';
 import {
-  Plus, Music2, Trash2, ExternalLink, Download, Play, Pause,
-  SkipForward, SkipBack, Volume2, Repeat, Shuffle, Loader,
-  Music, HardDrive, X, Info, AlertCircle, HelpCircle, Radio, Library
+  AlertCircle,
+  Download,
+  HardDrive,
+  HelpCircle,
+  Info,
+  Library,
+  Loader,
+  Music,
+  Music2,
+  Pause,
+  Play,
+  Radio,
+  SkipBack,
+  SkipForward,
+  Trash2,
+  Volume2,
+  X
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { audioPlayer, type PlaybackStatus } from '../services/audioPlayerService';
+import { audioStream, type RadioStatus } from '../services/audioStreamService';
+import { CURATED_MUSIC, MUSIC_CATEGORIES, RADIO_STATIONS } from '../services/curatedMusicData';
+import { downloadQueue, type QueueStatus } from '../services/downloadQueueManager';
 import {
-  detectPlatform,
-  validateMusicUrl,
-  generateSpotifyEmbed,
-  generateYouTubeEmbed,
-  extractPlaylistName
-} from '../services/musicService';
-import {
-  downloadMusicFile,
   deleteTrack,
   formatBytes,
   getStorageUsed,
   type DownloadProgress
 } from '../services/downloadService';
-import { audioPlayer, type PlaybackStatus } from '../services/audioPlayerService';
-import { CURATED_MUSIC, RADIO_STATIONS, MUSIC_CATEGORIES } from '../services/curatedMusicData';
-import { audioStream, type RadioStatus } from '../services/audioStreamService';
-import { downloadQueue, type QueueStatus } from '../services/downloadQueueManager';
+import {
+  detectPlatform,
+  extractPlaylistName,
+  generateSpotifyEmbed,
+  generateYouTubeEmbed,
+  validateMusicUrl
+} from '../services/musicService';
+import type { CuratedTrack, LocalTrack, MusicPlaylist, RadioStation } from '../types';
+import { JamendoMusicSearch } from './JamendoMusicSearch';
 
 interface MusicLibraryProps {
   playlists: MusicPlaylist[];
@@ -72,7 +86,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     totalFailed: 0
   });
 
-  // Load local tracks from localStorage
+  // Load local tracks from localStorage (DB temporarily disabled - causing crash on A54)
   useEffect(() => {
     const saved = localStorage.getItem('localTracks');
     if (saved) {
@@ -80,7 +94,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
     }
   }, []);
 
-  // Save local tracks to localStorage
+  // Save local tracks to localStorage (DB temporarily disabled)
   useEffect(() => {
     localStorage.setItem('localTracks', JSON.stringify(localTracks));
   }, [localTracks]);
@@ -117,7 +131,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
   // ===== EMBEDDED PLAYLISTS HANDLERS =====
   const handleAddPlaylist = () => {
     setError('');
-    
+
     if (!urlInput.trim()) {
       setError('Please enter a playlist URL');
       return;
@@ -198,15 +212,15 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
           prev.map(t =>
             t.id === newTrack.id
               ? {
-                  ...t,
-                  downloadStatus: 'completed',
-                  downloadProgress: 100,
-                  localPath: result.filePath,
-                  fileSize: result.fileSize,
-                  metadata: result.metadata,
-                  duration: result.metadata?.duration,
-                  albumArt: result.albumArt
-                }
+                ...t,
+                downloadStatus: 'completed',
+                downloadProgress: 100,
+                localPath: result.filePath,
+                fileSize: result.fileSize,
+                metadata: result.metadata,
+                duration: result.metadata?.duration,
+                albumArt: result.albumArt
+              }
               : t
           )
         );
@@ -221,8 +235,8 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
   };
 
   const updateTrackStatus = (
-    trackId: string, 
-    status: LocalTrack['downloadStatus'], 
+    trackId: string,
+    status: LocalTrack['downloadStatus'],
     progress: number,
     localPath?: string
   ) => {
@@ -272,15 +286,15 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
           prev.map(t =>
             t.id === track.id
               ? {
-                  ...t,
-                  downloadStatus: 'completed',
-                  downloadProgress: 100,
-                  localPath: result.filePath,
-                  fileSize: result.fileSize,
-                  metadata: result.metadata,
-                  duration: result.metadata?.duration,
-                  albumArt: result.albumArt
-                }
+                ...t,
+                downloadStatus: 'completed',
+                downloadProgress: 100,
+                localPath: result.filePath,
+                fileSize: result.fileSize,
+                metadata: result.metadata,
+                duration: result.metadata?.duration,
+                albumArt: result.albumArt
+              }
               : t
           )
         );
@@ -476,15 +490,15 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
           prev.map(t =>
             t.id === newTrack.id
               ? {
-                  ...t,
-                  localPath: result.filePath,
-                  fileSize: result.fileSize,
-                  duration: result.metadata?.duration,
-                  metadata: result.metadata,
-                  albumArt: result.albumArt,
-                  downloadStatus: 'completed',
-                  downloadProgress: 100
-                }
+                ...t,
+                localPath: result.filePath,
+                fileSize: result.fileSize,
+                duration: result.metadata?.duration,
+                metadata: result.metadata,
+                albumArt: result.albumArt,
+                downloadStatus: 'completed',
+                downloadProgress: 100
+              }
               : t
           )
         );
@@ -494,6 +508,55 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
       (error) => {
         setDownloadError(error.message || 'Download failed');
         updateTrackStatus(newTrack.id, 'failed', 0);
+      }
+    );
+  };
+
+  // Handle Jamendo track download
+  const handleJamendoDownload = async (track: LocalTrack) => {
+    setDownloadError('');
+
+    // Check if already exists
+    const existingTrack = localTracks.find(t => t.downloadUrl === track.downloadUrl);
+    if (existingTrack) {
+      setDownloadError('This track is already in your library!');
+      return;
+    }
+
+    // Add track to local library
+    setLocalTracks(prev => [...prev, track]);
+
+    // Add to download queue
+    await downloadQueue.addToQueue(
+      track,
+      // Progress callback
+      (progress: DownloadProgress) => {
+        updateTrackStatus(progress.trackId, 'downloading', progress.percentage);
+      },
+      // Complete callback
+      (result) => {
+        setLocalTracks(prev =>
+          prev.map(t =>
+            t.id === track.id
+              ? {
+                ...t,
+                localPath: result.filePath,
+                fileSize: result.fileSize,
+                duration: result.metadata?.duration,
+                metadata: result.metadata,
+                albumArt: result.albumArt,
+                downloadStatus: 'completed',
+                downloadProgress: 100
+              }
+              : t
+          )
+        );
+        updateStorageUsed();
+      },
+      // Error callback
+      (error) => {
+        setDownloadError(error.message || 'Download failed');
+        updateTrackStatus(track.id, 'failed', 0);
       }
     );
   };
@@ -592,6 +655,22 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
         </div>
       )}
 
+      {/* SEARCH MUSIC SECTION (Jamendo API - 500,000+ tracks) */}
+      <div className="space-y-4 pb-6 border-b border-white/10">
+        <h2 className="text-xl font-semibold text-gray-200 flex items-center gap-2">
+          <Music className="w-5 h-5 text-cyan-400" />
+          Search Music
+        </h2>
+        <p className="text-sm text-gray-400">
+          Browse and search 500,000+ Creative Commons tracks
+        </p>
+
+        <JamendoMusicSearch
+          onDownloadTrack={handleJamendoDownload}
+          downloadedTrackUrls={localTracks.map(t => t.downloadUrl)}
+        />
+      </div>
+
       {/* BROWSE MUSIC SECTION (Curated Library) */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-200 flex items-center gap-2">
@@ -606,11 +685,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-4 py-2 rounded-xl font-medium transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-purple-500 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10'
-            }`}
+            className={`px-4 py-2 rounded-xl font-medium transition-all ${selectedCategory === 'all'
+              ? 'bg-purple-500 text-white'
+              : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              }`}
           >
             All
           </button>
@@ -618,11 +696,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-xl font-medium transition-all ${
-                selectedCategory === category.id
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
-              }`}
+              className={`px-4 py-2 rounded-xl font-medium transition-all ${selectedCategory === category.id
+                ? 'bg-purple-500 text-white'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                }`}
             >
               {category.icon} {category.name}
             </button>
@@ -652,11 +729,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
                   <button
                     onClick={() => handleDownloadCuratedTrack(track)}
                     disabled={isDownloaded}
-                    className={`p-3 rounded-xl transition-all ${
-                      isDownloaded
-                        ? 'bg-green-500/20 text-green-400 cursor-not-allowed'
-                        : 'bg-purple-500 hover:bg-purple-600 text-white'
-                    }`}
+                    className={`p-3 rounded-xl transition-all ${isDownloaded
+                      ? 'bg-green-500/20 text-green-400 cursor-not-allowed'
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                      }`}
                     title={isDownloaded ? 'Already downloaded' : 'Download'}
                   >
                     {isDownloaded ? (
@@ -689,11 +765,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
             return (
               <div
                 key={station.id}
-                className={`bg-white/5 backdrop-blur-xl border rounded-2xl p-4 transition-all ${
-                  isActive
-                    ? 'border-blue-500/50 bg-blue-500/10'
-                    : 'border-white/10 hover:border-blue-500/30'
-                }`}
+                className={`bg-white/5 backdrop-blur-xl border rounded-2xl p-4 transition-all ${isActive
+                  ? 'border-blue-500/50 bg-blue-500/10'
+                  : 'border-white/10 hover:border-blue-500/30'
+                  }`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1">
@@ -705,11 +780,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
                   </div>
                   <button
                     onClick={() => handlePlayRadio(station)}
-                    className={`p-3 rounded-xl transition-all ${
-                      isActive
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                        : 'bg-white/10 hover:bg-white/20 text-gray-300'
-                    }`}
+                    className={`p-3 rounded-xl transition-all ${isActive
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                      : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                      }`}
                   >
                     {isActive ? (
                       <Pause className="w-5 h-5" />
@@ -934,13 +1008,12 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({
               {getSortedTracks().map((track) => (
                 <div
                   key={track.id}
-                  className={`bg-white/5 backdrop-blur-xl border ${
-                    currentlyPlayingTrack?.id === track.id
-                      ? 'border-purple-500/50'
-                      : selectedTracks.has(track.id)
+                  className={`bg-white/5 backdrop-blur-xl border ${currentlyPlayingTrack?.id === track.id
+                    ? 'border-purple-500/50'
+                    : selectedTracks.has(track.id)
                       ? 'border-blue-500/50'
                       : 'border-white/10'
-                  } rounded-xl p-4 hover:border-purple-500/30 transition-all duration-200`}
+                    } rounded-xl p-4 hover:border-purple-500/30 transition-all duration-200`}
                 >
                   <div className="flex items-center gap-4">
                     {/* Selection Checkbox (only for completed tracks) */}

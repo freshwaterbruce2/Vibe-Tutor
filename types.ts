@@ -281,3 +281,59 @@ export interface BrainGameStats {
     totalStars: number;
   }>;
 }
+
+// Schedule System (from types/schedule.ts - re-exported here for convenience)
+export type ScheduleType = 'morning' | 'evening';
+export type StepStatus = 'pending' | 'in_progress' | 'completed' | 'skipped';
+
+export interface ScheduleStep {
+  id: string;
+  title: string;
+  description?: string;
+  estimatedMinutes?: number;
+  microsteps?: string[];
+  order: number;
+  status: StepStatus;
+  completedAt?: number;
+  skippedReason?: string;
+}
+
+export interface DailySchedule {
+  id: string;
+  type: ScheduleType;
+  title: string;
+  description?: string;
+  steps: ScheduleStep[];
+  createdAt: number;
+  updatedAt: number;
+  active: boolean;
+}
+
+export interface ScheduleProgress {
+  scheduleId: string;
+  date: string;
+  completedSteps: string[];
+  totalSteps: number;
+  completionPercentage: number;
+  completedAt?: number;
+  tokensEarned?: number;
+}
+
+// Usage Tracking
+export interface UsageSession {
+  id: string;
+  sessionType: 'game' | 'homework' | 'tutor' | 'buddy' | 'schedule' | 'focus';
+  startTime: number;
+  endTime?: number;
+  durationSeconds?: number;
+  activityData?: Record<string, any>;
+}
+
+export interface DailyUsageSummary {
+  date: string;
+  totalMinutes: number;
+  gameMinutes: number;
+  homeworkMinutes: number;
+  scheduleMinutes: number;
+  sessionsCompleted: number;
+}

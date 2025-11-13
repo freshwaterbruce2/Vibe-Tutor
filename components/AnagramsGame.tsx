@@ -83,7 +83,7 @@ const AnagramsGame: React.FC<AnagramsGameProps> = ({ subject, onComplete, onBack
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6 pb-36 md:pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="glass-card p-4 mb-6 flex items-center justify-between">

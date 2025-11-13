@@ -1,17 +1,17 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import Sidebar from './components/Sidebar';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import AchievementToast from './components/AchievementToast';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
 import OfflineIndicator from './components/OfflineIndicator';
-import type { View, HomeworkItem, ParsedHomework, Achievement, Reward, ClaimedReward, MusicPlaylist, SubjectType, CardLevel, ObbyType, WorksheetSession, DifficultyLevel, BrainGameType } from './types';
-import { sendMessageToBuddy } from './services/buddyService';
-import { getAchievements, checkAndUnlockAchievements, AchievementEvent } from './services/achievementService';
-import { triggerVibration } from './services/uiService';
+import Sidebar from './components/Sidebar';
 import { AI_TUTOR_PROMPT } from './constants';
-import { createChatCompletion, type DeepSeekMessage } from './services/secureClient';
-import { usageMonitor } from './services/usageMonitor';
+import { AchievementEvent, checkAndUnlockAchievements, getAchievements } from './services/achievementService';
+import { sendMessageToBuddy } from './services/buddyService';
 import { getSubjectProgress } from './services/progressionService';
+import { createChatCompletion, type DeepSeekMessage } from './services/secureClient';
+import { triggerVibration } from './services/uiService';
+import { usageMonitor } from './services/usageMonitor';
+import type { Achievement, BrainGameType, ClaimedReward, DifficultyLevel, HomeworkItem, MusicPlaylist, ParsedHomework, Reward, SubjectType, View, WorksheetSession } from './types';
 
 // Lazy-loaded components
 const HomeworkDashboard = lazy(() => import('./components/HomeworkDashboard'));
@@ -22,57 +22,59 @@ const MusicLibrary = lazy(() => import('./components/MusicLibrary').then(m => ({
 const SensorySettings = lazy(() => import('./components/SensorySettings'));
 const FocusTimer = lazy(() => import('./components/FocusTimer'));
 const SubjectCards = lazy(() => import('./components/SubjectCards'));
-const BrainGames = lazy(() => import('./components/BrainGames'));
+const BrainGames = lazy(() => import('./components/BrainGamesHub'));
 const WorksheetView = lazy(() => import('./components/WorksheetView'));
 const WorksheetResults = lazy(() => import('./components/WorksheetResults'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-// Mock initial data
+// Mock initial data (includes all subjects for proper dashboard display)
 const initialHomework: HomeworkItem[] = [
   { id: generateId(), subject: 'Math', title: 'Algebra II Worksheet', dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
   { id: generateId(), subject: 'History', title: 'Read Chapter 5: The Roman Empire', dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
   { id: generateId(), subject: 'Science', title: 'Lab Report on Photosynthesis', dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: true },
+  { id: generateId(), subject: 'Bible', title: 'Study Psalms Chapter 23', dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
+  { id: generateId(), subject: 'Language Arts', title: 'Write Essay on Favorite Book', dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], completed: false },
 ];
 
 
 // START: Inlined tutorService to avoid creating a new file as per project constraints.
 const tutorHistory: DeepSeekMessage[] = [
-    { role: 'system', content: AI_TUTOR_PROMPT }
+  { role: 'system', content: AI_TUTOR_PROMPT }
 ];
 
 const sendMessageToTutor = async (message: string): Promise<string> => {
-    // Check usage limits before making request
-    const canRequest = usageMonitor.canMakeRequest();
-    if (!canRequest.allowed) {
-        return canRequest.reason || "Usage limit reached. Please try again later.";
-    }
+  // Check usage limits before making request
+  const canRequest = usageMonitor.canMakeRequest();
+  if (!canRequest.allowed) {
+    return canRequest.reason || "Usage limit reached. Please try again later.";
+  }
 
-    tutorHistory.push({ role: 'user', content: message });
+  tutorHistory.push({ role: 'user', content: message });
 
-    const fallbackResponses = [
-        "I'm experiencing some technical difficulties right now. Let me try to help you again.",
-        "Sorry, I'm having connection issues. Please try asking your question again.",
-        "I'm having trouble processing that request. Could you rephrase your question?",
-        "There seems to be a temporary issue. Let's give it another try."
-    ];
+  const fallbackResponses = [
+    "I'm experiencing some technical difficulties right now. Let me try to help you again.",
+    "Sorry, I'm having connection issues. Please try asking your question again.",
+    "I'm having trouble processing that request. Could you rephrase your question?",
+    "There seems to be a temporary issue. Let's give it another try."
+  ];
 
-    const response = await createChatCompletion(tutorHistory, {
-        model: 'deepseek-chat',
-        temperature: 0.7,
-        top_p: 0.95,
-        retryCount: 3,
-        fallbackMessage: fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)]
-    });
+  const response = await createChatCompletion(tutorHistory, {
+    model: 'deepseek-chat',
+    temperature: 0.7,
+    top_p: 0.95,
+    retryCount: 3,
+    fallbackMessage: fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)]
+  });
 
-    const assistantMessage = response || fallbackResponses[0];
-    tutorHistory.push({ role: 'assistant', content: assistantMessage });
+  const assistantMessage = response || fallbackResponses[0];
+  tutorHistory.push({ role: 'assistant', content: assistantMessage });
 
-    // Record successful request
-    usageMonitor.recordRequest();
+  // Record successful request
+  usageMonitor.recordRequest();
 
-    return assistantMessage;
+  return assistantMessage;
 };
 // END: Inlined tutorService
 
@@ -101,19 +103,20 @@ const App: React.FC = () => {
   const [worksheetNewDifficulty, setWorksheetNewDifficulty] = useState<DifficultyLevel | undefined>();
   const [worksheetStarsToNextLevel, setWorksheetStarsToNextLevel] = useState(0);
 
+  const [isNavCollapsed, setIsNavCollapsed] = useState(false);  // New state
 
   useEffect(() => {
     localStorage.setItem('homeworkItems', JSON.stringify(homeworkItems));
   }, [homeworkItems]);
 
   useEffect(() => {
-      localStorage.setItem('studentPoints', String(points));
+    localStorage.setItem('studentPoints', String(points));
   }, [points]);
 
   useEffect(() => {
-      localStorage.setItem('parentRewards', JSON.stringify(rewards));
+    localStorage.setItem('parentRewards', JSON.stringify(rewards));
   }, [rewards]);
-  
+
   useEffect(() => {
     localStorage.setItem('claimedRewards', JSON.stringify(claimedRewards));
   }, [claimedRewards]);
@@ -163,7 +166,7 @@ const App: React.FC = () => {
       completed: false,
     };
     setHomeworkItems(prev => [...prev, newItem]);
-    handleAchievementEvent({ type: 'HOMEWORK_UPDATE', payload: { items: [...homeworkItems, newItem] }});
+    handleAchievementEvent({ type: 'HOMEWORK_UPDATE', payload: { items: [...homeworkItems, newItem] } });
   };
 
   const handleToggleComplete = (id: string) => {
@@ -184,10 +187,10 @@ const App: React.FC = () => {
     });
     setHomeworkItems(updatedItems);
     if (taskWasJustCompleted) {
-        handleAchievementEvent({ type: 'TASK_COMPLETED' });
-        setPoints(p => p + 10);
+      handleAchievementEvent({ type: 'TASK_COMPLETED' });
+      setPoints(p => p + 10);
     }
-    handleAchievementEvent({ type: 'HOMEWORK_UPDATE', payload: { items: updatedItems }});
+    handleAchievementEvent({ type: 'HOMEWORK_UPDATE', payload: { items: updatedItems } });
   };
 
   const handleClaimReward = (rewardId: string) => {
@@ -206,7 +209,7 @@ const App: React.FC = () => {
     if (!rewardToHandle) return;
 
     if (!isApproved) { // Denied
-        setPoints(p => p + rewardToHandle.cost); // Refund points
+      setPoints(p => p + rewardToHandle.cost); // Refund points
     }
     // Remove from claimed list in both cases
     setClaimedRewards(prev => prev.filter(r => r.id !== claimedRewardId));
@@ -258,76 +261,85 @@ const App: React.FC = () => {
     setWorksheetSubject(null);
     setWorksheetSession(null);
   };
-  
+
   const renderView = () => {
     const currentViewComponent = () => {
-        switch (view) {
-            case 'dashboard':
-                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
-            case 'tutor':
-                return <ChatWindow title="AI Tutor" description="Get help with your homework concepts." onSendMessage={sendMessageToTutor} type="tutor" />;
-            case 'friend':
-                return <ChatWindow title="AI Buddy" description="Chat about anything on your mind." onSendMessage={sendMessageToBuddy} type="friend" />;
-            case 'achievements':
-                return <AchievementCenter achievements={achievements} points={points} rewards={rewards} onClaimReward={handleClaimReward} claimedRewards={claimedRewards} />;
-            case 'parent':
-                return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} />;
-            case 'music':
-                return <MusicLibrary playlists={playlists} onAddPlaylist={handleAddPlaylist} onRemovePlaylist={handleRemovePlaylist} />;
-            case 'sensory':
-                return <SensorySettings />;
-            case 'focus':
-                return <FocusTimer onSessionComplete={(mins) => {
-                    setPoints(p => p + mins);
-                    handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED', payload: { duration: mins } });
-                }} />;
-            case 'cards':
-                // Worksheet system with three states: card selection, active worksheet, results
-                if (worksheetSession) {
-                    // Show results after completing worksheet
-                    return <WorksheetResults
-                        session={worksheetSession}
-                        leveledUp={worksheetLeveledUp}
-                        newDifficulty={worksheetNewDifficulty}
-                        starsToNextLevel={worksheetStarsToNextLevel}
-                        onTryAgain={handleWorksheetTryAgain}
-                        onContinue={handleWorksheetContinue}
-                    />;
-                } else if (worksheetSubject) {
-                    // Show active worksheet
-                    const progress = getSubjectProgress(worksheetSubject);
-                    return <WorksheetView
-                        subject={worksheetSubject}
-                        difficulty={progress.currentDifficulty}
-                        onComplete={handleWorksheetComplete}
-                        onCancel={handleWorksheetCancel}
-                    />;
-                } else {
-                    // Show subject cards (main menu)
-                    return <SubjectCards onStartWorksheet={handleStartWorksheet} />;
-                }
-            case 'games':
-                return <BrainGames onGameComplete={(gameType: BrainGameType, score: number, stars: number) => {
-                    setPoints(p => p + stars);
-                    handleAchievementEvent({ type: 'TASK_COMPLETED' });
-                }} />;
-            default:
-                return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
-        }
+      switch (view) {
+        case 'dashboard':
+          return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
+        case 'tutor':
+          return <ChatWindow title="AI Tutor" description="Get help with your homework concepts." onSendMessage={sendMessageToTutor} type="tutor" />;
+        case 'friend':
+          return <ChatWindow title="AI Buddy" description="Chat about anything on your mind." onSendMessage={sendMessageToBuddy} type="friend" />;
+        case 'achievements':
+          return <AchievementCenter achievements={achievements} points={points} rewards={rewards} onClaimReward={handleClaimReward} claimedRewards={claimedRewards} />;
+        case 'parent':
+          return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} />;
+        case 'music':
+          return <MusicLibrary playlists={playlists} onAddPlaylist={handleAddPlaylist} onRemovePlaylist={handleRemovePlaylist} />;
+        case 'sensory':
+          return <SensorySettings />;
+        case 'focus':
+          return <FocusTimer onSessionComplete={(mins) => {
+            setPoints(p => p + mins);
+            handleAchievementEvent({ type: 'FOCUS_SESSION_COMPLETED', payload: { duration: mins } });
+          }} />;
+        case 'cards':
+          // Worksheet system with three states: card selection, active worksheet, results
+          if (worksheetSession) {
+            // Show results after completing worksheet
+            return <WorksheetResults
+              session={worksheetSession}
+              leveledUp={worksheetLeveledUp}
+              newDifficulty={worksheetNewDifficulty}
+              starsToNextLevel={worksheetStarsToNextLevel}
+              onTryAgain={handleWorksheetTryAgain}
+              onContinue={handleWorksheetContinue}
+            />;
+          } else if (worksheetSubject) {
+            // Show active worksheet
+            const progress = getSubjectProgress(worksheetSubject);
+            return <WorksheetView
+              subject={worksheetSubject}
+              difficulty={progress.currentDifficulty}
+              onComplete={handleWorksheetComplete}
+              onCancel={handleWorksheetCancel}
+            />;
+          } else {
+            // Show subject cards (main menu)
+            return <SubjectCards onStartWorksheet={handleStartWorksheet} />;
+          }
+        case 'games':
+          return <BrainGames onGameComplete={(gameType: BrainGameType, score: number, stars: number) => {
+            setPoints(p => p + stars);
+            handleAchievementEvent({ type: 'TASK_COMPLETED' });
+          }} />;
+        default:
+          return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
+      }
     };
-    
+
     return (
-        <ErrorBoundary>
-            <Suspense fallback={<LoadingSpinner />}>
-                {currentViewComponent()}
-            </Suspense>
-        </ErrorBoundary>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          {currentViewComponent()}
+        </Suspense>
+      </ErrorBoundary>
     )
+  };
+
+  const toggleNav = () => {
+    setIsNavCollapsed(!isNavCollapsed);
   };
 
   return (
     <div className="h-screen w-screen bg-background-main text-text-primary flex font-sans">
-      <Sidebar currentView={view} onNavigate={setView} />
+      <Sidebar
+        currentView={view}
+        onNavigate={setView}
+        isCollapsed={isNavCollapsed}
+        onToggle={toggleNav}
+      />
       <main className="flex-1 overflow-y-auto relative pb-52 md:pb-0">
         {renderView()}
         {!isOnline && <OfflineIndicator />}

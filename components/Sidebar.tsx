@@ -1,27 +1,28 @@
-import React from 'react';
-import type { View } from '../types';
-import { VibeTechLogo } from './icons/VibeTechLogo';
-import { GradientIcon, GradientDefs } from './icons/GradientIcon';
 import {
-  LayoutDashboard,
+  Brain,
+  ChevronDown,
+  ChevronUp,
+  Eye,
   GraduationCap,
   Heart,
-  Trophy,
-  Lock,
-  Sparkles,
-  Bot,
-  Users,
-  Music2,
-  Eye,
-  Timer,
   Layers,
-  Brain
+  LayoutDashboard,
+  Lock,
+  Music2,
+  Timer,
+  Trophy
 } from 'lucide-react';
+import React from 'react';
+import type { View } from '../types';
+import { GradientDefs, GradientIcon } from './icons/GradientIcon';
+import { VibeTechLogo } from './icons/VibeTechLogo';
 
 
 interface SidebarProps {
   currentView: View;
   onNavigate: (view: View) => void;
+  isCollapsed?: boolean;  // New prop
+  onToggle?: () => void;  // New prop
 }
 
 const navItems = [
@@ -36,7 +37,7 @@ const navItems = [
   { view: 'focus', icon: Timer, label: 'Focus', gradient: 'vibe-gradient-secondary' },
 ] as const;
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isCollapsed = false, onToggle }) => {
   return (
     <>
       <GradientDefs />
@@ -57,11 +58,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
               <button
                 key={view}
                 onClick={() => onNavigate(view as View)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${
-                  currentView === view
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${currentView === view
                     ? 'glass-button text-white font-semibold shadow-[var(--neon-glow-primary)] border-[var(--primary-accent)]'
                     : 'glass-card hover:glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 focus-glow'
-                }`}
+                  }`}
               >
                 <GradientIcon
                   Icon={Icon}
@@ -78,11 +78,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
           </nav>
           <div className="p-4 border-t border-[var(--glass-border)]">
             <button
-                onClick={() => onNavigate('parent')}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${
-                  currentView === 'parent'
-                    ? 'glass-button text-white font-semibold shadow-[var(--neon-glow-secondary)] border-[var(--secondary-accent)]'
-                    : 'glass-card hover:glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 focus-glow'
+              onClick={() => onNavigate('parent')}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${currentView === 'parent'
+                  ? 'glass-button text-white font-semibold shadow-[var(--neon-glow-secondary)] border-[var(--secondary-accent)]'
+                  : 'glass-card hover:glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 focus-glow'
                 }`}
             >
               <GradientIcon
@@ -100,19 +99,32 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation - Two-row grid for all 10 buttons */}
-      <nav role="navigation" aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-[var(--glass-border)] z-50" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
-        <div className="grid grid-cols-5 gap-1 px-2 py-2">
+      {/* Floating Collapse Toggle Button - ABOVE nav bar, always accessible */}
+      <button
+        onClick={onToggle}
+        className="md:hidden fixed bottom-20 right-4 z-[60] w-12 h-12 bg-purple-500 hover:bg-purple-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-300"
+        style={{ touchAction: 'manipulation' }}
+      >
+        {isCollapsed ? (
+          <ChevronUp className="w-6 h-6 text-white" />
+        ) : (
+          <ChevronDown className="w-6 h-6 text-white" />
+        )}
+      </button>
+
+      {/* Mobile Bottom Navigation */}
+      <nav role="navigation" aria-label="Mobile navigation" className={`md:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-[var(--glass-border)] z-50 transition-all duration-300 ${isCollapsed ? 'h-0 p-0 overflow-hidden' : 'h-auto p-3'
+        }`} style={{ paddingBottom: isCollapsed ? '0' : 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
+        <div className={`max-w-4xl mx-auto grid grid-cols-5 gap-1 px-2 py-2 transition-opacity duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
           {/* Top row: First 5 items */}
           {navItems.slice(0, 5).map(({ view, icon: Icon, label, gradient }) => (
             <button
               key={view}
               onClick={() => onNavigate(view as View)}
-              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
-                currentView === view
+              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${currentView === view
                   ? 'text-[var(--primary-accent)]'
                   : 'text-[var(--text-secondary)]'
-              }`}
+                }`}
               style={{ touchAction: 'manipulation' }}
             >
               <GradientIcon
@@ -130,11 +142,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
             <button
               key={view}
               onClick={() => onNavigate(view as View)}
-              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
-                currentView === view
+              className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${currentView === view
                   ? 'text-[var(--primary-accent)]'
                   : 'text-[var(--text-secondary)]'
-              }`}
+                }`}
               style={{ touchAction: 'manipulation' }}
             >
               <GradientIcon
@@ -148,11 +159,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
           ))}
           <button
             onClick={() => onNavigate('parent')}
-            className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${
-              currentView === 'parent'
+            className={`flex flex-col items-center justify-center min-h-[48px] px-1 py-1 rounded-lg transition-all duration-200 ${currentView === 'parent'
                 ? 'text-[var(--secondary-accent)]'
                 : 'text-[var(--text-secondary)]'
-            }`}
+              }`}
             style={{ touchAction: 'manipulation' }}
           >
             <GradientIcon

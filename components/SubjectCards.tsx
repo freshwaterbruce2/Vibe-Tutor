@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import type { SubjectType, SubjectProgress } from '../types';
-import { BookOpen, Atom, Clock, Sparkles, Trophy, Zap, Star, PlayCircle, Heart, TrendingUp } from 'lucide-react';
+import { Atom, BookOpen, Clock, Heart, PlayCircle, Sparkles, Star, TrendingUp, Trophy, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { getAllProgress } from '../services/progressionService';
+import type { SubjectProgress, SubjectType } from '../types';
 
 interface SubjectCardsProps {
   onStartWorksheet: (subject: SubjectType) => void;
@@ -28,17 +28,27 @@ const SubjectCards: React.FC<SubjectCardsProps> = ({ onStartWorksheet }) => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 pb-36 md:pb-8">
-      {/* Header */}
+      {/* Header with Fun Mascot */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Trophy size={48} className="text-yellow-500" />
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-500">
+          <div className="animate-bounce">
+            <Trophy size={48} className="text-yellow-500 filter drop-shadow-lg" />
+          </div>
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-500 animate-pulse">
             Subject Worksheets
           </h1>
+          <div className="animate-bounce" style={{ animationDelay: '0.2s' }}>
+            <Sparkles size={48} className="text-purple-500" />
+          </div>
         </div>
-        <p className="text-text-secondary text-lg">
-          Complete worksheets to earn stars and unlock harder levels!
-        </p>
+        <div className="space-y-2">
+          <p className="text-text-secondary text-lg">
+            🎮 Complete worksheets to earn stars and level up! 🎮
+          </p>
+          <p className="text-sm text-purple-400">
+            Every worksheet is an adventure - let's learn and have fun!
+          </p>
+        </div>
       </div>
 
       {/* Subject Cards Grid */}
@@ -57,9 +67,8 @@ const SubjectCards: React.FC<SubjectCardsProps> = ({ onStartWorksheet }) => {
           return (
             <div
               key={subject}
-              className={`relative group glass-card p-6 rounded-2xl border-2 transition-all duration-300 ${
-                selectedSubject === subject ? 'border-yellow-500 shadow-yellow-500/50 scale-105' : 'border-[var(--glass-border)]'
-              } ${config.bgColor}`}
+              className={`relative group glass-card p-6 rounded-2xl border-2 transition-all duration-300 ${selectedSubject === subject ? 'border-yellow-500 shadow-yellow-500/50 scale-105' : 'border-[var(--glass-border)]'
+                } ${config.bgColor}`}
             >
               {/* Subject Icon & Name */}
               <div className="text-center mb-4">
@@ -128,18 +137,52 @@ const SubjectCards: React.FC<SubjectCardsProps> = ({ onStartWorksheet }) => {
                 )}
               </div>
 
-              {/* Start Worksheet Button */}
+              {/* Motivational Message */}
+              <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
+                <p className="text-xs text-center text-gray-400">
+                  {isMaxLevel
+                    ? '🌟 You\'re a master! Try another subject!'
+                    : progress.starsCollected === 0
+                      ? '🚀 Start your journey!'
+                      : starsToNextLevel === 1
+                        ? '🎯 One more star to level up!'
+                        : '💪 Keep practicing!'}
+                </p>
+              </div>
+
+              {/* Start Worksheet Button - Enhanced */}
               <button
                 onClick={() => onStartWorksheet(subject)}
-                className={`w-full glass-button px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-105 transition-all bg-gradient-to-r ${config.color}`}
+                className={`w-full glass-button px-6 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all bg-gradient-to-r ${config.color} shadow-lg group relative overflow-hidden`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <PlayCircle size={24} />
-                <span>Start Worksheet</span>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                <PlayCircle size={28} className="relative z-10" />
+                <span className="relative z-10">Let's Practice!</span>
+                <Sparkles size={20} className="relative z-10 animate-pulse" />
               </button>
             </div>
           );
         })}
+      </div>
+
+      {/* Daily Challenge Banner (ABCmouse-style) */}
+      <div className="mt-12 max-w-4xl mx-auto">
+        <div className="glass-card p-6 rounded-2xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-orange-500/10">
+          <div className="flex items-center gap-4">
+            <div className="text-6xl animate-bounce">🎯</div>
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold text-yellow-400 mb-2">Daily Challenge!</h3>
+              <p className="text-white mb-3">Complete any 3 worksheets today to earn a bonus 50 points!</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full" style={{ width: '0%' }}></div>
+                </div>
+                <span className="text-sm text-gray-400">0/3</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Info Section */}

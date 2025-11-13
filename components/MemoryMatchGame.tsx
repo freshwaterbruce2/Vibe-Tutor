@@ -62,7 +62,7 @@ const MemoryMatchGame: React.FC<MemoryMatchGameProps> = ({ subject, onComplete, 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6 pb-36 md:pb-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="glass-card p-4 mb-6 flex items-center justify-between">
@@ -96,45 +96,32 @@ const MemoryMatchGame: React.FC<MemoryMatchGameProps> = ({ subject, onComplete, 
                 <div
                   key={card.id}
                   onClick={() => handleCardClick(card.id)}
-                  className={`aspect-square cursor-pointer transition-all duration-300 transform ${
-                    isFlipped ? 'rotate-y-180' : ''
-                  } ${!canFlip && !isFlipped ? 'opacity-50' : ''}`}
-                  style={{ perspective: '1000px' }}
+                  className={`aspect-square cursor-pointer ${isMatched ? 'opacity-30' : !canFlip && !isFlipped ? 'opacity-50' : 'hover:scale-105'} transition-all`}
+                  style={{ touchAction: 'manipulation' }}
                 >
-                  <div
-                    className={`relative w-full h-full rounded-lg ${
-                      isFlipped ? 'rotate-y-180' : ''
-                    }`}
-                    style={{
-                      transformStyle: 'preserve-3d',
-                      transition: 'transform 0.6s',
-                    }}
-                  >
-                    {/* Back of card */}
-                    <div
-                      className={`absolute w-full h-full rounded-lg flex items-center justify-center ${
-                        isMatched ? 'bg-gradient-to-br from-green-600 to-emerald-600' : 'bg-gradient-to-br from-purple-600 to-pink-600'
-                      } ${isFlipped ? 'hidden' : 'block'}`}
-                      style={{ backfaceVisibility: 'hidden' }}
-                    >
-                      <div className="text-4xl">?</div>
+                  {!isFlipped ? (
+                    /* Card Back - Purple/Pink Question Mark */
+                    <div className={`w-full h-full rounded-xl flex items-center justify-center shadow-lg border-4 ${
+                      isMatched ? 'bg-gradient-to-br from-green-600 to-emerald-600 border-green-500' : 'bg-gradient-to-br from-purple-600 to-pink-600 border-purple-400'
+                    }`}>
+                      <div className="text-white text-5xl sm:text-6xl font-bold drop-shadow-lg">?</div>
                     </div>
-
-                    {/* Front of card */}
-                    <div
-                      className={`absolute w-full h-full rounded-lg flex items-center justify-center p-2 ${
-                        isMatched ? 'bg-gradient-to-br from-green-500 to-emerald-500' : 'bg-white'
-                      } ${isFlipped ? 'block' : 'hidden'}`}
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)',
-                      }}
-                    >
-                      <div className={`text-center text-xs sm:text-sm font-bold ${isMatched ? 'text-white' : 'text-gray-800'}`}>
+                  ) : (
+                    /* Card Front - Shows Word/Definition */
+                    <div className={`w-full h-full rounded-xl flex items-center justify-center p-3 shadow-lg border-4 ${
+                      isMatched
+                        ? 'bg-green-400 border-green-600'
+                        : 'bg-white border-cyan-400'
+                    }`}>
+                      <div className={`text-center break-words leading-tight ${
+                        card.type === 'word'
+                          ? 'text-purple-900 font-bold text-base sm:text-xl'
+                          : 'text-gray-800 text-xs sm:text-sm font-medium'
+                      }`}>
                         {card.content}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}

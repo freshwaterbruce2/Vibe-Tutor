@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { Bot, GraduationCap, Heart, Send, Sparkles, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../types';
 import { GradientIcon } from './icons/GradientIcon';
-import { Send, GraduationCap, Heart, Bot, Sparkles } from 'lucide-react';
+import LifeSkillsChecklist from './LifeSkillsChecklist';
+import SocialSkillsTips from './SocialSkillsTips';
 
 interface ChatWindowProps {
   title: string;
@@ -41,6 +43,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
   }, [messages, type]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showLifeSkills, setShowLifeSkills] = useState(false);
+  const [showSocialTips, setShowSocialTips] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -60,37 +64,67 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
     setIsLoading(true);
 
     try {
-        const responseContent = await onSendMessage(input);
-        if (!responseContent) {
-          throw new Error('No response received');
-        }
-        const formattedResponse = formatAIResponse(responseContent);
-        const modelMessage: ChatMessage = { role: 'model', content: formattedResponse, timestamp: Date.now() };
-        setMessages(prev => [...prev, modelMessage]);
+      const responseContent = await onSendMessage(input);
+      if (!responseContent) {
+        throw new Error('No response received');
+      }
+      const formattedResponse = formatAIResponse(responseContent);
+      const modelMessage: ChatMessage = { role: 'model', content: formattedResponse, timestamp: Date.now() };
+      setMessages(prev => [...prev, modelMessage]);
     } catch (error) {
-        console.error('Chat error:', error);
+      console.error('Chat error:', error);
 
-        const errorMessages = [
-          "I'm having trouble connecting right now. Please try again in a moment.",
-          "Something went wrong on my end. Let me try to help you again.",
-          "I'm experiencing some technical difficulties. Please retry your message.",
-          "Oops! I couldn't process that. Mind giving it another shot?"
-        ];
+      const errorMessages = [
+        "I'm having trouble connecting right now. Please try again in a moment.",
+        "Something went wrong on my end. Let me try to help you again.",
+        "I'm experiencing some technical difficulties. Please retry your message.",
+        "Oops! I couldn't process that. Mind giving it another shot?"
+      ];
 
-        const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
-        const errorMessage: ChatMessage = {
-          role: 'model',
-          content: randomError,
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, errorMessage]);
+      const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+      const errorMessage: ChatMessage = {
+        role: 'model',
+        content: randomError,
+        timestamp: Date.now()
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
+  const handleAskBuddy = (question: string) => {
+    setInput(question);
+    setShowSocialTips(false);
+    setShowLifeSkills(false);
+  };
+
   return (
-    <div className="h-full flex flex-col p-4 md:p-8 pb-24 md:pb-8">
+    <div className="h-full flex flex-col p-4 md:p-8 pb-24 md:pb-8 relative">
+      {/* AI Buddy Tools Overlay (Life Skills + Social Tips) */}
+      {type === 'friend' && (showLifeSkills || showSocialTips) && (
+        <div className="absolute inset-0 bg-black/95 backdrop-blur-sm z-50 overflow-y-auto p-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-white">
+                {showLifeSkills ? '📋 Daily Life Skills' : '💡 Social Skills Tips'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowLifeSkills(false);
+                  setShowSocialTips(false);
+                }}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+            {showLifeSkills && <LifeSkillsChecklist />}
+            {showSocialTips && <SocialSkillsTips onAskBuddy={handleAskBuddy} />}
+          </div>
+        </div>
+      )}
+
       <header className="mb-4 md:mb-8 text-center">
         <div className="flex items-center justify-center gap-4 mb-4">
           {type === 'tutor' ? (
@@ -98,9 +132,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
           ) : (
             <GradientIcon Icon={Heart} size={48} gradientId="vibe-gradient-secondary" className="icon-bounce" />
           )}
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] neon-text-primary">
-            {title}
-          </h1>
+          <div className="flex flex-col items-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-accent)] to-[var(--secondary-accent)] neon-text-primary">
+              {title}
+            </h1>
+            {type === 'friend' && (
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => setShowLifeSkills(true)}
+                  className="glass-card px-3 py-1.5 rounded-lg hover:bg-purple-500/20 transition-all text-sm flex items-center gap-1"
+                  title="Daily Life Skills Checklist"
+                >
+                  <span>📋</span>
+                  <span className="text-gray-300 text-xs">Life Skills</span>
+                </button>
+                <button
+                  onClick={() => setShowSocialTips(true)}
+                  className="glass-card px-3 py-1.5 rounded-lg hover:bg-purple-500/20 transition-all text-sm flex items-center gap-1"
+                  title="Social Skills Tips"
+                >
+                  <span>💡</span>
+                  <span className="text-gray-300 text-xs">Social Tips</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         <p className="text-text-secondary text-lg">{description}</p>
         {messages.length > 0 && (
@@ -142,11 +198,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ title, description, onSendMessa
                   </span>
                 </div>
               )}
-              <div className={`p-4 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-[1.02] ${
-                msg.role === 'user'
-                  ? 'bg-gradient-to-br from-[var(--primary-accent)] to-[var(--tertiary-accent)] text-white border-[var(--primary-accent)]/30 shadow-lg shadow-[var(--primary-accent)]/20'
-                  : 'bg-[var(--glass-surface)] text-text-primary border-[var(--glass-border)] hover:border-[var(--border-hover)]'
-              }`}>
+              <div className={`p-4 rounded-2xl backdrop-blur-md border transition-all duration-300 hover:scale-[1.02] ${msg.role === 'user'
+                ? 'bg-gradient-to-br from-[var(--primary-accent)] to-[var(--tertiary-accent)] text-white border-[var(--primary-accent)]/30 shadow-lg shadow-[var(--primary-accent)]/20'
+                : 'bg-[var(--glass-surface)] text-text-primary border-[var(--glass-border)] hover:border-[var(--border-hover)]'
+                }`}>
                 <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                 <div className="flex justify-end mt-2">
                   <span className="text-xs opacity-60">

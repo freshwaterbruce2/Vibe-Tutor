@@ -39,13 +39,17 @@ const SensorySettings: React.FC = () => {
   );
 
   return (
-    <div className="p-8 space-y-8 max-w-2xl mx-auto">
+    <div className="p-8 pb-36 md:pb-8 space-y-8 max-w-2xl mx-auto">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2 flex items-center justify-center gap-3">
-          <Eye size={32} className="text-[var(--primary-accent)]" />
-          Sensory Settings
-        </h1>
-        <p className="text-text-secondary">Adjust for comfort and focus</p>
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Eye size={48} className="text-blue-400 animate-pulse" />
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+            Sensory Settings
+          </h1>
+          <Zap size={48} className="text-yellow-400 animate-bounce" />
+        </div>
+        <p className="text-lg text-gray-300">⚙️ Customize for YOUR comfort and focus ⚙️</p>
+        <p className="text-sm text-blue-400 mt-2">Everyone's brain is different - make it perfect for you!</p>
       </header>
 
       {/* Animation Speed */}

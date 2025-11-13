@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, RotateCcw } from 'lucide-react';
-import { makepuzzle, solvepuzzle } from 'sudoku-umd';
+import * as SudokuModule from 'sudoku-umd';
 
 interface SudokuGameProps {
   onComplete: (score: number, stars: number, timeSpent: number) => void;
@@ -13,13 +13,30 @@ const SudokuGame: React.FC<SudokuGameProps> = ({ onComplete, onBack }) => {
   const [solution, setSolution] = useState<(number | null)[]>([]);
   const [userGrid, setUserGrid] = useState<(number | null)[]>([]);
   const [selectedCell, setSelectedCell] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const newPuzzle = makepuzzle();
-    const newSolution = solvepuzzle(newPuzzle);
-    setPuzzle(newPuzzle);
-    setSolution(newSolution);
-    setUserGrid([...newPuzzle]);
+    try {
+      // Access sudoku functions safely
+      const makepuzzle = (SudokuModule as any).makepuzzle || (SudokuModule as any).default?.makepuzzle;
+      const solvepuzzle = (SudokuModule as any).solvepuzzle || (SudokuModule as any).default?.solvepuzzle;
+      
+      if (!makepuzzle || !solvepuzzle) {
+        console.error('Sudoku functions not available');
+        setIsLoading(false);
+        return;
+      }
+      
+      const newPuzzle = makepuzzle();
+      const newSolution = solvepuzzle(newPuzzle);
+      setPuzzle(newPuzzle);
+      setSolution(newSolution);
+      setUserGrid([...newPuzzle]);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to generate Sudoku:', error);
+      setIsLoading(false);
+    }
   }, []);
 
   const handleCellClick = (index: number) => {
@@ -58,8 +75,16 @@ const SudokuGame: React.FC<SudokuGameProps> = ({ onComplete, onBack }) => {
     setSelectedCell(null);
   };
 
+  if (isLoading || puzzle.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6 flex items-center justify-center">
+        <div className="text-white text-xl">Generating Sudoku puzzle...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 p-6 pb-36 md:pb-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="glass-card p-4 mb-6 flex items-center justify-between">

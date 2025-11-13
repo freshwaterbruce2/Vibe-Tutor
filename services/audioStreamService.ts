@@ -28,6 +28,14 @@ class AudioStreamService {
   private isInitialized: boolean = false;
 
   constructor() {
+    // Initialize HTML5 Audio immediately (synchronous) for A54 compatibility
+    this.audio = new Audio();
+    this.audio.preload = 'auto';  // Preload for better streaming
+    this.audio.crossOrigin = 'anonymous';
+    this.setupListeners();
+    console.log('[AudioStream] HTML5 Audio initialized synchronously');
+    
+    // Try native audio async (non-blocking)
     this.init();
   }
 
@@ -43,20 +51,11 @@ class AudioStreamService {
         const module = await import('@mediagrid/capacitor-native-audio');
         NativeAudio = module.NativeAudio;
         this.isNativeMode = true;
-        console.log('[AudioStream] Using native audio for radio streaming');
+        console.log('[AudioStream] Native audio loaded for radio streaming');
       } catch (error) {
-        console.warn('[AudioStream] Native audio not available, falling back to HTML5:', error);
+        console.warn('[AudioStream] Native audio not available, using HTML5:', error);
         this.isNativeMode = false;
       }
-    }
-
-    // Fallback to HTML5 Audio if not native or plugin failed
-    if (!this.isNativeMode) {
-      this.audio = new Audio();
-      this.audio.preload = 'none';
-      this.audio.crossOrigin = 'anonymous';
-      this.setupListeners();
-      console.log('[AudioStream] Using HTML5 Audio for radio streaming');
     }
 
     this.isInitialized = true;
@@ -177,7 +176,7 @@ class AudioStreamService {
       if (this.isNativeMode && NativeAudio) {
         await this.playNative(station);
       } else {
-        await this.playHTML5(station);
+        await this.playHTML5Fallback(station, [station.streamUrl, ...(station.fallbackUrls || [])]);
       }
 
       console.log(`[AudioStream] Playing: ${station.name} (${station.streamUrl})`);
@@ -207,90 +206,129 @@ class AudioStreamService {
    * Play using native audio (Android/iOS)
    */
   private async playNative(station: RadioStation): Promise<void> {
-    const urlsToTry = [station.streamUrl, ...(station.fallbackUrls || [])];
-    let lastError: any = null;
+    // Filter to MP3/AAC only for A54 compatibility
+    const urlsToTry = [station.streamUrl, ...(station.fallbackUrls || [])].filter(url =>
+      url.includes('.mp3') || url.includes('.aac')
+    );
 
+    if (urlsToTry.length === 0) {
+      throw new Error('No compatible MP3/AAC streams available. Try a different station.');
+    }
+
+    let lastError: any = null;
     for (let i = 0; i < urlsToTry.length; i++) {
       const url = urlsToTry[i];
+      const assetId = `radio-${station.id}-${i}`;  // Unique per URL to avoid conflicts
       try {
-        console.log(`[AudioStream] Native audio attempt ${i + 1}/${urlsToTry.length}: ${url}`);
+        console.log(`[AudioStream] Native attempt ${i + 1}/${urlsToTry.length}: ${url}`);
 
-        // Preload the stream with native audio
+        // Preload with native for A54 background support
         await NativeAudio.preload({
-          assetId: 'radio-stream',
+          assetId,
           assetPath: url,
-          isUrl: true
+          isUrl: true,
+          audioChannelNum: 1,  // Mono for streams (battery efficient)
+          volume: 0.8  // Conservative default
         });
 
-        // Start playback
-        await NativeAudio.play({
-          assetId: 'radio-stream'
-        });
+        // Play
+        await NativeAudio.play({ assetId });
 
         this._isPlaying = true;
         this.notifyStatusChange();
-        console.log(`[AudioStream] ✅ Native playback successful with URL ${i + 1}`);
-        return; // Success - exit function
+        console.log(`[AudioStream] Native success: ${station.name} via ${url}`);
+        return;
       } catch (error: any) {
         lastError = error;
-        console.error(`[AudioStream] Native audio attempt ${i + 1} failed:`, error.message);
+        console.error(`[AudioStream] Native fail ${i + 1}: ${error.message}`);
 
-        // Cleanup failed attempt
+        // Cleanup
         try {
-          await NativeAudio.unload({ assetId: 'radio-stream' });
-        } catch {}
+          await NativeAudio.unload({ assetId });
+        } catch (cleanupErr) {
+          console.warn('[AudioStream] Cleanup failed:', cleanupErr);
+        }
 
-        // Continue to next URL if available
+        // Retry delay
         if (i < urlsToTry.length - 1) {
-          console.log('[AudioStream] Trying fallback URL...');
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          console.log('[AudioStream] Retrying fallback in 1s...');
+          await new Promise(r => setTimeout(r, 1000));
         }
       }
     }
 
-    // All URLs failed
-    throw lastError || new Error('All stream URLs failed');
+    // All failed - fallback to HTML5 with same filter
+    console.warn('[AudioStream] Native failed, trying HTML5 fallback');
+    await this.playHTML5Fallback(station, urlsToTry);
   }
 
-  /**
-   * Play using HTML5 Audio (web fallback)
-   */
-  private async playHTML5(station: RadioStation): Promise<void> {
+  private async playHTML5Fallback(station: RadioStation, urlsToTry: string[]): Promise<void> {
     if (!this.audio) {
-      throw new Error('HTML5 Audio not initialized');
+      // Reinitialize if somehow null (shouldn't happen but be safe)
+      this.audio = new Audio();
+      this.audio.preload = 'auto';
+      this.audio.crossOrigin = 'anonymous';
+      this.setupListeners();
+      console.log('[AudioStream] HTML5 Audio reinitialized');
     }
 
-    const urlsToTry = [station.streamUrl, ...(station.fallbackUrls || [])];
     let lastError: any = null;
 
     for (let i = 0; i < urlsToTry.length; i++) {
       const url = urlsToTry[i];
       try {
-        console.log(`[AudioStream] HTML5 Audio attempt ${i + 1}/${urlsToTry.length}: ${url}`);
-
-        // Set source and load
+        console.log(`[AudioStream] HTML5 attempt ${i + 1}/${urlsToTry.length}: ${url}`);
+        
         this.audio.src = url;
         this.audio.load();
-
-        // Start playback
+        
+        // User interaction required on Android - this should work if called from button click
         await this.audio.play();
-
-        console.log(`[AudioStream] ✅ HTML5 playback successful with URL ${i + 1}`);
-        return; // Success - exit function
+        
+        this._isPlaying = true;
+        this.notifyStatusChange();
+        console.log(`[AudioStream] HTML5 success: ${station.name}`);
+        return;
       } catch (error: any) {
-        lastError = error;
-        console.error(`[AudioStream] HTML5 Audio attempt ${i + 1} failed:`, error.message);
+        // Rename to audioError to avoid shadowing
+        const audioError = this.audio?.error;
+        let errorMessage = 'Failed to play radio station';
 
-        // Continue to next URL if available
+        if (audioError) {
+          switch (audioError.code) {
+            case audioError.MEDIA_ERR_ABORTED:
+              errorMessage = 'Playback aborted. Please try again.';
+              break;
+            case audioError.MEDIA_ERR_NETWORK:
+              errorMessage = 'Network error. Check your internet connection.';
+              break;
+            case audioError.MEDIA_ERR_DECODE:
+              errorMessage = 'Stream format not supported. Try another station.';
+              break;
+            case audioError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage = 'Stream not available. Station may be offline.';
+              break;
+            default:
+              errorMessage = audioError.message || 'Unknown error occurred';
+          }
+        }
+
+        this.lastError = errorMessage;
+        this._isPlaying = false;
+        this.notifyStatusChange();
+
+        console.error('[AudioStream] HTML5 Audio error:', errorMessage, audioError);
+        lastError = error;
+        
+        // Try next URL
         if (i < urlsToTry.length - 1) {
-          console.log('[AudioStream] Trying fallback URL...');
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          console.log('[AudioStream] Trying next fallback...');
+          await new Promise(r => setTimeout(r, 500));
         }
       }
     }
 
-    // All URLs failed
-    throw lastError || new Error('All stream URLs failed');
+    throw lastError || new Error('All streams failed - check internet and try later.');
   }
 
   /**

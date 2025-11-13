@@ -1,13 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import { Bell, Plus } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import type { HomeworkItem, ParsedHomework } from '../types';
-import HomeworkItemComponent from './HomeworkItem';
 import AddHomeworkModal from './AddHomeworkModal';
-import NotificationPanel from './NotificationPanel';
 import BreakdownModal from './BreakdownModal';
-import WeekProgress from './WeekProgress';
 import GoalsPanel from './GoalsPanel';
+import HomeworkItemComponent from './HomeworkItem';
+import NotificationPanel from './NotificationPanel';
+import QuickStats from './QuickStats';
+import StreakTracker from './StreakTracker';
+import StudyTimeInsight from './StudyTimeInsight';
+import SubjectChart from './SubjectChart';
+import WeekProgress from './WeekProgress';
 import { GradientIcon } from './icons/GradientIcon';
-import { Plus, Bell } from 'lucide-react';
 
 interface HomeworkDashboardProps {
   items: HomeworkItem[];
@@ -54,24 +58,24 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
             <p className="text-[var(--text-secondary)] text-sm md:text-lg">Stay on top of your tasks</p>
           </div>
           <div className="flex items-center gap-2 md:gap-4 w-full sm:w-auto">
-              <div className="relative">
-                  <button
-                    onClick={() => setIsNotifPanelOpen(prev => !prev)}
-                    className="glass-card p-3 md:p-3 min-h-[48px] min-w-[48px] rounded-xl hover:scale-110 transition-all duration-300 group relative overflow-hidden focus-glow flex items-center justify-center"
-                    style={{ touchAction: 'manipulation' }}
-                  >
-                      <GradientIcon Icon={Bell} size={24} gradientId="vibe-gradient-accent" />
-                      {upcomingItems.length > 0 && (
-                          <span className="absolute -top-1 -right-1 flex h-5 w-5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--tertiary-accent)] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-5 w-5 bg-[var(--tertiary-accent)] text-xs text-white items-center justify-center font-bold">
-                              {upcomingItems.length}
-                            </span>
-                          </span>
-                      )}
-                  </button>
-                  {isNotifPanelOpen && <NotificationPanel items={upcomingItems} onClose={() => setIsNotifPanelOpen(false)} />}
-              </div>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotifPanelOpen(prev => !prev)}
+                className="glass-card p-3 md:p-3 min-h-[48px] min-w-[48px] rounded-xl hover:scale-110 transition-all duration-300 group relative overflow-hidden focus-glow flex items-center justify-center"
+                style={{ touchAction: 'manipulation' }}
+              >
+                <GradientIcon Icon={Bell} size={24} gradientId="vibe-gradient-accent" />
+                {upcomingItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--tertiary-accent)] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-[var(--tertiary-accent)] text-xs text-white items-center justify-center font-bold">
+                      {upcomingItems.length}
+                    </span>
+                  </span>
+                )}
+              </button>
+              {isNotifPanelOpen && <NotificationPanel items={upcomingItems} onClose={() => setIsNotifPanelOpen(false)} />}
+            </div>
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="glass-button flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 min-h-[48px] font-semibold text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg flex-1 sm:flex-initial"
@@ -85,10 +89,23 @@ const HomeworkDashboard: React.FC<HomeworkDashboardProps> = ({ items, onAdd, onT
       </header>
 
       <div className="flex-1 relative z-10 space-y-8">
+        {/* Quick Stats Overview */}
+        <QuickStats items={items} />
+
+        {/* Progress & Goals Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <WeekProgress homeworkItems={items} />
           <GoalsPanel homeworkItems={items} points={points} />
         </div>
+
+        {/* Insights Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <StreakTracker items={items} />
+          <StudyTimeInsight items={items} />
+        </div>
+
+        {/* Subject Distribution */}
+        <SubjectChart items={items} />
 
         <section className="space-y-6">
           <div className="flex items-center gap-4">

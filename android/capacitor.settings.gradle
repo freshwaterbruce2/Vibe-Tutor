@@ -10,3 +10,6 @@ project(':capacitor-filesystem').projectDir = new File('../../node_modules/.pnpm
 
 include ':mediagrid-capacitor-native-audio'
 project(':mediagrid-capacitor-native-audio').projectDir = new File('../../node_modules/.pnpm/@mediagrid+capacitor-native-audio@2.3.1_@capacitor+core@7.4.4/node_modules/@mediagrid/capacitor-native-audio/android')
+
+include ':capacitor-community-sqlite'
+project(':capacitor-community-sqlite').projectDir = new File('../../node_modules/.pnpm/@capacitor-community+sqlite@5.7.4_@capacitor+core@7.4.4/node_modules/@capacitor-community/sqlite/android')

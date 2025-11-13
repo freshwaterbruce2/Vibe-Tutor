@@ -65,17 +65,16 @@ class DownloadQueueManager {
     console.log(`[DownloadQueue] URL: ${track.downloadUrl}`);
     console.log(`[DownloadQueue] Current queue length: ${this.queue.length}`);
 
-    // Check if track is already in queue or downloading
-    const isDuplicate =
-      this.queue.some((d) => d.track.downloadUrl === track.downloadUrl) ||
-      (this.activeDownload && this.activeDownload.track.downloadUrl === track.downloadUrl);
+    // Normalize URL for dedup (lowercase, trim, remove query params if needed)
+    const normalizeUrl = (url: string) => url.toLowerCase().trim().split('?')[0].split('#')[0];
+
+    const normalizedUrl = normalizeUrl(track.downloadUrl);
+    const isDuplicate = this.queue.some(d => normalizeUrl(d.track.downloadUrl) === normalizedUrl) ||
+      (this.activeDownload && normalizeUrl(this.activeDownload.track.downloadUrl) === normalizedUrl);
 
     if (isDuplicate) {
-      console.warn(`[DownloadQueue] DUPLICATE REJECTED: ${track.name}`);
-      const error = new Error('This track is already in the download queue');
-      if (onError) {
-        onError(error);
-      }
+      console.warn(`[DownloadQueue] Duplicate rejected: ${track.name} (URL: ${normalizedUrl})`);
+      if (onError) onError(new Error('This track is already queued or downloading'));
       return;
     }
 

@@ -61,6 +61,7 @@ const SUBJECTS = [
 const BrainGames: React.FC<BrainGamesProps> = ({ onGameComplete }) => {
   const [selectedGame, setSelectedGame] = useState<BrainGameType | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGameComplete = (score: number, stars: number, timeSpent: number) => {
     if (selectedGame && onGameComplete) {
@@ -127,14 +128,31 @@ const BrainGames: React.FC<BrainGamesProps> = ({ onGameComplete }) => {
               {SUBJECTS.map(subject => (
                 <button
                   key={subject.id}
-                  onClick={() => setSelectedSubject(subject.id)}
-                  className={`glass-button p-6 rounded-xl transition-all transform hover:scale-105 hover:shadow-2xl`}
+                  onClick={() => {
+                    setIsLoading(true);
+                    // Small delay for smooth transition
+                    setTimeout(() => {
+                      setSelectedSubject(subject.id);
+                      setIsLoading(false);
+                    }, 100);
+                  }}
+                  disabled={isLoading}
+                  className={`glass-button p-6 rounded-xl transition-all transform hover:scale-105 hover:shadow-2xl ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
                   <div className="text-4xl mb-2">{subject.emoji}</div>
                   <div className="font-bold text-white">{subject.name}</div>
                 </button>
               ))}
             </div>
+
+            {isLoading && (
+              <div className="mt-6 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-cyan-500 border-t-transparent"></div>
+                <p className="text-white mt-2">Loading game...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

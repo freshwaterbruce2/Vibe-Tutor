@@ -7,7 +7,7 @@
 import type { CuratedTrack, RadioStation } from '../types';
 
 export const CURATED_MUSIC: CuratedTrack[] = [
-  // Lo-fi / Chill Study Music (Incompetech - Kevin MacLeod)
+  // Lo-fi / Chill Study Music (Streamlined - kept best tracks)
   {
     id: 'study-1',
     name: 'Floating Cities',
@@ -19,24 +19,6 @@ export const CURATED_MUSIC: CuratedTrack[] = [
   },
   {
     id: 'study-2',
-    name: 'Merry Go',
-    artist: 'Kevin MacLeod',
-    category: 'lofi',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Merry%20Go.mp3',
-    description: 'Light playful background music',
-    estimatedSize: '3.8 MB'
-  },
-  {
-    id: 'study-3',
-    name: 'Sneaky Snitch',
-    artist: 'Kevin MacLeod',
-    category: 'lofi',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sneaky%20Snitch.mp3',
-    description: 'Upbeat quirky study tune',
-    estimatedSize: '4.1 MB'
-  },
-  {
-    id: 'study-4',
     name: 'Wallpaper',
     artist: 'Kevin MacLeod',
     category: 'lofi',
@@ -44,111 +26,8 @@ export const CURATED_MUSIC: CuratedTrack[] = [
     description: 'Smooth relaxing background',
     estimatedSize: '3.5 MB'
   },
-  {
-    id: 'study-5',
-    name: 'Cipher',
-    artist: 'Kevin MacLeod',
-    category: 'lofi',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cipher.mp3',
-    description: 'Mysterious ambient track',
-    estimatedSize: '2.9 MB'
-  },
 
-  // Anime-Themed Music
-  {
-    id: 'anime-1',
-    name: 'Monkeys Spinning Monkeys',
-    artist: 'Kevin MacLeod',
-    category: 'anime',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Monkeys%20Spinning%20Monkeys.mp3',
-    description: 'Fun upbeat anime vibe',
-    estimatedSize: '2.6 MB'
-  },
-  {
-    id: 'anime-2',
-    name: 'Scheming Weasel',
-    artist: 'Kevin MacLeod',
-    category: 'anime',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Scheming%20Weasel.mp3',
-    description: 'Playful comedic theme',
-    estimatedSize: '3.3 MB'
-  },
-  {
-    id: 'anime-3',
-    name: 'The Builder',
-    artist: 'Kevin MacLeod',
-    category: 'anime',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/The%20Builder.mp3',
-    description: 'Energetic action theme',
-    estimatedSize: '3.7 MB'
-  },
-  {
-    id: 'anime-4',
-    name: 'Pixel Peeker Polka',
-    artist: 'Kevin MacLeod',
-    category: 'anime',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Pixel%20Peeker%20Polka%20-%20Slower.mp3',
-    description: 'Chiptune retro game music',
-    estimatedSize: '2.8 MB'
-  },
-  {
-    id: 'anime-5',
-    name: 'Amazing Plan',
-    artist: 'Kevin MacLeod',
-    category: 'anime',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Amazing%20Plan.mp3',
-    description: 'Epic orchestral adventure',
-    estimatedSize: '4.2 MB'
-  },
-
-  // Christian / Worship Music
-  {
-    id: 'christian-1',
-    name: 'Heartwarming',
-    artist: 'Kevin MacLeod',
-    category: 'christian',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Heartwarming.mp3',
-    description: 'Uplifting praise music',
-    estimatedSize: '3.4 MB'
-  },
-  {
-    id: 'christian-2',
-    name: 'Peaceful Music',
-    artist: 'Kevin MacLeod',
-    category: 'christian',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Peaceful%20Music.mp3',
-    description: 'Calm worship atmosphere',
-    estimatedSize: '3.9 MB'
-  },
-  {
-    id: 'christian-3',
-    name: 'Meditation Impromptu 03',
-    artist: 'Kevin MacLeod',
-    category: 'christian',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Meditation%20Impromptu%2003.mp3',
-    description: 'Peaceful prayer music',
-    estimatedSize: '3.6 MB'
-  },
-  {
-    id: 'christian-4',
-    name: 'Divine',
-    artist: 'Kevin MacLeod',
-    category: 'christian',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Divine.mp3',
-    description: 'Ethereal spiritual music',
-    estimatedSize: '4.5 MB'
-  },
-  {
-    id: 'christian-5',
-    name: 'Gregorian Chant',
-    artist: 'Kevin MacLeod',
-    category: 'christian',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Gregorian%20Chant.mp3',
-    description: 'Traditional sacred music',
-    estimatedSize: '3.8 MB'
-  },
-
-  // Classical / Instrumental
+  // Classical / Instrumental (Kept essentials only)
   {
     id: 'classical-1',
     name: 'Gymnopedie No 1',
@@ -175,122 +54,244 @@ export const CURATED_MUSIC: CuratedTrack[] = [
     downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Moonlight%20Sonata.mp3',
     description: 'Beethoven classic',
     estimatedSize: '4.8 MB'
-  },
-  {
-    id: 'classical-4',
-    name: 'Brandenburg Concerto No4',
-    artist: 'Kevin MacLeod',
-    category: 'classical',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Brandenburg%20Concerto%20No4-1%20BWV1049%20-%20Classical%20Whimsical.mp3',
-    description: 'Bach baroque masterpiece',
-    estimatedSize: '5.6 MB'
-  },
-  {
-    id: 'classical-5',
-    name: 'Air Prelude',
-    artist: 'Kevin MacLeod',
-    category: 'classical',
-    downloadUrl: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Air%20Prelude.mp3',
-    description: 'Elegant orchestral piece',
-    estimatedSize: '3.2 MB'
   }
 ];
 
 export const RADIO_STATIONS: RadioStation[] = [
+  // ANIME / J-POP
   {
-    id: 'radio-1',
-    name: 'LISTEN.moe - Anime (JPOP)',
-    genre: 'Anime / J-Pop',
-    streamUrl: 'https://listen.moe/fallback',
-    fallbackUrls: ['https://listen.moe/stream', 'https://listen.moe/opus'],
-    description: '24/7 anime soundtracks and J-pop hits (MP3 128kbps)'
+    id: 'radio-anime-1',
+    name: 'LISTEN.moe - Anime Music',
+    genre: 'Anime / J-Pop / Soundtracks',
+    streamUrl: 'https://listen.moe/opus',
+    fallbackUrls: [
+      'https://listen.moe/stream',
+      'https://listen.moe/fallback'
+    ],
+    description: '24/7 anime soundtracks, openings, endings, and J-pop (Opus/MP3)'
   },
   {
-    id: 'radio-2',
+    id: 'radio-anime-2',
     name: 'LISTEN.moe - KPOP',
-    genre: 'Korean Pop / Anime',
-    streamUrl: 'https://listen.moe/kpop/fallback',
-    fallbackUrls: ['https://listen.moe/kpop/stream', 'https://listen.moe/kpop/opus'],
-    description: 'Korean pop and anime music (MP3 128kbps)'
+    genre: 'K-Pop / Korean Music',
+    streamUrl: 'https://listen.moe/kpop/opus',
+    fallbackUrls: [
+      'https://listen.moe/kpop/stream',
+      'https://listen.moe/kpop/fallback'
+    ],
+    description: 'Korean pop music and anime crossover hits (Opus/MP3)'
   },
   {
-    id: 'radio-3',
-    name: 'R/a/dio - Anime Radio',
-    genre: 'Anime / Japanese Music',
-    streamUrl: 'https://stream.r-a-d.io/main.mp3',
-    fallbackUrls: ['https://relay0.r-a-d.io/main.mp3'],
-    description: '24/7 anime and Japanese music radio'
+    id: 'radio-anime-3',
+    name: 'AnimeNfo Radio',
+    genre: 'Anime / J-Rock / J-Pop',
+    streamUrl: 'https://streamow6.radionomy.com:443/animenforadio',
+    fallbackUrls: [
+      'https://streamow6.radionomy.com/animenforadio'
+    ],
+    description: 'Anime music radio with J-rock and J-pop variety (128kbps MP3)'
   },
+
+  // EDM / ELECTRONIC / TECHNO
   {
-    id: 'radio-4',
-    name: 'Moody Radio - Praise & Worship',
-    genre: 'Christian Contemporary',
-    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/IM_1.mp3',
-    fallbackUrls: ['https://playerservices.streamtheworld.com/api/livestream-redirect/WAYFM.mp3'],
-    description: 'Contemporary Christian worship music (K-LOVE alternative)'
-  },
-  {
-    id: 'radio-5',
-    name: 'SomaFM - Groove Salad',
-    genre: 'Ambient / Chill',
-    streamUrl: 'https://ice1.somafm.com/groovesalad-128-aac',
-    fallbackUrls: ['https://ice2.somafm.com/groovesalad-128-aac', 'https://ice4.somafm.com/groovesalad-128-aac'],
-    description: 'Ambient/downtempo beats and chillout grooves'
-  },
-  {
-    id: 'radio-6',
-    name: 'Digitally Imported - Trance',
-    genre: 'EDM / Trance',
-    streamUrl: 'https://prem2.di.fm:80/trance',
-    fallbackUrls: ['https://prem1.di.fm:80/trance', 'http://pub1.di.fm:80/di_trance'],
-    description: 'Uplifting trance and progressive EDM beats'
-  },
-  {
-    id: 'radio-7',
-    name: 'Digitally Imported - Techno',
-    genre: 'Techno / Electronic',
-    streamUrl: 'https://prem2.di.fm:80/techno',
-    fallbackUrls: ['https://prem1.di.fm:80/techno', 'http://pub1.di.fm:80/di_techno'],
-    description: 'Hard-hitting techno and underground electronic'
-  },
-  {
-    id: 'radio-8',
-    name: 'SomaFM - Beat Blender',
+    id: 'radio-edm-1',
+    name: 'SomaFM - Beat Blender (House/Techno)',
     genre: 'EDM / House / Techno',
-    streamUrl: 'https://ice1.somafm.com/beatblender-128-aac',
-    fallbackUrls: ['https://ice2.somafm.com/beatblender-128-aac', 'https://ice4.somafm.com/beatblender-128-aac'],
-    description: 'Deep house, techno, and downtempo EDM mix'
+    streamUrl: 'https://ice1.somafm.com/beatblender-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/beatblender-128-mp3',
+      'https://ice4.somafm.com/beatblender-128-mp3'
+    ],
+    description: 'Deep house, techno, and progressive beats (128kbps MP3)'
   },
   {
-    id: 'radio-9',
-    name: 'SomaFM - DEF CON Radio',
-    genre: 'Electronic / Gaming',
-    streamUrl: 'https://ice1.somafm.com/defcon-128-aac',
-    fallbackUrls: ['https://ice2.somafm.com/defcon-128-aac', 'https://ice4.somafm.com/defcon-128-aac'],
-    description: 'Music for hacking and gaming - electronic and IDM'
+    id: 'radio-edm-2',
+    name: 'SomaFM - DEF CON Radio (Gaming)',
+    genre: 'Electronic / IDM / Gaming',
+    streamUrl: 'https://ice1.somafm.com/defcon-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/defcon-128-mp3',
+      'https://ice4.somafm.com/defcon-128-mp3'
+    ],
+    description: 'Electronic beats for gaming and hacking (128kbps MP3)'
   },
   {
-    id: 'radio-10',
-    name: 'Digitally Imported - Electro House',
-    genre: 'EDM / Electro House',
-    streamUrl: 'https://prem2.di.fm:80/electrohouse',
-    fallbackUrls: ['https://prem1.di.fm:80/electrohouse', 'http://pub1.di.fm:80/di_electrohouse'],
-    description: 'High-energy electro house and festival EDM'
+    id: 'radio-edm-3',
+    name: 'SomaFM - Lush (Chill Electronic)',
+    genre: 'Chill / Ambient / Electronic',
+    streamUrl: 'https://ice1.somafm.com/lush-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/lush-128-mp3',
+      'https://ice4.somafm.com/lush-128-mp3'
+    ],
+    description: 'Sensuous and mellow electronica for relaxation (128kbps MP3)'
   },
   {
-    id: 'radio-11',
+    id: 'radio-edm-4',
+    name: 'SomaFM - Drone Zone (Deep Ambient)',
+    genre: 'Ambient / Drone / Deep Electronic',
+    streamUrl: 'https://ice1.somafm.com/dronezone-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/dronezone-128-mp3',
+      'https://ice4.somafm.com/dronezone-128-mp3'
+    ],
+    description: 'Atmospheric ambient perfect for deep focus and meditation (128kbps MP3)'
+  },
+
+  // CLASSICAL / INSTRUMENTAL
+  {
+    id: 'radio-classical-1',
+    name: 'WQXR Classical (New York)',
+    genre: 'Classical / Orchestra / Chamber',
+    streamUrl: 'https://stream.wqxr.org/wqxr',
+    fallbackUrls: [
+      'https://stream.wqxr.org/wqxr-web'
+    ],
+    description: 'World-class classical music from Carnegie Hall (128kbps AAC)'
+  },
+  {
+    id: 'radio-classical-2',
+    name: 'Venice Classic Radio',
+    genre: 'Classical / Baroque / Romantic',
+    streamUrl: 'https://uk3.internet-radio.com:15406/stream',
+    fallbackUrls: [
+      'https://uk3.internet-radio.com/proxy/veniceclassicradio/stream'
+    ],
+    description: 'Italian classical radio with masterpieces from all eras (128kbps MP3)'
+  },
+
+  // CHILL / STUDY / FOCUS
+  {
+    id: 'radio-chill-1',
+    name: 'SomaFM - Groove Salad (Chill EDM)',
+    genre: 'Ambient / Chill / Downtempo',
+    streamUrl: 'https://ice1.somafm.com/groovesalad-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/groovesalad-128-mp3',
+      'https://ice4.somafm.com/groovesalad-128-mp3'
+    ],
+    description: 'Chill grooves and ambient beats for studying (128kbps MP3)'
+  },
+  {
+    id: 'radio-chill-2',
     name: 'SomaFM - Space Station Soma',
-    genre: 'Ambient / Electronic',
-    streamUrl: 'https://ice1.somafm.com/spacestation-128-aac',
-    fallbackUrls: ['https://ice2.somafm.com/spacestation-128-aac', 'https://ice4.somafm.com/spacestation-128-aac'],
-    description: 'Ambient space music with electronic textures - perfect for studying'
+    genre: 'Ambient / Space / Electronic',
+    streamUrl: 'https://ice1.somafm.com/spacestation-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/spacestation-128-mp3',
+      'https://ice4.somafm.com/spacestation-128-mp3'
+    ],
+    description: 'Floating ambient space music for deep concentration (128kbps MP3)'
+  },
+  {
+    id: 'radio-chill-3',
+    name: 'Lofi Girl Radio',
+    genre: 'Lo-fi / Hip-Hop / Study Beats',
+    streamUrl: 'https://streams.ilovemusic.de/iloveradio17.mp3',
+    fallbackUrls: [
+      'https://streams.ilovemusic.de/iloveradio17'
+    ],
+    description: 'Lo-fi hip hop beats to study and relax (128kbps MP3)'
+  },
+
+  // CHRISTIAN / WORSHIP
+  {
+    id: 'radio-christian-1',
+    name: 'Moody Radio - Praise & Worship',
+    genre: 'Christian Contemporary / Worship',
+    streamUrl: 'https://playerservices.streamtheworld.com/api/livestream-redirect/WMBI.mp3',
+    fallbackUrls: [
+      'https://playerservices.streamtheworld.com/api/livestream-redirect/IM_1.mp3',
+      'https://icecast.k-love.com/k-love'
+    ],
+    description: 'Uplifting Christian worship music (128kbps MP3)'
+  },
+
+  // GAMING MUSIC
+  {
+    id: 'radio-gaming-1',
+    name: 'SomaFM - DEF CON Radio',
+    genre: 'Gaming / Electronic / Hacking',
+    streamUrl: 'https://ice1.somafm.com/defcon-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/defcon-128-mp3',
+      'https://ice4.somafm.com/defcon-128-mp3'
+    ],
+    description: 'Electronic beats for gaming and coding sessions (128kbps MP3)'
+  },
+  {
+    id: 'radio-gaming-2',
+    name: 'SomaFM - Secret Agent',
+    genre: 'Gaming / Spy / Lounge',
+    streamUrl: 'https://ice1.somafm.com/secretagent-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/secretagent-128-mp3',
+      'https://ice4.somafm.com/secretagent-128-mp3'
+    ],
+    description: 'Spy and action game soundtracks, retro lounge (128kbps MP3)'
+  },
+  {
+    id: 'radio-gaming-3',
+    name: 'SomaFM - Sonic Universe',
+    genre: 'Gaming / Sci-Fi / Electronic',
+    streamUrl: 'https://ice1.somafm.com/sonicuniverse-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/sonicuniverse-128-mp3',
+      'https://ice4.somafm.com/sonicuniverse-128-mp3'
+    ],
+    description: 'Sci-fi and space game soundtracks (128kbps MP3)'
+  },
+
+  // MORE TECHNO / HARD ELECTRONIC
+  {
+    id: 'radio-techno-1',
+    name: 'SomaFM - Cliq Hop',
+    genre: 'Techno / Glitch / IDM',
+    streamUrl: 'https://ice1.somafm.com/cliqhop-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/cliqhop-128-mp3',
+      'https://ice4.somafm.com/cliqhop-128-mp3'
+    ],
+    description: 'Glitchy, bleepy techno and IDM (128kbps MP3)'
+  },
+  {
+    id: 'radio-techno-2',
+    name: 'SomaFM - Mission Control',
+    genre: 'Techno / Deep House / Progressive',
+    streamUrl: 'https://ice1.somafm.com/missioncontrol-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/missioncontrol-128-mp3',
+      'https://ice4.somafm.com/missioncontrol-128-mp3'
+    ],
+    description: 'Deep house and techno for concentration (128kbps MP3)'
+  },
+  {
+    id: 'radio-techno-3',
+    name: 'SomaFM - Underground 80s',
+    genre: 'Techno / Synthwave / Retro',
+    streamUrl: 'https://ice1.somafm.com/u80s-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/u80s-128-mp3',
+      'https://ice4.somafm.com/u80s-128-mp3'
+    ],
+    description: 'Alternative 80s synth and new wave (128kbps MP3)'
+  },
+
+  // VARIETY / MIXED
+  {
+    id: 'radio-variety-1',
+    name: 'SomaFM - Indie Pop Rocks',
+    genre: 'Indie / Alternative / Pop',
+    streamUrl: 'https://ice1.somafm.com/indiepop-128-mp3',
+    fallbackUrls: [
+      'https://ice2.somafm.com/indiepop-128-mp3',
+      'https://ice4.somafm.com/indiepop-128-mp3'
+    ],
+    description: 'Indie pop and rock from the 80s to today (128kbps MP3)'
   }
 ];
 
 export const MUSIC_CATEGORIES = [
   { id: 'lofi', name: 'Lo-fi / Chill', icon: '🎵' },
-  { id: 'anime', name: 'Anime Music', icon: '🎌' },
-  { id: 'edm', name: 'EDM / Techno', icon: '🎧' },
-  { id: 'christian', name: 'Christian Worship', icon: '✝️' },
-  { id: 'classical', name: 'Classical / Instrumental', icon: '🎹' }
+  { id: 'classical', name: 'Classical', icon: '🎹' }
 ] as const;
