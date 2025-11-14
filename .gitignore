@@ -23,7 +23,17 @@ playwright-report/
 
 # Build artifacts
 *.apk
+*.aab
+*-release.apk
 package-lock.json
+
+# Android signing (NEVER commit!)
+*.keystore
+*.jks
+keystore.properties
+android/keystore.properties
+android/app/*.keystore
+android/app/*.jks
 
 # Temporary test files
 minimal-*.tsx

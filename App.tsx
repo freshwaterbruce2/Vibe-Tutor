@@ -25,6 +25,11 @@ const SubjectCards = lazy(() => import('./components/SubjectCards'));
 const BrainGames = lazy(() => import('./components/BrainGamesHub'));
 const WorksheetView = lazy(() => import('./components/WorksheetView'));
 const WorksheetResults = lazy(() => import('./components/WorksheetResults'));
+const VisualSchedule = lazy(() => import('./components/schedule/VisualSchedule'));
+const ConversationBuddy = lazy(() => import('./components/ConversationBuddy'));
+const TokenWallet = lazy(() => import('./components/TokenWallet'));
+const ParentRulesPage = lazy(() => import('./components/ParentRulesPage'));
+const FirstThenGate = lazy(() => import('./components/FirstThenGate'));
 
 // A simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -274,7 +279,7 @@ const App: React.FC = () => {
         case 'achievements':
           return <AchievementCenter achievements={achievements} points={points} rewards={rewards} onClaimReward={handleClaimReward} claimedRewards={claimedRewards} />;
         case 'parent':
-          return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} />;
+          return <ParentDashboard items={homeworkItems} rewards={rewards} onUpdateRewards={setRewards} claimedRewards={claimedRewards} onApproval={handleRewardApproval} onNavigate={setView} />;
         case 'music':
           return <MusicLibrary playlists={playlists} onAddPlaylist={handleAddPlaylist} onRemovePlaylist={handleRemovePlaylist} />;
         case 'sensory':
@@ -310,10 +315,25 @@ const App: React.FC = () => {
             return <SubjectCards onStartWorksheet={handleStartWorksheet} />;
           }
         case 'games':
-          return <BrainGames onGameComplete={(gameType: BrainGameType, score: number, stars: number) => {
-            setPoints(p => p + stars);
-            handleAchievementEvent({ type: 'TASK_COMPLETED' });
-          }} />;
+          return (
+            <FirstThenGate minimumStepsRequired={3}>
+              <BrainGames onGameComplete={(gameType: BrainGameType, score: number, stars: number) => {
+                setPoints(p => p + stars);
+                handleAchievementEvent({ type: 'TASK_COMPLETED' });
+              }} />
+            </FirstThenGate>
+          );
+        case 'schedules':
+          return <VisualSchedule
+            type="morning"
+            onEditSchedule={() => setView('dashboard')}
+          />;
+        case 'buddy':
+          return <ConversationBuddy onClose={() => setView('dashboard')} />;
+        case 'tokens':
+          return <TokenWallet onClose={() => setView('dashboard')} />;
+        case 'parent-rules':
+          return <ParentRulesPage onClose={() => setView('parent')} />;
         default:
           return <HomeworkDashboard items={homeworkItems} onAdd={handleAddHomework} onToggleComplete={handleToggleComplete} points={points} />;
       }

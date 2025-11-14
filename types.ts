@@ -21,7 +21,7 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus' | 'cards' | 'games';
+export type View = 'dashboard' | 'tutor' | 'friend' | 'achievements' | 'parent' | 'music' | 'sensory' | 'focus' | 'cards' | 'games' | 'schedules' | 'buddy' | 'tokens' | 'parent-rules';
 
 export interface Achievement {
     id: string;

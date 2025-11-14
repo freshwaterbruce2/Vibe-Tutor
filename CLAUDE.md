@@ -53,6 +53,20 @@ adb install android\app\build\outputs\apk\debug\app-debug.apk  # 5. Install new
 
 # WHY: versionCode tells Android it's a new app. Without incrementing it, Android uses cached old code!
 # See BUILD_PROCESS_FIX_2025-11-11.md for full explanation.
+
+# Play Store Release Build (AAB)
+# FIRST TIME ONLY: Generate signing keystore
+cd android
+.\generate-keystore.ps1 -StorePassword "YOUR_STRONG_PASSWORD"  # Run once, backup keystore!
+cd ..
+
+# EVERY RELEASE: Build signed AAB
+pnpm run build                         # 1. Build web assets
+pnpm exec cap sync android             # 2. Sync to Android
+cd android && .\gradlew.bat bundleRelease && cd ..  # 3. Build signed AAB
+
+# AAB output: android/app/build/outputs/bundle/release/app-release.aab
+# Upload this to Play Console
 ```
 
 ## ⚠️ CRITICAL: Regression Prevention Protocol
@@ -381,32 +395,52 @@ adb install android/app/build/outputs/apk/debug/app-debug.apk  # 5. Install new 
 
 ## Additional Resources
 
-- **Neurodivergent Features**: [NEURODIVERGENT_FEATURES_COMPLETE.md](./NEURODIVERGENT_FEATURES_COMPLETE.md) - **NEW** Complete 4-week implementation guide
-- **Music Player Enhancements**: [MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md](./MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md) - **NEW** Phase 1 reliability improvements
-- **Kiosk Mode**: [KIOSK_MODE_SETUP.md](./KIOSK_MODE_SETUP.md) - Single-app lockdown for dedicated study devices
-- **Troubleshooting**: [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md) - Android WebView issues
-- **Version History**: [VERSION.md](./VERSION.md) - Release notes and changelog
-- **Neurodivergent Support**: [NEURODIVERGENT-SUPPORT.md](./NEURODIVERGENT-SUPPORT.md) - ADHD/autism accommodations (original design doc)
-- **Testing**: [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
+### User Documentation
 - **Parent Guide**: [PARENT_GUIDE.md](./PARENT_GUIDE.md) - User documentation
+- **Neurodivergent Support**: [NEURODIVERGENT-SUPPORT.md](./NEURODIVERGENT-SUPPORT.md) - ADHD/autism accommodations (original design doc)
+
+### Development Guides
+- **Neurodivergent Features**: [NEURODIVERGENT_FEATURES_COMPLETE.md](./NEURODIVERGENT_FEATURES_COMPLETE.md) - Complete 4-week implementation guide
+- **Music Player Enhancements**: [MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md](./MUSIC_PLAYER_ENHANCEMENTS_v1.0.13.md) - Phase 1 reliability improvements
 - **UI Design**: [GLASSMORPHISM_GUIDE.md](./GLASSMORPHISM_GUIDE.md) - Design system details
+- **Testing**: [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md) - QA procedures
+- **Troubleshooting**: [MOBILE-TROUBLESHOOTING.md](./MOBILE-TROUBLESHOOTING.md) - Android WebView issues
+
+### Deployment & Operations
+- **Kiosk Mode**: [KIOSK_MODE_SETUP.md](./KIOSK_MODE_SETUP.md) - Single-app lockdown for dedicated study devices
+- **Version History**: [VERSION.md](./VERSION.md) - Release notes and changelog
+
+### Play Store Submission (NEW)
+- **Privacy Policy**: [docs/PRIVACY_POLICY.md](./docs/PRIVACY_POLICY.md) - Published at https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
+- **Data Safety**: [docs/DATA_SAFETY.md](./docs/DATA_SAFETY.md) - Play Console form answers
+- **Play Store Checklist**: [docs/PLAY_STORE_CHECKLIST.md](./docs/PLAY_STORE_CHECKLIST.md) - Complete submission guide
+- **Store Description**: [docs/PLAY_STORE_DESCRIPTION.md](./docs/PLAY_STORE_DESCRIPTION.md) - Listing copy
+- **Store Assets Guide**: [docs/STORE_ASSETS_GUIDE.md](./docs/STORE_ASSETS_GUIDE.md) - Icon, screenshots, graphics
+- **Content Rating Guide**: [docs/CONTENT_RATING_GUIDE.md](./docs/CONTENT_RATING_GUIDE.md) - IARC questionnaire answers
+- **QA Testing Checklist**: [docs/QA_TESTING_CHECKLIST.md](./docs/QA_TESTING_CHECKLIST.md) - Device testing procedures
+- **Families U13 Roadmap**: [docs/FAMILIES_U13_ROADMAP.md](./docs/FAMILIES_U13_ROADMAP.md) - Future under-13 edition plan
 
 ## Current Stable Version
 
-**v1.0.13 - "Resilience" + Neurodivergent Suite** (versionCode 14)
-- Released: 2025-01-14
-- **Music Player Enhancements**: Native audio, retry logic, fallback URLs, storage management
+**v1.4.0 - "ASD Companion"** (versionCode 25)
+- Released: 2024-11-14
+- **Status**: READY FOR PLAY STORE SUBMISSION
+- **ASD-Friendly Features**: Visual Schedules, First-Then Gate, Token Economy, Conversation Buddy, Parent Controls
 - **Neurodivergent Features**: Sensory settings, focus timer, emoji-limited AI, progress visualization
 - Key Features:
-  - Native audio for Android (better background playback)
-  - Download retry logic (3 attempts)
-  - Radio fallback URLs (95% uptime)
-  - Storage warnings + bulk delete + sorting
+  - Visual Schedules (morning/evening routines)
+  - First-Then Gate (unlock games after routine steps)
+  - Token Economy (Roblox-style rewards)
+  - Conversation Buddy (AI chat with Roblox-friendly tone)
+  - Parent Controls (manage rules, time limits, calm mode)
+  - Enhanced Word Hunt (difficulty levels, hints, celebrations)
   - Sensory controls (animation/sound/haptic/font/color)
   - Pomodoro focus timer (25min, 1pt/min)
   - WeekProgress chart (7-day bar chart)
+  - Native audio for Android (better background playback)
   - AI responses limited to 2 emojis max
-- APK: `vibe-tutor-v1.0.13.apk`
+- Build: Signed AAB ready for Google Play Store
+- Target Audience: 13-17 (Teens)
 
 ### Previous Stable Versions
 

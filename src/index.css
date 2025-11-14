@@ -1,9 +1,9 @@
+/* OpenDyslexic Font for accessibility - must come before @tailwind */
+@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* OpenDyslexic Font for accessibility */
-@import url('https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap');
 
 .dyslexia-font {
   font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
