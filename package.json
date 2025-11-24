@@ -26,7 +26,7 @@
     "@capacitor/core": "^7.4.3",
     "@capacitor/file-transfer": "^1.0.6",
     "@capacitor/filesystem": "^7.1.4",
-    "@google/genai": "^1.20.0",
+    "@google/genai": "^1.28.0",
     "@jaredreisinger/react-crossword": "^5.2.0",
     "@mediagrid/capacitor-native-audio": "^2.3.1",
     "@capacitor-community/sqlite": "^5.0.9",
