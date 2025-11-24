@@ -21,7 +21,7 @@
     "android:deploy": "npm run android:full-build && npm run android:uninstall && npm run android:install"
   },
   "dependencies": {
-    "@capacitor/android": "^7.4.3",
+    "@capacitor/android": "^7.4.4",
     "@capacitor/cli": "^7.4.3",
     "@capacitor/core": "^7.4.3",
     "@capacitor/file-transfer": "^1.0.6",
