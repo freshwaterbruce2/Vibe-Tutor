@@ -23,7 +23,7 @@
   "dependencies": {
     "@capacitor/android": "^7.4.3",
     "@capacitor/cli": "^7.4.3",
-    "@capacitor/core": "^7.4.3",
+    "@capacitor/core": "^7.4.4",
     "@capacitor/file-transfer": "^1.0.6",
     "@capacitor/filesystem": "^7.1.4",
     "@google/genai": "^1.20.0",
