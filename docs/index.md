@@ -4,7 +4,7 @@ Welcome to Vibe-Tutor's documentation portal.
 
 ## For Users
 
-- [Privacy Policy](PRIVACY_POLICY.md) - How we handle your data
+- [Privacy Policy](privacy-policy/) - How we handle your data
 - [Parent Guide](../PARENT_GUIDE.md) - How to use parental controls
 
 ## For Developers

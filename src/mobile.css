@@ -1,8 +1,5 @@
 /* Mobile-specific styles for better phone display */
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* NOTE: Import this file AFTER index.css which provides @theme tokens */
 
 @layer base {
   /* Mobile viewport fixes */

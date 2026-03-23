@@ -1,202 +1,188 @@
-# Data Safety - Play Console Answers
+# Google Play Data Safety Answers for Vibe Tutor
 
-**App**: Vibe-Tutor
-**Version**: 1.4.0
-**Date**: November 14, 2024
+**App:** Vibe Tutor  
+**Reviewed Against Code:** March 9, 2026  
+**Policy Baseline:** [PRIVACY_POLICY.md](C:\dev\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
 
-This document provides answers for the Google Play Console Data Safety form.
+This file is the working source of truth for Play Console Data safety answers.
 
-## Overview of Data Collection
+It is based on the current code paths for:
 
-**Does your app collect or share any of the required user data types?**
-- **Answer**: YES (minimal - only app interactions for AI chat)
+- AI chat and homework parsing
+- optional microphone-based homework entry
+- analytics and operational logging
+- radio streaming
+- local SQLite / local storage persistence
+- local export and sync features
+- Android permissions in the release manifest
 
-## Data Types Collected
+## High-Level Answer
 
-### App Activity (Interactions)
+**Does your app collect or share any of the required user data types?**  
+**Recommended answer:** `Yes`
 
-**Data Type**: App interactions
-**Collected**: YES
-**Shared**: YES (with DeepSeek AI for processing only)
-**Purpose**: App functionality (AI tutoring and conversation features)
-**Required or Optional**: Optional (AI features can be disabled)
-**Ephemeral**: YES (not stored by our servers; only transmitted for processing)
+Reason:
 
-**Details**:
-- Chat messages sent to AI Tutor and AI Buddy are transmitted to DeepSeek AI API
-- No chat history is stored on our backend servers
-- Users can opt out by not using AI chat features
-- All other app functionality works without AI features
+- the app sends chat prompts, conversation context, and homework transcript text off-device when AI features are used
+- the app sends pseudonymous analytics / operational events off-device
+- the backend and infrastructure necessarily receive network metadata for requests
 
-### App Info and Performance
+## Recommended Data Types to Declare
 
-**Data Type**: Crash logs, diagnostics
-**Collected**: NO
-**Shared**: NO
+### 1. App activity -> Other user-generated content
 
-**Explanation**: No crash reporting or analytics SDKs are integrated. Standard Android system crash reports may be collected by Google Play if user has opted in to Google's data sharing.
+**Recommended answer:** `Collected: Yes`
 
-### Personal Info
+What this covers:
 
-**Data Type**: Name, email address, user IDs, address, phone number, race, ethnicity, religion, sexual orientation, etc.
-**Collected**: NO
-**Shared**: NO
+- AI tutor / AI buddy prompts
+- conversation context sent to backend AI routes
+- homework transcript text generated from optional voice-entry flow
+- homework text submitted for parsing
 
-**Explanation**: Vibe-Tutor does not require account creation, registration, or any personal information.
+Recommended form selections:
 
-### Financial Info
+- `Shared: Yes`
+- `Processed ephemerally: No`
+- `Required: No`
+- `Purpose(s): App functionality`
 
-**Data Type**: Payment info, purchase history, credit score, etc.
-**Collected**: NO
-**Shared**: NO
+Why:
 
-### Health and Fitness
+- this content leaves the device and is sent to backend + third-party AI providers
+- the current implementation does not guarantee strict ephemeral-only handling across all providers
+- the feature is optional, so it should not be marked required
 
-**Data Type**: Health info, fitness info
-**Collected**: NO
-**Shared**: NO
+### 2. App activity -> App interactions
 
-**Note**: While the app includes neurodivergent support features (ADHD/autism accommodations), no health data is collected or transmitted.
+**Recommended answer:** `Collected: Yes`
 
-### Location
+What this covers:
 
-**Data Type**: Approximate location, precise location
-**Collected**: NO
-**Shared**: NO
+- pseudonymous analytics events
+- AI usage metrics such as prompt length, response length, duration, and feature events
+- operational events logged through `/api/analytics/log`
 
-### Contacts
+Recommended form selections:
 
-**Data Type**: Contacts
-**Collected**: NO
-**Shared**: NO
+- `Shared: No`
+- `Processed ephemerally: No`
+- `Required: No`
+- `Purpose(s): Analytics`
 
-### Messages
+Why:
 
-**Data Type**: Emails, SMS, other messages
-**Collected**: NO
-**Shared**: NO
+- the app sends interaction-related telemetry to your backend
+- current code does not send those analytics events directly to ad tech or another third-party analytics SDK
+- this is optional from a feature perspective
 
-### Photos and Videos
+## Recommended Data Types to Mark Not Collected
 
-**Data Type**: Photos, videos
-**Collected**: NO
-**Shared**: NO
+Unless implementation changes, the following should be marked `Not collected`:
 
-### Audio Files
+- Personal info -> Name
+- Personal info -> Email address
+- Personal info -> User IDs
+- Personal info -> Address
+- Personal info -> Phone number
+- Personal info -> Race and ethnicity
+- Personal info -> Political or religious beliefs
+- Personal info -> Sexual orientation
+- Financial info -> all categories
+- Health and fitness -> all categories
+- Messages -> Emails
+- Messages -> SMS or MMS
+- Messages -> Other in-app messages
+- Photos and videos -> all categories
+- Audio files -> Voice or sound recordings
+- Audio files -> Music files
+- Audio files -> Other audio files
+- Files and docs
+- Calendar
+- Contacts
+- Location -> Precise location
+- Location -> Approximate location
+- Web browsing
+- App info and performance -> Crash logs
+- App info and performance -> Diagnostics
+- App info and performance -> Other app performance data
+- Device or other identifiers
 
-**Data Type**: Voice/sound recordings, music files, other audio
-**Collected**: NO
-**Shared**: NO
+Notes on the trickier ones:
 
-**Note**: Music Library feature streams audio from third-party services (Jamendo, internet radio) but does not record, upload, or share user audio.
+- `Audio files`: the app may access microphone input for speech recognition, but it sends transcript text, not stored audio recordings, through the AI flow.
+- `Files and docs`: the app can export locally and request storage access, but it does not send user files/documents off-device as a collected data type.
+- `Device or other identifiers`: current code does not use advertising ID, Android ID, IMEI, or similar device identifiers in the app flow reviewed.
+- `Diagnostics`: `@sentry/react` is in dependencies, but no active initialization was found in the reviewed runtime code.
+- `Personal info -> Other info`: this worksheet does not recommend declaring ordinary backend request metadata as a Play Console app data type for the current implementation.
 
-### Files and Docs
+## Security and Handling Answers
 
-**Data Type**: User files or documents
-**Collected**: NO
-**Shared**: NO
+### Is all user data encrypted in transit?
 
-**Note**: Data Export feature allows parents to download app data as JSON, but this is user-initiated and stored locally.
+**Recommended answer:** `Yes`
 
-### Calendar
+Reason:
 
-**Data Type**: Calendar events
-**Collected**: NO
-**Shared**: NO
+- app network calls use HTTPS/TLS backend endpoints in production
+- AI provider calls from backend also use HTTPS
 
-### Device or Other IDs
+### Can users request that data be deleted?
 
-**Data Type**: Device or other IDs
-**Collected**: NO
-**Shared**: NO
+**Recommended answer:** `Yes`
 
-## Data Security
+Reason:
 
-**Is all user data encrypted in transit?**
-- **Answer**: YES
-- **Details**: All network requests use HTTPS encryption
+- local app data can be cleared in-app through `Settings -> Data Management -> Clear All Data`
+- the app does not rely on long-term account profiles for core usage
 
-**Do you provide a way for users to request that their data is deleted?**
-- **Answer**: YES
-- **Details**:
-  - All data stored locally can be deleted via Settings > Data Management > Clear All Data
-  - No data is stored on our servers to delete
-  - Parent Dashboard includes data export and deletion controls
+Important nuance:
 
-## Data Handling Practices
+- if Play asks specifically about server-side deletion workflows, the backend currently has limited account-linked deletion capability because there is no normal user account system
 
-### Is data collected for app functionality or optional features?
+## Android Permission Alignment
 
-**App Interactions (AI Chat)**:
-- Collection is **OPTIONAL**
-- Users can choose not to use AI Tutor or AI Buddy
-- All other features (homework, music, schedules, games) work without AI
+Current manifest permissions reviewed:
 
-### Is data shared with third parties?
+1. `android.permission.INTERNET`
+2. `android.permission.RECORD_AUDIO`
+3. `android.permission.READ_EXTERNAL_STORAGE` (`maxSdkVersion=32`)
+4. `android.permission.READ_MEDIA_AUDIO`
+5. `android.permission.WAKE_LOCK`
+6. `android.permission.FOREGROUND_SERVICE`
+7. `android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK`
 
-**DeepSeek AI (Chat Processing)**:
-- **Purpose**: App functionality
-- **Data Shared**: Chat message text only
-- **User Control**: Optional feature; can be disabled
-- **Encryption**: Data transmitted via HTTPS
-- **Retention**: Not stored by our backend; DeepSeek retention per their policy
+Recommended Play Console explanations:
 
-### Is data sold?
+- `RECORD_AUDIO`: optional voice homework entry
+- `READ_MEDIA_AUDIO` / `READ_EXTERNAL_STORAGE`: optional user-initiated audio / export-related functionality where applicable
+- foreground service permissions: background audio playback
+- `WAKE_LOCK`: audio / session continuity
 
-**Answer**: NO
-Data is not sold to third parties.
+## Store Reviewer Notes
 
-### Is data used for advertising or marketing?
+If a reviewer compares the code and disclosures, these are the main points they will likely see:
 
-**Answer**: NO
-No advertising or marketing use.
+- chat content is transmitted off-device when AI is used
+- transcript text is transmitted off-device when voice homework parsing is used
+- analytics / usage telemetry is posted to backend routes
+- radio requests are proxied through backend routes
+- local educational data is also stored on-device
+- there is no sign-in system and no obvious ad SDK
 
-### Is data used for analytics?
+## Practical Recommendation
 
-**Answer**: NO
-No analytics SDKs or third-party analytics services are integrated.
+Use this posture:
 
-## Age Requirements
+- declare `Other user-generated content` as collected and shared for app functionality
+- declare `App interactions` as collected for analytics
 
-**Target Age Group**: 13-17 (teens)
-**Content Rating**: ESRB Everyone 10+ / PEGI 7
+## Before Submission
 
-The app is designed for students aged 13 and older and does not target children under 13.
+Verify all of the following match each other:
 
-## Permissions Requested
-
-The following Android permissions are requested:
-
-1. **INTERNET**: Required for AI chat and music streaming
-2. **READ_EXTERNAL_STORAGE** (SDK ≤32): For music file downloads
-3. **WRITE_EXTERNAL_STORAGE** (SDK ≤32): For music file downloads
-4. **WAKE_LOCK**: For focus timer to prevent screen sleep during sessions
-5. **FOREGROUND_SERVICE**: For background music playback
-
-**Note**: No permissions are requested at app startup. Permissions are only prompted when user attempts to use specific features (e.g., downloading music).
-
-## Data Safety Form Summary
-
-For quick reference when filling out the Play Console form:
-
-| Question | Answer |
-|----------|--------|
-| Does your app collect or share user data? | YES (minimal) |
-| App interactions collected? | YES (AI chat only, optional) |
-| App interactions shared? | YES (DeepSeek AI, for processing) |
-| Personal info collected? | NO |
-| Location collected? | NO |
-| Photos/videos collected? | NO |
-| Audio collected? | NO |
-| Files collected? | NO |
-| Device IDs collected? | NO |
-| Is data encrypted in transit? | YES |
-| Can users request data deletion? | YES |
-| Is data sold? | NO |
-| Is data used for ads? | NO |
-| Is data used for analytics? | NO |
-
----
-
-**Last Updated**: November 14, 2024
-**Contact**: (to be added before submission)
+- Play Console Data Safety answers
+- [PRIVACY_POLICY.md](C:\dev\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
+- [privacy-policy.html](C:\dev\apps\vibe-tutor\public\privacy-policy.html)
+- target audience / age settings
+- any future telemetry or crash-reporting SDKs added after this review

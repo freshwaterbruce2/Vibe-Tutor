@@ -13,7 +13,7 @@ The current Vibe-Tutor v1.4.0 targets teens (13-17) to avoid Families Policy com
 
 | Aspect | Teen Edition (13-17) | U13 Edition (8-12) |
 |--------|----------------------|---------------------|
-| **AI Chat** | DeepSeek AI unrestricted | Content filtering required OR disabled |
+| **AI Chat** | Current AI provider stack (Gemini/OpenRouter) unrestricted | Content filtering required OR disabled |
 | **Data Collection** | Minimal (chat for processing) | Zero or parental consent only |
 | **Ads** | None | None (Families Policy: no ads) |
 | **Analytics** | None | None (no behavioral tracking allowed) |
@@ -31,17 +31,17 @@ The current Vibe-Tutor v1.4.0 targets teens (13-17) to avoid Families Policy com
 ### Tasks
 
 1. **Review Google Play Families Policy**
-   - Read: https://support.google.com/googleplay/android-developer/answer/9893335
+   - Read: <https://support.google.com/googleplay/android-developer/answer/9893335>
    - Understand all requirements
    - Identify gaps in current implementation
 
 2. **COPPA Compliance Research**
-   - FTC COPPA rules: https://www.ftc.gov/business-guidance/resources/childrens-online-privacy-protection-rule-six-step-compliance-plan-your-business
+   - FTC COPPA rules: <https://www.ftc.gov/business-guidance/resources/childrens-online-privacy-protection-rule-six-step-compliance-plan-your-business>
    - Parental consent mechanisms (verifiable consent)
    - Data minimization requirements
 
 3. **SDK Audit**
-   - DeepSeek AI: Is it Families-compliant? (likely NO)
+   - Current AI providers (Gemini/OpenRouter): Are they Families-compliant? (likely NO without additional controls)
    - Jamendo API: Check data practices
    - Google Fonts: Compliant (standard web resource)
    - Capacitor plugins: Verify no tracking
@@ -58,16 +58,18 @@ The current Vibe-Tutor v1.4.0 targets teens (13-17) to avoid Families Policy com
 ### AI Chat System Overhaul
 
 **Option A: Content Filtering (Preferred)**
+
 - Integrate child-safe AI service:
   - OpenAI GPT-4 with moderation API
   - Azure OpenAI with content filtering
-  - Custom DeepSeek wrapper with regex filters
+  - Custom AI provider wrapper with regex filters
 - Pre-filter user input (block inappropriate queries)
 - Post-filter AI responses (block unsafe content)
 - Log all conversations for parental review (with consent)
 - Add "Report to Parent" button in chat
 
 **Option B: Disable AI Chat (Simpler)**
+
 - Remove AI Tutor and AI Buddy entirely
 - Replace with pre-written study tips
 - Static FAQ library by subject
@@ -78,6 +80,7 @@ The current Vibe-Tutor v1.4.0 targets teens (13-17) to avoid Families Policy com
 ### Parental Consent System
 
 **Required Changes:**
+
 1. **First Launch**
    - Display COPPA notice
    - Explain data practices in child-friendly language
@@ -98,6 +101,7 @@ The current Vibe-Tutor v1.4.0 targets teens (13-17) to avoid Families Policy com
    - Knowledge-based questions (parent's DOB, address)
 
 **Implementation**:
+
 ```typescript
 // New component: ParentalConsentFlow.tsx
 interface ConsentForm {
@@ -114,6 +118,7 @@ interface ConsentForm {
 **U13 Requirement**: Parental gate before exiting app
 
 **Implementation**:
+
 ```typescript
 // Before opening external link:
 const showParentalGate = () => {
@@ -123,12 +128,13 @@ const showParentalGate = () => {
 };
 ```
 
-### Usage Tracking Removal
+### Usage Tracking & Analytics
 
-**Current**: `usageTracker.ts` logs session data
+**Current**: `learningAnalytics.ts` logs session data to D: drive via backend proxy.
 **U13 Requirement**: No behavioral tracking without explicit consent
 
 **Changes**:
+
 1. Make usage tracking opt-in only
 2. Display clear explanation to parent
 3. Allow parent to export/delete tracked data
@@ -141,6 +147,7 @@ const showParentalGate = () => {
 ### Child-Friendly Privacy Policy
 
 **Requirements**:
+
 - Written at 3rd-grade reading level
 - Accompanied by parent-focused version
 - Explain data practices without legal jargon
@@ -154,6 +161,7 @@ const showParentalGate = () => {
 ### COPPA Disclosure Notice
 
 **Display on First Launch**:
+
 ```
 Vibe-Tutor U13 is designed for children aged 8-12.
 
@@ -170,6 +178,7 @@ Click "Parent Consent" to continue.
 ### Updated Data Safety Form
 
 **Additional Disclosures**:
+
 - Target audience: Under 13
 - Families Policy compliance: YES
 - Parental consent mechanism: Email verification
@@ -226,7 +235,7 @@ Click "Parent Consent" to continue.
 
 ### Backend Changes (if applicable)
 
-**Current**: Backend proxies DeepSeek API
+**Current**: Backend proxies external AI provider APIs
 **U13 Requirement**: Add content filtering layer
 
 ```javascript
@@ -242,7 +251,7 @@ app.post('/api/chat', async (req, res) => {
     }
 
     // Call AI
-    const aiResponse = await deepseekAPI.chat(messages);
+    const aiResponse = await aiProvider.chat(messages);
 
     // Post-filter AI response
     const filteredOutput = contentFilter.filterOutput(aiResponse);
@@ -254,7 +263,7 @@ app.post('/api/chat', async (req, res) => {
   }
 
   // Teen mode (no filtering)
-  const aiResponse = await deepseekAPI.chat(messages);
+  const aiResponse = await aiProvider.chat(messages);
   return res.json({ content: aiResponse });
 });
 ```
@@ -333,6 +342,7 @@ app.post('/api/chat', async (req, res) => {
 ### Required Families Assets
 
 **Additional Assets Beyond Standard**:
+
 - [x] App icon (same as teen edition)
 - [x] Feature graphic (add "Ages 8-12" badge)
 - [ ] Privacy Policy icon (512x512)
@@ -346,6 +356,7 @@ app.post('/api/chat', async (req, res) => {
 **Content Rating**: Everyone / PEGI 7
 
 **Additional Notes**:
+
 - Emphasize parental controls in description
 - Highlight safety features
 - Mention content filtering
@@ -370,12 +381,14 @@ app.post('/api/chat', async (req, res) => {
 ## Decision: Proceed with U13 Edition?
 
 ### Pros
+
 ✓ Expands addressable market (8-12 year olds)
 ✓ Features highly beneficial for younger ADHD/autism students
 ✓ Demonstrates commitment to child safety
 ✓ Potential for higher Play Store visibility (Families badge)
 
 ### Cons
+
 ✗ 3-4 months additional development time
 ✗ Ongoing compliance maintenance burden
 ✗ Content filtering may reduce AI quality
@@ -387,6 +400,7 @@ app.post('/api/chat', async (req, res) => {
 **Defer to v2.0** (6-12 months post-launch)
 
 **Rationale**:
+
 1. Launch teen edition first (faster time-to-market)
 2. Gather user feedback and metrics
 3. Validate product-market fit
@@ -401,6 +415,7 @@ If strong demand emerges from parents of younger children, prioritize U13 editio
 ## Alternative: Age Gate
 
 **Simpler Approach**:
+
 - Keep single app
 - Add age verification on first launch
 - If age 8-12: Enable Families mode (AI disabled, parental consent required)

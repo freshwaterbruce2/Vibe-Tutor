@@ -1,55 +1,21 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Environment
+node_modules/
+dist/
+dist-electron/
+release/
+coverage/
 .env
-.env.local
-.env.*.local
-
-# Test artifacts
-test-results/
+.env.*
+!.env.example
+.vite/
 playwright-report/
-
-# Build artifacts
-*.apk
-*.aab
-*-release.apk
-package-lock.json
-
-# Android signing (NEVER commit!)
-*.keystore
-*.jks
-keystore.properties
-android/keystore.properties
-android/app/*.keystore
-android/app/*.jks
-
-# Temporary test files
-minimal-*.tsx
-minimal.html
-simple-*.tsx
-simple.html
-test.html
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+test-results/
+*.tsbuildinfo
+android/.gradle/
+android/build/
+android/app/build/
+*.log
+*-debug.txt
+*-output.txt
+test_results.txt
+tmp-window-dump*.xml
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-render-backend/
