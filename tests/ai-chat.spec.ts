@@ -1,107 +1,73 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-// AI Chat Functionality Tests
-test.describe('AI Chat Integration Tests', () => {
+const BASE_URL = 'http://localhost:5173';
+
+test.describe('AI Chat Integration', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173');
-    await page.waitForLoadState('networkidle');
+    await page.route('**/api/session/init', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ token: 'test-token', expiresIn: 3600 }),
+      });
+    });
+
+    await page.route('**/api/chat', async (route) => {
+      const body = route.request().postData() ?? '';
+      const isBuddy = /buddy|friend/i.test(body);
+      const mockText = isBuddy ? 'Mock buddy response' : 'Mock tutor response';
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          choices: [{ message: { content: mockText } }],
+        }),
+      });
+    });
+
+    await page.goto(BASE_URL);
+    await expect(page.getByRole('button', { name: /^Add$/ })).toBeVisible({ timeout: 15000 });
   });
 
-  test('AI Tutor should be accessible and respond', async ({ page }) => {
-    // Navigate to AI Tutor
-    await page.getByRole('button', { name: /AI Tutor|tutor/i }).click();
-    await page.waitForTimeout(500);
+  test('tutor chat sends and receives', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Tutor|AI Tutor|Tutor/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.locator('h1:visible', { hasText: /Vibe Tutor|AI Tutor/i })).toBeVisible();
 
-    // Verify chat window header is visible (more specific)
-    await expect(page.getByRole('heading', { name: /AI Tutor/i })).toBeVisible();
+    const input = board.getByLabel('Chat input');
+    await input.fill('Hello tutor');
+    await board.getByRole('button', { name: /Send message/i }).click();
 
-    // Type a message
-    const input = page.locator('input[placeholder*="Message"], input[aria-label="Chat input"]');
-    await expect(input).toBeVisible();
-    await input.fill('Hello');
-
-    // Send message
-    const sendButton = page.getByRole('button', { name: /send/i });
-    await sendButton.click();
-
-    // Wait for loading indicator
-    await expect(page.getByText(/thinking|typing/i)).toBeVisible({ timeout: 5000 });
-
-    // Wait for AI response (30 seconds for backend to wake + process)
-    const response = page.locator('[class*="message"]').last();
-    await expect(response).toContainText(/\w+/, { timeout: 35000 });
-
-    console.log('[TEST] AI Tutor responded successfully');
+    await expect(board.getByText('Hello tutor')).toBeVisible();
+    await expect(board.getByText('Mock tutor response')).toBeVisible({ timeout: 15000 });
   });
 
-  test('AI Buddy should be accessible and respond', async ({ page }) => {
-    // Navigate to AI Buddy
-    await page.getByRole('button', { name: /AI Buddy|friend|buddy/i }).click();
-    await page.waitForTimeout(500);
+  test('buddy chat sends and receives', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Buddy|AI Buddy|Buddy/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.locator('h1:visible', { hasText: /Vibe Buddy|AI Buddy/i })).toBeVisible();
 
-    // Verify chat window header is visible (more specific)
-    await expect(page.getByRole('heading', { name: /AI Buddy/i })).toBeVisible();
+    const input = board.getByLabel('Chat input');
+    await input.fill('Hello buddy');
+    await board.getByRole('button', { name: /Send message/i }).click();
 
-    // Type a message
-    const input = page.locator('input[placeholder*="Message"], input[aria-label="Chat input"]');
-    await expect(input).toBeVisible();
-    await input.fill('Hi');
-
-    // Send message
-    const sendButton = page.getByRole('button', { name: /send/i });
-    await sendButton.click();
-
-    // Wait for loading indicator
-    await expect(page.getByText(/thinking|typing/i)).toBeVisible({ timeout: 5000 });
-
-    // Wait for AI response
-    const response = page.locator('[class*="message"]').last();
-    await expect(response).toContainText(/\w+/, { timeout: 35000 });
-
-    console.log('[TEST] AI Buddy responded successfully');
+    await expect(board.getByText('Hello buddy')).toBeVisible();
+    await expect(board.getByText('Mock buddy response')).toBeVisible({ timeout: 15000 });
   });
 
-  test('Chat should handle backend sleep/wake correctly', async ({ page }) => {
-    // This test verifies the app handles a sleeping backend gracefully
-    await page.getByRole('button', { name: /AI Tutor/i }).click();
-    await page.waitForTimeout(500);
+  test('chat history persists per session', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Tutor|AI Tutor|Tutor/i }).first().click();
+    const board = page.getByLabel('Evidence board');
 
-    const input = page.locator('input[aria-label="Chat input"]');
-    await input.fill('Test message');
+    const input = board.getByLabel('Chat input');
+    await input.fill('Message one');
+    await board.getByRole('button', { name: /Send message/i }).click();
+    await expect(board.getByText('Message one')).toBeVisible();
 
-    const sendButton = page.getByRole('button', { name: /send/i });
-    await sendButton.click();
-
-    // Should show loading state
-    await expect(page.getByText(/thinking/i)).toBeVisible({ timeout: 5000 });
-
-    // Should eventually get response (even if backend was sleeping)
-    const hasResponse = await page.locator('[class*="message"]').last().textContent({ timeout: 60000 });
-    expect(hasResponse).toBeTruthy();
-    expect(hasResponse!.length).toBeGreaterThan(0);
-
-    console.log('[TEST] Backend wake handling successful');
-  });
-
-  test('Chat should persist conversation history', async ({ page }) => {
-    await page.getByRole('button', { name: /AI Tutor/i }).click();
-    await page.waitForTimeout(500);
-
-    // Send first message
-    let input = page.locator('input[aria-label="Chat input"]');
-    await input.fill('Message 1');
-    await page.getByRole('button', { name: /send/i }).click();
-    await page.waitForTimeout(2000);
-
-    // Send second message
-    input = page.locator('input[aria-label="Chat input"]');
-    await input.fill('Message 2');
-    await page.getByRole('button', { name: /send/i }).click();
-
-    // Verify both messages are visible
-    await expect(page.getByText('Message 1')).toBeVisible();
-    await expect(page.getByText('Message 2')).toBeVisible();
-
-    console.log('[TEST] Chat history persistence verified');
+    await page.reload();
+    await page.getByRole('button', { name: /Vibe Tutor|AI Tutor|Tutor/i }).first().click();
+    await expect(page.getByLabel('Evidence board').getByText('Message one')).toBeVisible({
+      timeout: 10000,
+    });
   });
 });

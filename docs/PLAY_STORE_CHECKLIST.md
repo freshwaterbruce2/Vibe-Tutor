@@ -140,8 +140,9 @@ See `PLAY_STORE_DESCRIPTION.md` for complete store listing copy.
 #### Privacy Policy URL
 
 After GitHub Pages setup:
+
 ```
-https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
+https://freshwaterbruce2.github.io/vibetech/privacy-policy/
 ```
 
 ### 5. Content Rating
@@ -162,6 +163,7 @@ https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
 - Gambling: No
 
 **Expected Ratings**:
+
 - ESRB: Everyone 10+ or Teen
 - PEGI: 7 or 12
 - IARC: General
@@ -207,6 +209,7 @@ https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
 - [ ] **Permissions**: Only requested when needed, explained clearly
 
 **Performance Targets**:
+
 - Launch time: <3 seconds
 - Navigation: <200ms transition
 - AI response: <5 seconds (network dependent)
@@ -248,6 +251,7 @@ For students with ADHD and autism support!
 ### Must Be Excluded from Git
 
 Add to `.gitignore`:
+
 ```
 # Keystore (NEVER commit!)
 *.keystore
@@ -275,18 +279,23 @@ keystore.properties
 ## Common Issues & Solutions
 
 ### Issue: "App not signed correctly"
+
 **Solution**: Verify keystore.properties path is correct and passwords match
 
 ### Issue: "Unable to find valid certification path"
+
 **Solution**: Ensure `usesCleartextTraffic="false"` and backend uses HTTPS
 
 ### Issue: "Data Safety form incomplete"
+
 **Solution**: Review `docs/DATA_SAFETY.md` and ensure all sections answered
 
 ### Issue: "Privacy Policy URL unreachable"
+
 **Solution**: Test URL in incognito browser; ensure GitHub Pages deployed
 
 ### Issue: "Content rating rejected"
+
 **Solution**: Verify no AI-generated content is UGC (it's processed, not shared)
 
 ## Final Pre-Submission Checklist

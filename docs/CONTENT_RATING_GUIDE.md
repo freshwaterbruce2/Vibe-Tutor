@@ -11,12 +11,14 @@
 **Primary Target Audience**: 13-17 years old (Teens)
 
 **Reasoning**:
+
 - App features are designed for high school students
 - AI chat requires maturity to use responsibly
 - Complex study organization suitable for teens
 - Avoids Families Policy compliance burden (see FAMILIES_U13_ROADMAP.md)
 
 **Secondary Audiences**:
+
 - Parents of teens with ADHD/autism (indirectly)
 - Educators working with neurodivergent students (indirectly)
 
@@ -64,7 +66,7 @@ Complete the IARC questionnaire in Play Console. Below are the expected answers:
 - Profanity or crude humor: NO
 - Mild profanity or crude humor: NO
 
-**Explanation**: App uses clean, professional language. AI responses are filtered for inappropriate content by DeepSeek's moderation system.
+**Explanation**: App uses clean, professional language. AI responses are filtered for inappropriate content by the app and AI provider safety controls.
 
 ### Section 4: Controlled Substances
 
@@ -91,6 +93,7 @@ Complete the IARC questionnaire in Play Console. Below are the expected answers:
 **Answer**: NO
 
 **Explanation**:
+
 - AI chat messages are NOT shared publicly or with other users
 - Messages are sent to AI service for processing only
 - No social features, forums, or content sharing
@@ -208,6 +211,7 @@ Recommended for teens aged 13-17. Features AI tutoring and study tools designed 
 ### Mistake 4: Ignoring Secondary Ratings
 
 Some countries require additional ratings beyond IARC. Check for:
+
 - Iran
 - Russia
 - Saudi Arabia
@@ -227,6 +231,7 @@ If your app receives an unexpected rating:
 5. **Wait 3-7 days** - Google will manually review
 
 **Common Auto-Flags**:
+
 - "Chat" keyword → Flagged as UGC (appeal by explaining AI context)
 - "Music streaming" → Flagged for copyright (appeal with Creative Commons proof)
 
@@ -254,11 +259,13 @@ When releasing new versions:
 4. **Document changes** - Keep log of rating history
 
 **Examples Requiring Re-Rating**:
+
 - Adding multiplayer/social features (UGC)
 - Adding violent game mechanics
 - Allowing unmoderated user uploads
 
 **Examples NOT Requiring Re-Rating**:
+
 - Bug fixes
 - UI improvements
 - New non-violent games
@@ -270,13 +277,13 @@ When releasing new versions:
 
 If Google requests additional information, provide:
 
-1. **Privacy Policy** - https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
+1. **Privacy Policy** - <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
 2. **Data Safety Documentation** - docs/DATA_SAFETY.md
 3. **Screenshots** - Show no inappropriate content
 4. **AI Moderation Statement**:
 
 ```
-Vibe-Tutor uses DeepSeek AI for educational tutoring. All AI responses are moderated by DeepSeek's content filtering system to ensure age-appropriate, educational content. User messages are not stored, shared, or made visible to other users. This is not user-generated content as defined by Google Play policies.
+Vibe-Tutor uses Google Gemini (primary) and OpenRouter (fallback) for educational tutoring. AI responses are moderated with provider and application safety controls for age-appropriate output. User messages are not visible to other users. This is not user-generated content as defined by Google Play policies.
 ```
 
 ---
