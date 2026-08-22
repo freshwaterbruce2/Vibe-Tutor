@@ -1,8 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' http://localhost:5173; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: http:; media-src 'self' blob: data: https: http:; connect-src 'self' https: http: ws: wss: http://localhost:3001 http://localhost:5173 ws://localhost:5173 ws://localhost:3001"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,33 +14,39 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta name="version" content="1.0.5-v6" />
+    <meta name="version" content="1.5.8" />
     <title>Vibe-Tutor</title>
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#10121A" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icon.png" />
+    <meta name="color-scheme" content="dark light" />
+    <!-- Optional Windows tiles fallback -->
+    <meta name="msapplication-TileColor" content="#10121A" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         /* Vibe-Tech Brand Colors */
-        --background-main: #0F0F23;
-        --background-card: #1A1627;
+        --background-main: #0f0f23;
+        --background-card: #1a1627;
         --background-surface: #252140;
-        --glass-surface: rgba(217, 70, 239, 0.12);
-        --glass-border: rgba(217, 70, 239, 0.35);
+        --glass-surface: rgba(139, 92, 246, 0.1);
+        --glass-border: rgba(139, 92, 246, 0.3);
 
-        /* Brand Primary Colors - BOLD Gen Z 2025 */
-        --primary-accent: #D946EF;     /* Hot Magenta */
-        --secondary-accent: #06FFF0;   /* Electric Cyan */
-        --tertiary-accent: #FF6B00;    /* Blazing Orange */
-        --quaternary-accent: #00FF87;  /* Neon Green */
+        /* Brand Primary Colors - Vibe-Tech Purple Theme */
+        --primary-accent: #8b5cf6; /* Vibe Purple */
+        --secondary-accent: #06fff0; /* Electric Cyan */
+        --tertiary-accent: #ff6b00; /* Blazing Orange */
+        --quaternary-accent: #00ff87; /* Neon Green */
 
         /* Text Colors */
-        --text-primary: #F8FAFC;
-        --text-secondary: #CBD5E1;
-        --text-muted: #64748B;
-        --text-glow: #FFFFFF;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        --text-glow: #ffffff;
 
         /* Border & Effects */
         --border-color: rgba(217, 70, 239, 0.25);
@@ -45,12 +55,20 @@
 
         /* Gradients */
         --gradient-primary: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-        --gradient-surface: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.05));
+        --gradient-surface: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.1),
+          rgba(6, 182, 212, 0.05)
+        );
         --gradient-glow: linear-gradient(135deg, var(--primary-accent), var(--tertiary-accent));
 
         /* Neon Effects - INTENSE */
-        --neon-glow-primary: 0 0 10px var(--primary-accent), 0 0 20px var(--primary-accent), 0 0 40px var(--primary-accent), 0 0 60px var(--primary-accent);
-        --neon-glow-secondary: 0 0 10px var(--secondary-accent), 0 0 20px var(--secondary-accent), 0 0 40px var(--secondary-accent);
+        --neon-glow-primary:
+          0 0 10px var(--primary-accent), 0 0 20px var(--primary-accent),
+          0 0 40px var(--primary-accent), 0 0 60px var(--primary-accent);
+        --neon-glow-secondary:
+          0 0 10px var(--secondary-accent), 0 0 20px var(--secondary-accent),
+          0 0 40px var(--secondary-accent);
         --neon-glow-soft: 0 0 20px rgba(217, 70, 239, 0.6), 0 0 40px rgba(217, 70, 239, 0.3);
 
         /* Animation Timings */
@@ -67,17 +85,21 @@
           radial-gradient(circle at 75% 75%, rgba(6, 255, 240, 0.2) 0%, transparent 50%),
           radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.15) 0%, transparent 50%),
           linear-gradient(180deg, rgba(15, 15, 35, 0.8) 0%, rgba(15, 15, 35, 1) 100%);
-        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+        background-size:
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          100% 100%;
         background-attachment: fixed;
         min-height: 100vh;
         overflow-x: hidden;
       }
-      
+
       /* Glassmorphism Classes */
       .glass-card {
         background: var(--glass-surface);
-        backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
         border: 1px solid var(--glass-border);
         border-radius: 16px;
         box-shadow: var(--shadow-glow);
@@ -93,8 +115,8 @@
 
       .glass-button {
         background: var(--gradient-primary);
-        backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 12px;
         transition: all var(--transition-fast);
@@ -158,9 +180,44 @@
         animation: float 3s ease-in-out infinite;
       }
 
+      /* Word Hunt Animations */
+      .animate-pulse-once {
+        animation: pulseOnce 0.6s ease-out;
+      }
+
+      @keyframes pulseOnce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) translateY(300px) rotate(720deg);
+        }
+      }
+
+      .animate-confetti {
+        will-change: transform, opacity;
+      }
+
       @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
       }
 
       @keyframes fadeInUp {
@@ -180,7 +237,8 @@
       }
 
       @keyframes iconPulse {
-        0%, 100% {
+        0%,
+        100% {
           transform: scale(1);
           filter: drop-shadow(0 0 8px var(--primary-accent));
         }
@@ -195,8 +253,13 @@
       }
 
       @keyframes iconBounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
       }
 
       .icon-spin {
@@ -204,8 +267,12 @@
       }
 
       @keyframes iconSpin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       /* Enhanced Button Interactions */
@@ -238,32 +305,56 @@
         background: var(--gradient-glow);
         box-shadow: var(--neon-glow-soft);
       }
+
+      /* Safe Area Insets for Notched Phones */
+      :root {
+        --safe-area-inset-top: env(safe-area-inset-top, 0px);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      /* Touch Device Optimizations */
+      * {
+        -webkit-tap-highlight-color: rgba(139, 92, 246, 0.3);
+        touch-action: manipulation;
+      }
+
+      button,
+      a {
+        touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Touch scrolling is natively smooth in all modern browsers */
+
+      body {
+        overscroll-behavior-y: contain;
+      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react": "https://aistudiocdn.com/react@^19.1.1"
-  }
-}
-</script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <!-- Load environment configuration before app loads -->
+    <script src="/env-config.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
     <script>
       // FIXED: Disable service worker for Capacitor (native app builds)
       // Only enable for PWA (web browser)
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           // Check if running in Capacitor native app
-          if (window.location.protocol !== 'capacitor:' && window.location.protocol !== 'ionic:') {
-            navigator.serviceWorker.register('/service-worker.js?v=6').then(registration => {
-              console.log('[PWA] Service Worker registered successfully');
-            }, err => {
-              console.log('[PWA] ServiceWorker registration failed: ', err);
-            });
+          if (
+            globalThis.location.protocol !== 'capacitor:' &&
+            globalThis.location.protocol !== 'ionic:'
+          ) {
+            navigator.serviceWorker.register('/service-worker.js?v=6').then(
+              (registration) => {
+                console.log('[PWA] Service Worker registered successfully');
+              },
+              (err) => {
+                console.log('[PWA] ServiceWorker registration failed: ', err);
+              },
+            );
           } else {
             console.log('[Capacitor] Service worker disabled for native app - no caching');
           }
