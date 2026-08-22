@@ -48,13 +48,12 @@
     "android:deploy": "pnpm run android:full-build && pnpm run android:uninstall && pnpm run android:install"
   },
   "dependencies": {
-    "@capacitor-community/sqlite": "^8.0.0",
-    "@capacitor/android": "^8.0.2",
+    "@capacitor/android": "^7.4.3",
     "@capacitor/cli": "^8.0.2",
-    "@capacitor/core": "^8.0.2",
-    "@capacitor/file-transfer": "^2.0.3",
-    "@capacitor/filesystem": "^8.1.0",
-    "@google/genai": "^1.39.0",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/file-transfer": "^1.0.6",
+    "@capacitor/filesystem": "^7.1.4",
+    "@google/genai": "^1.20.0",
     "@jaredreisinger/react-crossword": "^5.2.0",
     "@mediagrid/capacitor-native-audio": "^3.0.0",
     "@react-spring/web": "^10.0.3",
