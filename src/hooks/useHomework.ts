@@ -1,9 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { logger } from '../utils/logger';
 import { dataStore } from '../services/dataStore';
 import type { HomeworkItem, ParsedHomework } from '../types';
 
 // Simple ID generator
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+function mergeHomeworkItems(currentItems: HomeworkItem[], loadedItems: HomeworkItem[]) {
+  if (currentItems.length === 0) {
+    return loadedItems;
+  }
+
+  const currentIds = new Set(currentItems.map((item) => item.id));
+  const persistedOnlyItems = loadedItems.filter((item) => !currentIds.has(item.id));
+  return [...persistedOnlyItems, ...currentItems];
+}
 
 /**
  * Custom hook for managing homework items
@@ -14,23 +25,62 @@ export const useHomework = () => {
 
   // Load homework items from dataStore on mount
   useEffect(() => {
+    let isCancelled = false;
+
     const loadHomework = async () => {
       try {
+        await dataStore.initialize();
         const items = await dataStore.getHomeworkItems();
-        setHomeworkItems(items);
+        if (!isCancelled) {
+          setHomeworkItems((currentItems) => mergeHomeworkItems(currentItems, items));
+        }
       } catch (error) {
-        console.error('[useHomework] Failed to load homework items:', error);
+        logger.error('[useHomework] Failed to load homework items:', error);
       }
     };
+
     void loadHomework();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
-  // Persist homework items to dataStore whenever they change
-  useEffect(() => {
-    if (homeworkItems.length > 0) {
-      dataStore.saveHomeworkItems(homeworkItems).catch(console.error);
+  // Keep a ref to the latest items so the unmount flush can persist them.
+  const itemsRef = useRef(homeworkItems);
+  itemsRef.current = homeworkItems;
+  const dirtyRef = useRef(false);
+
+  const persistHomework = useCallback(async (items: HomeworkItem[]) => {
+    try {
+      await dataStore.initialize();
+      await dataStore.saveHomeworkItems(items);
+      dirtyRef.current = false;
+    } catch (error) {
+      logger.error(
+        `[useHomework] Failed to save homework items: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
-  }, [homeworkItems]);
+  }, []);
+
+  // Debounce persistence so rapid edits collapse into a single write.
+  useEffect(() => {
+    if (homeworkItems.length === 0) return;
+
+    dirtyRef.current = true;
+    const timer = setTimeout(() => {
+      void persistHomework(itemsRef.current);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [homeworkItems, persistHomework]);
+
+  // Flush any pending write on unmount so the last edit isn't lost.
+  useEffect(() => {
+    return () => {
+      if (dirtyRef.current) void persistHomework(itemsRef.current);
+    };
+  }, [persistHomework]);
 
   /**
    * Add a new homework item

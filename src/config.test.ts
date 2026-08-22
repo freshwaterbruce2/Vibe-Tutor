@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const PRODUCTION_URL = 'https://vibe-tutor-api-734857480460.us-east4.run.app';
+
 // Helper to create full Location object from partial
 const createLocation = (partial: Partial<Location> = {}): Location =>
   ({
@@ -13,31 +15,23 @@ const createLocation = (partial: Partial<Location> = {}): Location =>
     origin: 'http://localhost',
     port: '',
     ancestorOrigins: {} as DOMStringList,
-    assign: vi.fn() as any,
-    reload: vi.fn() as any,
-    replace: vi.fn() as any,
+    assign: vi.fn() as Location['assign'],
+    reload: vi.fn() as Location['reload'],
+    replace: vi.fn() as Location['replace'],
     toString: () => 'http://localhost/',
     ...partial,
   }) as Location;
 
 // Mock window object for different environments
-const mockWindow = (overrides?: { location?: Partial<Location>; [key: string]: any }) => {
-  (global as any).window = {
+const mockWindow = (overrides?: { location?: Partial<Location>; [key: string]: unknown }) => {
+  (global as unknown as Record<string, unknown>).window = {
     location: createLocation(overrides?.location),
     ...overrides,
   };
 };
 
 const clearWindow = () => {
-  delete (global as any).window;
-};
-
-const PRODUCTION_BACKEND_URL = 'https://vibe-tutor-api-711105902979.us-east4.run.app';
-const USB_DEBUG_URL = 'http://localhost:3001';
-
-const enableDevMode = () => {
-  vi.stubEnv('DEV', 'true');
-  vi.stubEnv('MODE', 'development');
+  delete (global as unknown as Record<string, unknown>).window;
 };
 
 describe('config.ts', () => {
@@ -47,7 +41,6 @@ describe('config.ts', () => {
     clearWindow();
     // Keep tests deterministic even if shell/.env has USB debug enabled.
     vi.stubEnv('VITE_USB_DEBUG', 'false');
-    vi.stubEnv('VITE_ALLOW_NATIVE_LOCAL_API', 'false');
     // Clear console logs to avoid test pollution
     vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -59,7 +52,6 @@ describe('config.ts', () => {
 
   describe('environment detection', () => {
     it('should detect localhost as development', async () => {
-      enableDevMode();
       mockWindow({
         location: {
           protocol: 'http:',
@@ -68,11 +60,10 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(USB_DEBUG_URL);
+      expect(config.API_CONFIG.baseURL).toBe('http://localhost:3001');
     });
 
     it('should detect 127.0.0.1 as development', async () => {
-      enableDevMode();
       mockWindow({
         location: {
           protocol: 'http:',
@@ -81,7 +72,7 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(USB_DEBUG_URL);
+      expect(config.API_CONFIG.baseURL).toBe('http://localhost:3001');
     });
 
     it('should detect production environment', async () => {
@@ -93,7 +84,7 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_BACKEND_URL);
+      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_URL);
     });
 
     it('should detect Capacitor by protocol', async () => {
@@ -106,7 +97,7 @@ describe('config.ts', () => {
 
       const config = await import('./config');
       // Capacitor release builds should use production backend by default
-      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_BACKEND_URL);
+      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_URL);
     });
 
     it('should detect Capacitor by ionic protocol', async () => {
@@ -118,21 +109,20 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_BACKEND_URL);
+      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_URL);
     });
 
-    it('should ignore non-native Capacitor shims during localhost development', async () => {
-      enableDevMode();
+    it('should detect Capacitor by global object', async () => {
       mockWindow({
         location: {
           protocol: 'http:',
           hostname: 'localhost',
         },
-        Capacitor: {} as any,
+        Capacitor: {},
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(USB_DEBUG_URL);
+      expect(config.API_CONFIG.baseURL).toBe('http://localhost:3001');
     });
   });
 
@@ -182,11 +172,10 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_BACKEND_URL);
+      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_URL);
     });
 
     it('should use USB debug URL for local development', async () => {
-      enableDevMode();
       mockWindow({
         location: {
           protocol: 'http:',
@@ -195,13 +184,13 @@ describe('config.ts', () => {
       });
 
       const config = await import('./config');
-      expect(config.API_CONFIG.baseURL).toBe(USB_DEBUG_URL);
+      expect(config.API_CONFIG.baseURL).toBe('http://localhost:3001');
     });
   });
 
   describe('edge cases', () => {
     it('should handle missing location object', async () => {
-      mockWindow({ location: undefined as any });
+      mockWindow({ location: undefined as unknown as Partial<Location> });
 
       // KNOWN ISSUE: config.ts doesn't gracefully handle undefined location
       // This would crash in real scenario, but we test the actual behavior
@@ -216,12 +205,12 @@ describe('config.ts', () => {
           protocol: 'capacitor:',
           hostname: '',
         },
-        Capacitor: {} as any,
+        Capacitor: {},
       });
 
       const config = await import('./config');
       // Production Capacitor defaults to production backend unless VITE_USB_DEBUG=true
-      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_BACKEND_URL);
+      expect(config.API_CONFIG.baseURL).toBe(PRODUCTION_URL);
     });
 
     it('should log environment detection info', async () => {

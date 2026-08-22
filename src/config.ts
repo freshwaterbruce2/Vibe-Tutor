@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { logger } from './utils/logger';
 
 // Vibe-Tutor Configuration
 // UPDATED: January 10, 2026 - Fixed for USB debugging with ADB reverse
@@ -25,8 +26,8 @@ const isNativeCapacitor =
       )));
 
 // ============== URL CONFIGURATION ==============
-// Production: Render.com
-const PRODUCTION_BACKEND_URL = 'https://vibe-tutor-api-711105902979.us-east4.run.app';
+// Production: Google Cloud Run
+const PRODUCTION_BACKEND_URL = 'https://vibe-tutor-api-734857480460.us-east4.run.app';
 const allowNativeLocalApi = import.meta.env.VITE_ALLOW_NATIVE_LOCAL_API === 'true';
 const runtimeApiUrl =
   typeof window !== 'undefined'
@@ -68,7 +69,7 @@ function detectBackendURL(): string {
 
   // Local browser/electron development — always use local backend.
   // Native Capacitor release builds also run at localhost, so exclude those.
-  if (import.meta.env.DEV && isDevelopment && !isNativeCapacitor) {
+  if (isDevelopment && !isNativeCapacitor) {
     return USB_DEBUG_URL;
   }
 
@@ -91,7 +92,7 @@ export const API_CONFIG = {
 // ============== DEBUG LOGGING ==============
 
 if (typeof window !== 'undefined') {
-  console.debug('[CONFIG] Environment detected:', {
+  logger.debug('[CONFIG] Environment detected:', {
     isDevelopment,
     isNativeCapacitor,
     protocol: window.location.protocol,
@@ -100,7 +101,7 @@ if (typeof window !== 'undefined') {
     baseURL: API_CONFIG.baseURL,
   });
 } else {
-  console.debug('[CONFIG] Node.js environment:', {
+  logger.debug('[CONFIG] Node.js environment:', {
     baseURL: API_CONFIG.baseURL,
   });
 }
@@ -119,7 +120,7 @@ USB DEBUGGING SETUP (Recommended):
 
 4. Start backend server:
 
-   cd C:\dev\apps\vibe-tutor\render-backend
+   cd V:\monorepo\apps\vibe-tutor\render-backend
    node server.mjs
 
 5. Now the Android app can reach your PC's localhost:3001

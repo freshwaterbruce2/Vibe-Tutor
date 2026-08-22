@@ -1,13 +1,13 @@
-import { syncService } from '@/services';
-import { Bot, GraduationCap, Heart, Send, Sparkles, X } from 'lucide-react';
-import React, { useEffect, useRef, useState, useTransition } from 'react';
-import { hydrateBuddyHistory } from '../../services/buddyService';
+import { Bot, Flag, GraduationCap, Heart, Send, Sparkles, X } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { dataStore } from '../../services/dataStore';
-import { hydrateTutorHistory } from '../../services/tutorService';
-import type { ChatMessage } from '../../types';
 import { GradientIcon } from '../ui/icons/GradientIcon';
+import { useChatMessages } from '../../hooks/useChatMessages';
+import { secureClient } from '../../services/secureClient';
 import LifeSkillsChecklist from './LifeSkillsChecklist';
 import SocialSkillsTips from './SocialSkillsTips';
+import { logger } from '../../utils/logger';
+import type { ChatMessage } from '../../types';
 
 interface ChatWindowProps {
   title: string;
@@ -16,203 +16,96 @@ interface ChatWindowProps {
   type?: 'tutor' | 'friend';
 }
 
-const formatAIResponse = (text: string): string => {
-  // Ensure proper spacing
-  let formatted = text.replace(/\n{3,}/g, '\n\n'); // Max 2 newlines
-
-  // Limit emojis (keep first 2, remove rest)
-  const emojiRegex = /[\u{1F300}-\u{1F9FF}]/gu;
-  const emojis = formatted.match(emojiRegex) ?? [];
-  if (emojis.length > 2) {
-    let count = 0;
-    formatted = formatted.replace(emojiRegex, (match) => {
-      count++;
-      return count > 2 ? '' : match;
-    });
-  }
-
-  return formatted;
-};
+type ConnectionStatus = 'checking' | 'connected' | 'disconnected';
 
 const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatWindowProps) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showLifeSkills, setShowLifeSkills] = useState(false);
-  const [showSocialTips, setShowSocialTips] = useState(false);
-  const [_isPending, startTransition] = useTransition();
+  const {
+    messages,
+    setMessages,
+    input,
+    setInput,
+    isLoading,
+    showLifeSkills,
+    setShowLifeSkills,
+    showSocialTips,
+    setShowSocialTips,
+    messagesEndRef,
+    handleSend,
+    handleAskBuddy,
+    startTransition,
+  } = useChatMessages({ title, type, onSendMessage });
 
-  const messagesRef = useRef<ChatMessage[]>([]);
-  // Guards against saving stale messages when type prop changes
-  const typeRef = useRef(type);
-  const requestEpochRef = useRef(0);
-  const isLoadingRef = useRef(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('checking');
+  const [showOfflineBanner, setShowOfflineBanner] = useState(false);
+  const [reportedTimestamps, setReportedTimestamps] = useState<Set<number>>(new Set());
+  const [reportingTimestamp, setReportingTimestamp] = useState<number | null>(null);
 
-  // Load chat history from dataStore on mount or when type changes
-  useEffect(() => {
-    requestEpochRef.current += 1;
-    const epoch = requestEpochRef.current;
-    typeRef.current = type;
-    isLoadingRef.current = true;
-    setIsLoading(false);
-    setInput('');
-    setMessages([]);
-    messagesRef.current = [];
-    console.debug(`[ChatWindow] Loading chat history for type="${type}"`);
-    startTransition(async () => {
+  const handleReport = useCallback(
+    async (msg: ChatMessage) => {
+      if (reportingTimestamp !== null || reportedTimestamps.has(msg.timestamp)) return;
+      setReportingTimestamp(msg.timestamp);
       try {
-        const savedMessages = await dataStore.getChatHistory(type);
-        console.debug(
-          `[ChatWindow] Received ${savedMessages?.length ?? 0} messages for type="${type}"`,
-        );
-        // Only apply if type hasn't changed again while loading
-        if (typeRef.current === type && requestEpochRef.current === epoch) {
-          const validMessages = savedMessages && Array.isArray(savedMessages) ? savedMessages : [];
-          setMessages(validMessages);
-
-          // Hydrate AI service so it remembers past conversation context
-          if (type === 'tutor') {
-            hydrateTutorHistory(validMessages);
-          } else {
-            hydrateBuddyHistory(validMessages);
-          }
-        }
+        await secureClient.reportMessage({
+          role: msg.role,
+          content: msg.content,
+          timestamp: msg.timestamp,
+          chatType: type,
+        });
+        setReportedTimestamps((prev) => new Set(prev).add(msg.timestamp));
       } catch (error) {
-        console.error('Failed to load chat history:', error);
+        logger.error('Failed to report message:', error);
       } finally {
-        if (requestEpochRef.current === epoch) {
-          isLoadingRef.current = false;
-        }
+        setReportingTimestamp(null);
       }
-    });
-  }, [type]);
+    },
+    [reportingTimestamp, reportedTimestamps, type],
+  );
 
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
-  // Memory capture: on session end/unmount, persist a lightweight summary for Android hub sync.
-  useEffect(() => {
-    return () => {
-      try {
-        const count = messagesRef.current.length;
-        if (count <= 0) return;
-
-        const date = new Date().toLocaleDateString();
-        const topic = title ? ` Topic: ${title}.` : '';
-        const summary = `Chat Session: ${date} - ${count} messages exchanged.${topic}`;
-
-        // Fire-and-forget to avoid blocking navigation.
-        void (async () => {
-          try {
-            await syncService.logEvent(summary, ['chat', 'session_end', 'android_client']);
-          } catch (error) {
-            // Never block navigation if SQLite/filesystem is unavailable.
-            console.warn('SyncService.logEvent failed (non-fatal):', error);
-          }
-        })();
-      } catch (error) {
-        console.warn('ChatWindow memory capture failed (non-fatal):', error);
-      }
-    };
-  }, [title]);
-
-  // Save chat history whenever messages change — but NEVER during a type switch.
-  // When type changes, the save effect fires with stale messages from the old type,
-  // which would overwrite the new type's storage (the root cause of the collision bug).
-  useEffect(() => {
-    // Skip saving when we're in the middle of loading history for a new type
-    if (isLoadingRef.current) {
-      console.debug(`[ChatWindow] Skipping save — type switch in progress (type="${type}")`);
+  const checkConnection = useCallback(async () => {
+    // If the device itself reports offline, skip the network round-trip.
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      setConnectionStatus('disconnected');
+      setShowOfflineBanner(true);
       return;
     }
-    if (messages.length > 0) {
-      console.debug(`[ChatWindow] Saving ${messages.length} messages for type="${type}"`);
-      startTransition(async () => {
-        try {
-          // Double-check type hasn't changed since this effect was queued
-          if (typeRef.current === type) {
-            await dataStore.saveChatHistory(type, messages);
-          } else {
-            console.debug(
-              `[ChatWindow] Aborted save — type mismatch: ref="${typeRef.current}" vs effect="${type}"`,
-            );
-          }
-        } catch (error) {
-          console.error('Failed to save chat history:', error);
-        }
-      });
-    }
-  }, [messages, type]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    const CHECK_TIMEOUT_MS = 3000;
+    try {
+      const timeoutPromise = new Promise<false>((resolve) =>
+        setTimeout(() => resolve(false), CHECK_TIMEOUT_MS),
+      );
+      const isHealthy = await Promise.race([secureClient.healthCheck(), timeoutPromise]);
+      if (isHealthy) {
+        setConnectionStatus('connected');
+        setShowOfflineBanner(false);
+      } else {
+        setConnectionStatus('disconnected');
+        setShowOfflineBanner(true);
+      }
+    } catch {
+      setConnectionStatus('disconnected');
+      setShowOfflineBanner(true);
+    }
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    void checkConnection();
 
-  const handleSend = async () => {
-    const trimmedInput = input.trim();
-    if (trimmedInput === '' || isLoading) return;
+    // React to device connectivity changes so the chat re-enables on reconnect
+    // and locks down immediately when the network drops.
+    const handleOnline = () => void checkConnection();
+    const handleOffline = () => {
+      setConnectionStatus('disconnected');
+      setShowOfflineBanner(true);
+    };
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
-    const requestEpoch = requestEpochRef.current;
-    const requestType = typeRef.current;
-
-    const userMessage: ChatMessage = { role: 'user', content: trimmedInput, timestamp: Date.now() };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      const responseContent = await onSendMessage(trimmedInput);
-      if (requestEpochRef.current !== requestEpoch || typeRef.current !== requestType) {
-        return;
-      }
-      if (!responseContent) {
-        throw new Error('No response received');
-      }
-      const formattedResponse = formatAIResponse(responseContent);
-      const modelMessage: ChatMessage = {
-        role: 'model',
-        content: formattedResponse,
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, modelMessage]);
-    } catch (error) {
-      if (requestEpochRef.current !== requestEpoch || typeRef.current !== requestType) {
-        return;
-      }
-      console.error('Chat error:', error);
-
-      const errorMessages = [
-        "I'm having trouble connecting right now. Please try again in a moment.",
-        'Something went wrong on my end. Let me try to help you again.',
-        "I'm experiencing some technical difficulties. Please retry your message.",
-        "Oops! I couldn't process that. Mind giving it another shot?",
-      ];
-
-      const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
-      const errorMessage: ChatMessage = {
-        role: 'model',
-        content: randomError ?? 'Something went wrong. Please try again.',
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      if (requestEpochRef.current === requestEpoch && typeRef.current === requestType) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const handleAskBuddy = (question: string) => {
-    setInput(question);
-    setShowSocialTips(false);
-    setShowLifeSkills(false);
-  };
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [checkConnection]);
 
   return (
     <div className="h-full flex flex-col p-4 md:p-8 pb-24 md:pb-8 relative">
@@ -229,7 +122,7 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
                   setShowLifeSkills(false);
                   setShowSocialTips(false);
                 }}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="min-h-[44px] min-w-[44px] p-2 hover:bg-white/10 rounded-lg transition-colors"
                 title="Close panel"
                 aria-label="Close panel"
               >
@@ -243,7 +136,38 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
       )}
 
       <header className="mb-4 md:mb-8 text-center">
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="relative flex items-center justify-center gap-4 mb-4">
+          {/* Connection status dot */}
+          <div
+            className="absolute right-0 top-0"
+            role="status"
+            aria-label={
+              connectionStatus === 'checking'
+                ? 'Checking AI connection'
+                : connectionStatus === 'connected'
+                  ? 'AI Tutor connected'
+                  : 'AI Tutor offline'
+            }
+          >
+            <span
+              className={`block w-3 h-3 rounded-full${connectionStatus === 'checking' ? ' animate-pulse' : ''}`}
+              style={{
+                backgroundColor:
+                  connectionStatus === 'connected'
+                    ? '#4ADE80'
+                    : connectionStatus === 'disconnected'
+                      ? '#EF4444'
+                      : '#F59E0B',
+              }}
+              title={
+                connectionStatus === 'connected'
+                  ? 'AI Tutor connected'
+                  : connectionStatus === 'disconnected'
+                    ? 'AI Tutor offline'
+                    : 'Checking connection...'
+              }
+            />
+          </div>
           {type === 'tutor' ? (
             <GradientIcon
               Icon={GraduationCap}
@@ -267,18 +191,20 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => setShowLifeSkills(true)}
-                  className="glass-card px-3 py-1.5 rounded-lg hover:bg-purple-500/20 transition-all text-sm flex items-center gap-1"
+                  className="glass-card min-h-[44px] px-3 py-2 rounded-lg hover:bg-violet-500/20 transition-all text-sm flex items-center gap-1"
                   title="Daily Life Skills Checklist"
+                  aria-label="Daily Life Skills Checklist"
                 >
-                  <span>📋</span>
+                  <span aria-hidden="true">📋</span>
                   <span className="text-gray-300 text-xs">Life Skills</span>
                 </button>
                 <button
                   onClick={() => setShowSocialTips(true)}
-                  className="glass-card px-3 py-1.5 rounded-lg hover:bg-purple-500/20 transition-all text-sm flex items-center gap-1"
+                  className="glass-card min-h-[44px] px-3 py-2 rounded-lg hover:bg-violet-500/20 transition-all text-sm flex items-center gap-1"
                   title="Social Skills Tips"
+                  aria-label="Social Skills Tips"
                 >
-                  <span>💡</span>
+                  <span aria-hidden="true">💡</span>
                   <span className="text-gray-300 text-xs">Social Tips</span>
                 </button>
               </div>
@@ -299,17 +225,40 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
                   try {
                     await dataStore.saveChatHistory(type, []);
                   } catch (error) {
-                    console.error('Failed to clear chat history:', error);
+                    logger.error('Failed to clear chat history:', error);
                   }
                 });
               }}
-              className="px-4 py-2 text-sm bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-200 transition-all duration-200 hover:scale-105"
+              className="min-h-[44px] px-4 py-2 text-sm bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-200 transition-all duration-200 hover:scale-105"
             >
               Clear Chat
             </button>
           </div>
         )}
       </header>
+
+      {/* Offline connection banner */}
+      {showOfflineBanner && (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 mb-3 px-4 py-3 rounded-xl border text-sm"
+          style={{
+            backgroundColor: 'var(--error-surface)',
+            borderColor: 'var(--error-accent)',
+            color: 'var(--error-accent)',
+          }}
+        >
+          <span>AI Tutor is offline — check your connection</span>
+          <button
+            type="button"
+            onClick={() => setShowOfflineBanner(false)}
+            className="shrink-0 min-h-[44px] min-w-[44px] p-1 rounded hover:bg-white/10 transition-colors"
+            aria-label="Dismiss offline warning"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       <div aria-live="polite" className="flex-1 overflow-y-auto mb-4 p-6 glass-card space-y-6">
         {messages.length === 0 && !isLoading && (
@@ -336,13 +285,13 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               {(type === 'tutor'
-                ? ['Help me with maths', 'Explain photosynthesis', 'Quiz me on history']
+                ? ['Help me with math', 'Explain photosynthesis', 'Quiz me on history']
                 : ['How are you today?', 'I need some advice', 'Tell me something fun']
               ).map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => setInput(prompt)}
-                  className="px-4 py-2 text-sm rounded-xl bg-white/5 border border-[var(--glass-border)] text-text-secondary hover:bg-white/10 hover:text-text-primary transition-all duration-200"
+                  className="min-h-[44px] px-4 py-2 text-sm rounded-xl bg-white/5 border border-[var(--glass-border)] text-text-secondary hover:bg-white/10 hover:text-text-primary transition-all duration-200"
                 >
                   {prompt}
                 </button>
@@ -432,7 +381,31 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
                     }`}
                   >
                     <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                    <div className="flex justify-end mt-2">
+                    <div className="flex items-center justify-end gap-3 mt-2">
+                      {msg.role !== 'user' && (
+                        <button
+                          type="button"
+                          onClick={() => void handleReport(msg)}
+                          disabled={
+                            reportingTimestamp === msg.timestamp ||
+                            reportedTimestamps.has(msg.timestamp)
+                          }
+                          className="flex items-center gap-1 text-xs opacity-60 hover:opacity-100 disabled:opacity-40 transition-opacity"
+                          aria-label={
+                            reportedTimestamps.has(msg.timestamp)
+                              ? 'Message reported'
+                              : 'Report this message'
+                          }
+                          title={
+                            reportedTimestamps.has(msg.timestamp)
+                              ? 'Reported — thank you'
+                              : 'Report inappropriate response'
+                          }
+                        >
+                          <Flag size={12} />
+                          {reportedTimestamps.has(msg.timestamp) ? 'Reported' : 'Report'}
+                        </button>
+                      )}
                       <span className="text-xs opacity-60">
                         {new Date(msg.timestamp).toLocaleTimeString([], {
                           hour: '2-digit',
@@ -486,6 +459,8 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
         <div className="flex items-center glass-card p-3 border-[var(--glass-border)] hover:border-[var(--border-hover)] transition-all duration-300">
           <input
             type="text"
+            id="chat-input"
+            name="chat-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -494,14 +469,18 @@ const ChatWindow = ({ title, description, onSendMessage, type = 'tutor' }: ChatW
                 void handleSend();
               }
             }}
-            placeholder={`Message ${type === 'tutor' ? 'your AI Tutor' : 'your AI Buddy'}... (Enter to send, Shift+Enter for new line)`}
-            className="flex-1 bg-transparent px-4 py-3 text-text-primary outline-none placeholder-text-muted"
-            disabled={isLoading}
+            placeholder={
+              connectionStatus === 'disconnected'
+                ? "You're offline — reconnect to chat"
+                : `Message ${type === 'tutor' ? 'your AI Tutor' : 'your AI Buddy'}... (Enter to send, Shift+Enter for new line)`
+            }
+            className="flex-1 bg-transparent px-4 py-3 text-text-primary outline-none focus:ring-2 focus:ring-[var(--primary-accent)] focus:ring-inset rounded placeholder-text-muted"
+            disabled={isLoading || connectionStatus === 'disconnected'}
             aria-label="Chat input"
           />
           <button
             onClick={() => void handleSend()}
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !input.trim() || connectionStatus === 'disconnected'}
             className="glass-button p-3 ml-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95"
             aria-label="Send message"
           >

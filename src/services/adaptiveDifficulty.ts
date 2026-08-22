@@ -1,4 +1,5 @@
-import { appStore } from '../utils/electronStore';
+﻿import { appStore } from '../utils/electronStore';
+import { logger } from '../utils/logger';
 
 /**
  * Adaptive Difficulty System for Brain Games
@@ -52,9 +53,8 @@ export function saveGamePerformance(performance: GamePerformance): void {
     const updated = [...existing, performance].slice(-20);
 
     appStore.set(key, JSON.stringify(updated));
-    console.debug(`[AdaptiveDifficulty] Saved performance for ${performance.gameType}`);
   } catch (error) {
-    console.error('[AdaptiveDifficulty] Failed to save performance:', error);
+    logger.error('[AdaptiveDifficulty] Failed to save performance:', error);
   }
 }
 
@@ -70,7 +70,7 @@ export function getGameHistory(gameType: string): GamePerformance[] {
 
     return saved;
   } catch (error) {
-    console.warn('[AdaptiveDifficulty] Failed to load history:', error);
+    logger.warn('[AdaptiveDifficulty] Failed to load history:', error);
     return [];
   }
 }
@@ -240,7 +240,7 @@ export function getDifficultyIndex(difficulty: DifficultyLevel): number {
  */
 export function getDifficultyColor(difficulty: DifficultyLevel): string {
   const colors = {
-    easy: 'text-green-400',
+    easy: 'text-fuchsia-400',
     medium: 'text-yellow-400',
     hard: 'text-orange-400',
     expert: 'text-red-400',
@@ -253,7 +253,7 @@ export function getDifficultyColor(difficulty: DifficultyLevel): string {
  */
 export function getDifficultyBadgeStyle(difficulty: DifficultyLevel): string {
   const styles = {
-    easy: 'bg-green-500/20 border-green-500/40 text-green-300',
+    easy: 'bg-fuchsia-500/20 border-fuchsia-500/40 text-fuchsia-300',
     medium: 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300',
     hard: 'bg-orange-500/20 border-orange-500/40 text-orange-300',
     expert: 'bg-red-500/20 border-red-500/40 text-red-300',
@@ -268,9 +268,8 @@ export function resetGameHistory(gameType: string): void {
   try {
     const key = `${STORAGE_KEY_PREFIX}${gameType}`;
     appStore.delete(key);
-    console.debug(`[AdaptiveDifficulty] Reset history for ${gameType}`);
   } catch (error) {
-    console.error('[AdaptiveDifficulty] Failed to reset history:', error);
+    logger.error('[AdaptiveDifficulty] Failed to reset history:', error);
   }
 }
 

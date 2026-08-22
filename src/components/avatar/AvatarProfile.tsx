@@ -1,10 +1,36 @@
-import { Zap, Sparkles, BookOpen, Brain, Activity } from 'lucide-react';
+import { Zap, Sparkles, BookOpen, Brain, Activity, type LucideProps } from 'lucide-react';
 import React, { useEffect, useState, useMemo } from 'react';
 import { type AvatarState, type AvatarStat, type ShopItem } from '../../types';
 import { dataStore } from '../../services/dataStore';
-import { SHOP_ITEMS } from '../../services/avatarShopData';
+import {
+  DEFAULT_UNLOCKED_AVATAR_IDS,
+  SHOP_ITEMS,
+  normalizeAvatarId,
+} from '../../services/avatarShopData';
+import { AvatarPreview } from './AvatarPreview';
 
-const STAT_ICONS: Record<AvatarStat, React.ComponentType<any>> = {
+function createAvatarState(
+  saved?: Partial<AvatarState> | null,
+  legacyAvatar?: string,
+): AvatarState {
+  const selectedAvatarId = normalizeAvatarId(saved?.selectedAvatarId ?? legacyAvatar);
+
+  return {
+    equippedItems: saved?.equippedItems ?? {},
+    ownedItems: saved?.ownedItems ?? [],
+    purchaseHistory: saved?.purchaseHistory ?? [],
+    selectedAvatarId,
+    unlockedAvatars: [
+      ...new Set([
+        ...DEFAULT_UNLOCKED_AVATAR_IDS,
+        ...(saved?.unlockedAvatars ?? []),
+        selectedAvatarId,
+      ]),
+    ],
+  };
+}
+
+const STAT_ICONS: Record<AvatarStat, React.ComponentType<LucideProps>> = {
   mathPower: CalculatorIcon,
   sciencePower: Zap,
   historyPower: BookOpen,
@@ -52,23 +78,48 @@ function CalculatorIcon(props: React.ComponentProps<'svg'>) {
 
 interface AvatarProfileProps {
   onOpenShop?: () => void;
+  userName?: string;
+  onUserNameSaved?: (name: string) => void;
 }
 
-export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
-  const [avatarState, setAvatarState] = useState<AvatarState>({
-    equippedItems: {},
-    ownedItems: [],
-  });
+export default function AvatarProfile({
+  onOpenShop,
+  userName,
+  onUserNameSaved,
+}: AvatarProfileProps) {
+  const [avatarState, setAvatarState] = useState<AvatarState>(() => createAvatarState());
+  const [savedName, setSavedName] = useState(userName ?? '');
+  const [nameInput, setNameInput] = useState(userName ?? '');
 
   useEffect(() => {
     async function load() {
-      const state = await dataStore.getAvatarState();
-      if (state) {
-        setAvatarState(state);
-      }
+      const [state, legacyAvatar, name] = await Promise.all([
+        dataStore.getAvatarState(),
+        dataStore.getUserSettings('user_avatar'),
+        dataStore.getUserSettings('user_name'),
+      ]);
+      setAvatarState(createAvatarState(state, legacyAvatar));
+      setSavedName(name);
+      setNameInput(name);
     }
     void load();
   }, []);
+
+  const handleSaveName = async () => {
+    const trimmed = nameInput.trim();
+    setSavedName(trimmed);
+    setNameInput(trimmed);
+    await dataStore.saveUserSettings('user_name', trimmed);
+    onUserNameSaved?.(trimmed);
+  };
+
+  const isNameUnchanged = nameInput.trim() === savedName.trim();
+
+  const selectedAvatarItem = useMemo(
+    () =>
+      SHOP_ITEMS.find((item) => item.id === avatarState.selectedAvatarId && item.type === 'avatar'),
+    [avatarState.selectedAvatarId],
+  );
 
   const equippedShopItems = useMemo(() => {
     const items: ShopItem[] = [];
@@ -119,30 +170,134 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
     <div
       style={{
         padding: '24px',
-        background: '#1e293b',
+        background: 'var(--background-surface)',
         borderRadius: '16px',
         color: 'white',
         boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Activity size={28} color="#8b5cf6" style={{ marginRight: '12px' }} />
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+          <Activity
+            size={28}
+            color="var(--success-accent)"
+            style={{ marginRight: '12px', flexShrink: 0 }}
+          />
           <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>Avatar Profile</h2>
         </div>
         {onOpenShop && (
-          <button 
-           onClick={onOpenShop}
-           style={{ background: '#3b82f6', color: 'white', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            onClick={onOpenShop}
+            style={{
+              background: '#3b82f6',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              flexShrink: 0,
+            }}
+          >
             <Sparkles size={16} /> Open Shop
           </button>
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div
+        className="mb-6"
+        style={{
+          background: 'var(--background-card)',
+          border: '1px solid var(--glass-border)',
+          borderRadius: '12px',
+          padding: '16px',
+        }}
+      >
+        <label
+          htmlFor="avatar-profile-name"
+          style={{
+            color: 'var(--text-secondary)',
+            display: 'block',
+            fontSize: '12px',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+          }}
+        >
+          My Name
+        </label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <input
+            id="avatar-profile-name"
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            maxLength={24}
+            placeholder="What should we call you?"
+            style={{
+              background: 'var(--background-surface)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '8px',
+              color: 'white',
+              flex: '1 1 200px',
+              padding: '8px 12px',
+            }}
+          />
+          <button
+            onClick={() => void handleSaveName()}
+            disabled={isNameUnchanged}
+            style={{
+              background: isNameUnchanged ? 'var(--text-placeholder)' : '#3b82f6',
+              border: 'none',
+              borderRadius: '8px',
+              color: 'white',
+              cursor: isNameUnchanged ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+              padding: '8px 16px',
+            }}
+          >
+            Save
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="mb-6"
+        style={{
+          alignItems: 'center',
+          background: 'var(--background-card)',
+          border: '1px solid var(--glass-border)',
+          borderRadius: '12px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '18px',
+          padding: '16px',
+        }}
+      >
+        <AvatarPreview avatarState={avatarState} allItems={SHOP_ITEMS} size={132} />
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{ color: 'var(--text-secondary)', fontSize: '12px', textTransform: 'uppercase' }}
+          >
+            Selected Avatar
+          </div>
+          <div style={{ fontSize: '22px', fontWeight: 'bold' }}>
+            {selectedAvatarItem?.name ?? 'Focus Gamer'}
+          </div>
+          <p style={{ color: 'var(--text-secondary)', margin: '6px 0 0 0' }}>
+            {selectedAvatarItem?.description ?? 'A focused learner ready for the next challenge.'}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* Equipped Items */}
-        <div style={{ background: '#0f172a', padding: '16px', borderRadius: '12px' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', color: '#94a3b8' }}>
+        <div
+          style={{ background: 'var(--background-card)', padding: '16px', borderRadius: '12px' }}
+        >
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', color: 'var(--text-secondary)' }}>
             Equipped Gear
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -157,10 +312,10 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: '#1e293b',
+                    background: 'var(--background-surface)',
                     padding: '12px',
                     borderRadius: '8px',
-                    border: '1px solid #334155',
+                    border: '1px solid var(--text-placeholder)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -168,7 +323,7 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
                       style={{
                         width: '40px',
                         height: '40px',
-                        background: '#334155',
+                        background: 'var(--text-placeholder)',
                         borderRadius: '8px',
                         display: 'flex',
                         alignItems: 'center',
@@ -179,7 +334,13 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
                       {item ? item.imageUrl : '❌'}
                     </div>
                     <div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase' }}>
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--text-secondary)',
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         {type}
                       </div>
                       <div style={{ fontWeight: '500' }}>{item ? item.name : 'Empty Slot'}</div>
@@ -190,8 +351,8 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
                       onClick={() => void handleUnequip(type)}
                       style={{
                         background: 'transparent',
-                        border: '1px solid #ef4444',
-                        color: '#ef4444',
+                        border: '1px solid var(--error-accent)',
+                        color: 'var(--error-accent)',
                         padding: '4px 8px',
                         borderRadius: '4px',
                         cursor: 'pointer',
@@ -208,8 +369,12 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
         </div>
 
         {/* Stats */}
-        <div style={{ background: '#0f172a', padding: '16px', borderRadius: '12px' }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', color: '#94a3b8' }}>Battle Stats</h3>
+        <div
+          style={{ background: 'var(--background-card)', padding: '16px', borderRadius: '12px' }}
+        >
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', color: 'var(--text-secondary)' }}>
+            Battle Stats
+          </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {(Object.keys(STAT_LABELS) as AvatarStat[]).map((stat) => {
               const Icon = STAT_ICONS[stat];
@@ -223,21 +388,23 @@ export default function AvatarProfile({ onOpenShop }: AvatarProfileProps) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '6px',
                     padding: '8px 0',
-                    borderBottom: '1px solid #1e293b',
+                    borderBottom: '1px solid var(--background-surface)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Icon size={18} color={isBoosted ? '#10b981' : '#64748b'} />
-                    <span style={{ color: isBoosted ? 'white' : '#cbd5e1' }}>
+                    <Icon size={18} color={isBoosted ? '#a855f7' : 'var(--text-muted)'} />
+                    <span style={{ color: isBoosted ? 'white' : 'var(--text-secondary)' }}>
                       {STAT_LABELS[stat]}
                     </span>
                   </div>
                   <div
                     style={{
                       fontWeight: 'bold',
-                      color: isBoosted ? '#10b981' : 'white',
-                      backgroundColor: isBoosted ? '#10b98122' : 'transparent',
+                      color: isBoosted ? '#a855f7' : 'white',
+                      backgroundColor: isBoosted ? '#a855f722' : 'transparent',
                       padding: '4px 8px',
                       borderRadius: '4px',
                     }}

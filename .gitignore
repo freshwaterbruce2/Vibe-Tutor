@@ -19,3 +19,12 @@ android/app/build/
 test_results.txt
 tmp-window-dump*.xml
 .DS_Store
+
+# Android signing (never commit)
+*.keystore
+*.jks
+keystore.properties
+
+# Vendored package build output
+packages/*/dist
+packages/*/node_modules
