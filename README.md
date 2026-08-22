@@ -6,6 +6,8 @@
 
 > A cutting-edge homework management and tutoring application featuring 2025 glassmorphism design trends and AI-powered learning assistance.
 
+This repository is the **standalone Vibe Tutor project** (app + Android + Electron + AI backend). It is version **1.5.12**, synced from `freshwaterbruce2/vibe-tech-monorepo/apps/vibe-tutor` plus the shared avatar/game packages. See [SOURCE.md](SOURCE.md) for how the other Vibe Tutor repos relate.
+
 ## ✨ Design Highlights
 
 **Modern UI/UX (2025 Enhancement)**
@@ -26,7 +28,7 @@
 
 ## 🚀 Quick Start
 
-**Prerequisites:** Node.js 22+, pnpm 10+, and Windows 11 for the desktop build
+**Prerequisites:** Node.js 22+ and pnpm 10+
 
 1. **Install dependencies:**
 
@@ -35,29 +37,27 @@
    ```
 
 2. **Set up environment:**
-   Create `.env.local` and add your backend AI provider keys:
+   Copy `.env.example` to `.env` (or set the same keys in your host dashboard) and add your backend AI provider keys:
 
    ```
    GEMINI_API_KEY=your_gemini_api_key_here
    OPENROUTER_API_KEY=your_openrouter_api_key_here
    ```
 
-3. **Run the app:**
+3. **Run the app and local API together:**
 
    ```bash
-   pnpm dev
+   pnpm run dev:full
    ```
 
-4. **Open your browser:**
-   Navigate to `http://localhost:5173/`
+   Or run them separately: `pnpm run dev` (Vite at `http://localhost:5173`) and `pnpm run start` (API at `http://localhost:3001`).
 
-5. **Run validation:**
+4. **Validate:**
 
    ```bash
-   pnpm typecheck
-   pnpm test:unit
-   pnpm build
-   pnpm build:desktop
+   pnpm run typecheck
+   pnpm run test:unit
+   pnpm run build
    ```
 
 ## 🎯 Features
@@ -81,8 +81,6 @@ Turn your child's device into a **dedicated study device** by locking it to only
 
 **Setup Instructions:** See **[docs/KIOSK_MODE_SETUP.md](docs/KIOSK_MODE_SETUP.md)** for detailed step-by-step guides.
 
-**For Parents:** See **[docs/KIOSK_MODE_SETUP.md](docs/KIOSK_MODE_SETUP.md)** for setup, maintenance, and troubleshooting.
-
 **Benefits:**
 
 - Eliminates access to games, social media, and other distractions
@@ -95,25 +93,15 @@ Turn your child's device into a **dedicated study device** by locking it to only
 For installing Vibe-Tutor as a native Android app, see:
 
 - **[docs/ANDROID_INSTALL_INSTRUCTIONS.md](docs/ANDROID_INSTALL_INSTRUCTIONS.md)** - Build and install APK
-- **[docs/ANDROID_RELEASE_RUNBOOK.md](docs/ANDROID_RELEASE_RUNBOOK.md)** - Release process
+- **[docs/ANDROID_RELEASE_RUNBOOK.md](docs/ANDROID_RELEASE_RUNBOOK.md)** - Release build flow
 - **[docs/MOBILE-TROUBLESHOOTING.md](docs/MOBILE-TROUBLESHOOTING.md)** - Common Android issues
-
-## 🖥️ Windows Desktop Build
-
-Build the Windows 11 installer with:
-
-```bash
-pnpm build:desktop
-```
-
-Installer artifacts are written to `release/`, including `Vibe Tutor Setup <version>.exe`.
 
 ## 📚 Documentation
 
-- **[docs/index.md](docs/index.md)** - Documentation index
+- **[AI.md](AI.md)** - Development guidelines and architecture
+- **[CLAUDE.md](CLAUDE.md)** - Legacy development notes
+- **[docs/USER_MANUAL.md](docs/USER_MANUAL.md)** - User and parent-facing guide
 - **[docs/QA_TESTING_CHECKLIST.md](docs/QA_TESTING_CHECKLIST.md)** - QA procedures
-- **[docs/USER_MANUAL.md](docs/USER_MANUAL.md)** - Family-facing usage guide
-- **[docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md)** - Privacy policy source
 
 ## 🤝 Contributing
 
@@ -125,4 +113,4 @@ MIT License - See LICENSE file for details
 
 ## 🆘 Support
 
-For issues, questions, or feature requests, please open an issue on [GitHub](https://github.com/freshwaterbruce2/vibe-tutor/issues) or refer to the documentation files listed above.
+For issues, questions, or feature requests, open an issue on this repository.

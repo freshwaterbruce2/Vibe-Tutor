@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, CheckCircle, Trophy, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { generateWorksheet } from '../../services/worksheetGenerator';
 import type {
   DifficultyLevel,
@@ -15,7 +15,7 @@ interface WorksheetViewProps {
   onCancel: () => void;
 }
 
-const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetViewProps) => {
+const WorksheetView = memo(function WorksheetView({ subject, difficulty, onComplete, onCancel }: WorksheetViewProps) {
   const [questions] = useState<WorksheetQuestion[]>(() => generateWorksheet(subject, difficulty));
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | number | null)[]>(() =>
@@ -27,6 +27,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
   const [startTime] = useState<number>(() => Date.now());
 
   const currentQuestion = questions[currentQuestionIndex];
+  if (!currentQuestion) return null;
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
@@ -42,10 +43,10 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
 
     // Case-insensitive comparison for fill-blank text answers
     const correct =
-      currentQuestion!.type === 'fill-blank'
+      currentQuestion.type === 'fill-blank'
         ? String(selectedAnswer).trim().toLowerCase() ===
-          String(currentQuestion!.correctAnswer).trim().toLowerCase()
-        : selectedAnswer === currentQuestion!.correctAnswer;
+          String(currentQuestion.correctAnswer).trim().toLowerCase()
+        : selectedAnswer === currentQuestion.correctAnswer;
     setIsCorrect(correct);
     setShowFeedback(true);
 
@@ -85,7 +86,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
     // Calculate score
     let correctCount = 0;
     answers.forEach((answer, index) => {
-      if (answer === questions[index]!.correctAnswer) {
+      if (answer === questions[index]?.correctAnswer) {
         correctCount = correctCount + 1;
       }
     });
@@ -132,7 +133,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
       <div className="max-w-4xl mx-auto mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+            <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-sky-500">
               {subject} Quest
             </h1>
             <p className="text-text-secondary text-sm md:text-base">{difficulty} Level</p>
@@ -155,7 +156,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
           </div>
           <div className="h-3 bg-surface-lighter rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+              className="h-full bg-gradient-to-r from-purple-500 to-sky-500 transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -167,25 +168,25 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
         <div className="glass-card p-6 md:p-8 rounded-2xl border-2 border-[var(--glass-border)] mb-6">
           {/* Question Number */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-sky-500 flex items-center justify-center text-white font-bold">
               {currentQuestionIndex + 1}
             </div>
             <div className="text-xs text-text-secondary">
-              {currentQuestion!.type.replace('-', ' ')}
+              {currentQuestion.type.replace('-', ' ')}
             </div>
           </div>
 
           {/* Question Text */}
           <h2 className="text-xl md:text-2xl font-semibold mb-6 text-text-primary">
-            {currentQuestion!.question}
+            {currentQuestion.question}
           </h2>
 
           {/* Multiple Choice Options */}
-          {currentQuestion!.type === 'multiple-choice' && currentQuestion!.options && (
+          {currentQuestion.type === 'multiple-choice' && currentQuestion.options && (
             <div className="space-y-3">
-              {currentQuestion!.options.map((option, index) => {
+              {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
-                const isCorrectAnswer = index === currentQuestion!.correctAnswer;
+                const isCorrectAnswer = index === currentQuestion.correctAnswer;
                 const showAsCorrect = showFeedback && isCorrectAnswer;
                 const showAsWrong = showFeedback && isSelected && !isCorrect;
 
@@ -196,7 +197,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
                     disabled={showFeedback}
                     className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-300 ${
                       showAsCorrect
-                        ? 'border-green-500 bg-green-500/20'
+                        ? 'border-violet-500 bg-violet-500/20'
                         : showAsWrong
                           ? 'border-red-500 bg-red-500/20'
                           : isSelected
@@ -211,7 +212,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
                         </span>
                         <span className="text-base md:text-lg">{option}</span>
                       </span>
-                      {showAsCorrect && <CheckCircle className="text-green-500" size={24} />}
+                      {showAsCorrect && <CheckCircle className="text-violet-500" size={24} />}
                       {showAsWrong && <XCircle className="text-red-500" size={24} />}
                     </div>
                   </button>
@@ -221,11 +222,11 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
           )}
 
           {/* True/False Options */}
-          {currentQuestion!.type === 'true-false' && currentQuestion!.options && (
+          {currentQuestion.type === 'true-false' && currentQuestion.options && (
             <div className="flex gap-4 justify-center">
-              {currentQuestion!.options.map((option, index) => {
+              {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
-                const isCorrectAnswer = index === currentQuestion!.correctAnswer;
+                const isCorrectAnswer = index === currentQuestion.correctAnswer;
                 const showAsCorrect = showFeedback && isCorrectAnswer;
                 const showAsWrong = showFeedback && isSelected && !isCorrect;
 
@@ -236,7 +237,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
                     disabled={showFeedback}
                     className={`flex-1 max-w-[200px] p-6 rounded-xl border-2 text-center text-xl font-bold transition-all duration-300 ${
                       showAsCorrect
-                        ? 'border-green-500 bg-green-500/20'
+                        ? 'border-violet-500 bg-violet-500/20'
                         : showAsWrong
                           ? 'border-red-500 bg-red-500/20'
                           : isSelected
@@ -246,7 +247,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
                   >
                     <div className="flex items-center justify-center gap-2">
                       <span>{option}</span>
-                      {showAsCorrect && <CheckCircle className="text-green-500" size={24} />}
+                      {showAsCorrect && <CheckCircle className="text-violet-500" size={24} />}
                       {showAsWrong && <XCircle className="text-red-500" size={24} />}
                     </div>
                   </button>
@@ -256,7 +257,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
           )}
 
           {/* Fill-in-the-Blank Input */}
-          {currentQuestion!.type === 'fill-blank' && (
+          {currentQuestion.type === 'fill-blank' && (
             <div>
               <input
                 type="text"
@@ -277,7 +278,7 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
                 autoComplete="off"
                 className={`w-full px-6 py-4 bg-white/5 border-2 rounded-xl text-white text-center text-2xl placeholder-gray-500 focus:outline-none transition-all ${
                   showFeedback && isCorrect
-                    ? 'border-green-500 bg-green-500/10'
+                    ? 'border-violet-500 bg-violet-500/10'
                     : showFeedback && !isCorrect
                       ? 'border-red-500 bg-red-500/10'
                       : 'border-[var(--glass-border)] focus:border-purple-500'
@@ -286,8 +287,8 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
               {showFeedback && !isCorrect && (
                 <p className="text-center text-sm text-gray-400 mt-2">
                   Correct answer:{' '}
-                  <span className="text-green-400 font-bold">
-                    {String(currentQuestion!.correctAnswer)}
+                  <span className="text-violet-400 font-bold">
+                    {String(currentQuestion.correctAnswer)}
                   </span>
                 </p>
               )}
@@ -297,20 +298,20 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
           {/* Feedback Section */}
           {showFeedback && (
             <div
-              className={`mt-6 p-4 rounded-xl ${isCorrect ? 'bg-green-500/10 border-2 border-green-500' : 'bg-red-500/10 border-2 border-red-500'}`}
+              className={`mt-6 p-4 rounded-xl ${isCorrect ? 'bg-violet-500/10 border-2 border-violet-500' : 'bg-red-500/10 border-2 border-red-500'}`}
             >
               <div className="flex items-start gap-3">
                 {isCorrect ? (
-                  <CheckCircle className="text-green-500 flex-shrink-0" size={24} />
+                  <CheckCircle className="text-violet-500 flex-shrink-0" size={24} />
                 ) : (
                   <XCircle className="text-red-500 flex-shrink-0" size={24} />
                 )}
                 <div>
-                  <p className={`font-bold mb-1 ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  <p className={`font-bold mb-1 ${isCorrect ? 'text-violet-400' : 'text-red-400'}`}>
                     {isCorrect ? 'Correct!' : 'Incorrect'}
                   </p>
-                  {currentQuestion!.explanation && (
-                    <p className="text-sm text-text-secondary">{currentQuestion!.explanation}</p>
+                  {currentQuestion.explanation && (
+                    <p className="text-sm text-text-secondary">{currentQuestion.explanation}</p>
                   )}
                 </div>
               </div>
@@ -350,6 +351,6 @@ const WorksheetView = ({ subject, difficulty, onComplete, onCancel }: WorksheetV
       </div>
     </div>
   );
-};
+});
 
 export default WorksheetView;

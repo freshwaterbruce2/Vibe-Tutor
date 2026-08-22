@@ -26,7 +26,7 @@ vi.mock('../../../utils/electronStore', () => ({
   },
 }));
 
-vi.mock('../MemoryMatchGame', () => ({
+vi.mock('../../../../packages/games/src/components/games/MemoryMatchGame', () => ({
   default: ({ onBack, onComplete }: { onBack?: () => void; onComplete?: (score: number, stars: number, timeSpent: number) => void }) => (
     <div data-testid="memory-game">
       <button onClick={() => onComplete?.(100, 3, 45)}>Complete Memory</button>
@@ -35,14 +35,14 @@ vi.mock('../MemoryMatchGame', () => ({
   ),
 }));
 
-vi.mock('../WordSearchGame', () => ({ default: () => <div data-testid="wordsearch-game" /> }));
-vi.mock('../AnagramsGame', () => ({ default: () => <div data-testid="anagrams-game" /> }));
-vi.mock('../CrosswordGame', () => ({ default: () => <div data-testid="crossword-game" /> }));
-vi.mock('../MathAdventureGame', () => ({ default: () => <div data-testid="math-game" /> }));
-vi.mock('../WordBuilderGame', () => ({ default: () => <div data-testid="wordbuilder-game" /> }));
-vi.mock('../SudokuGame', () => ({ default: () => <div data-testid="sudoku-game" /> }));
-vi.mock('../PatternQuestGame', () => ({ default: () => <div data-testid="pattern-game" /> }));
-vi.mock('../MusicNotesGame', () => ({ default: () => <div data-testid="musicnotes-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/WordSearchGame', () => ({ default: () => <div data-testid="wordsearch-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/AnagramsGame', () => ({ default: () => <div data-testid="anagrams-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/CrosswordGame', () => ({ default: () => <div data-testid="crossword-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/MathAdventureGame', () => ({ default: () => <div data-testid="math-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/WordBuilderGame', () => ({ default: () => <div data-testid="wordbuilder-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/SudokuGame', () => ({ default: () => <div data-testid="sudoku-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/PatternQuestGame', () => ({ default: () => <div data-testid="pattern-game" /> }));
+vi.mock('../../../../packages/games/src/components/games/MusicNotesGame', () => ({ default: () => <div data-testid="musicnotes-game" /> }));
 
 import BrainGymHub from '../BrainGymHub';
 

@@ -1,7 +1,6 @@
 // @vitest-environment node
-
-import { describe, expect, it } from 'vitest';
-import fs from 'node:fs';
+import { describe, it, expect } from 'vitest';
+import fs from 'fs';
 
 // The path to the batch file as specified
 const BAT_FILE_PATH = 'd:/installers/install_tools.bat';
@@ -22,10 +21,9 @@ describe('install_tools.bat', () => {
     if (!fileExists) return;
 
     const content = fs.readFileSync(BAT_FILE_PATH, 'utf-8');
-
+    
     // Verify key commands
-    expect(content).toContain('choco upgrade -y python');
-    expect(content).toMatch(/visualstudio20\d{2}-workload-vctools/);
+    expect(content).toMatch(/choco upgrade -y python visualstudio20\d{2}-workload-vctools/i);
     expect(content).toContain('powershell.exe');
   });
 

@@ -5,8 +5,8 @@
  * Respects sensory preferences for animations.
  */
 
-import { useEffect, useState, useTransition } from 'react';
-import { dataStore } from '../../services/dataStore';
+import { useEffect, useState } from 'react';
+import { useSensoryPreferences } from '../../hooks/useSensoryPreferences';
 
 interface CelebrationEffectProps {
   trigger: boolean;
@@ -25,48 +25,39 @@ const CelebrationEffect = ({
     { id: number; x: number; y: number; rotation: number; color: string }[]
   >([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [_isPending, startTransition] = useTransition();
+  const { animationEnabled } = useSensoryPreferences();
 
   useEffect(() => {
-    if (trigger && !isAnimating) {
-      startTransition(async () => {
-        try {
-          // Check sensory preferences from dataStore
-          const sensoryPrefs = await dataStore.getSensoryPreferences();
-          if (sensoryPrefs?.animationSpeed === 'none') {
-            onComplete?.();
-            return;
-          }
+    if (!trigger || isAnimating) return;
 
-          setIsAnimating(true);
-
-          // Generate particles
-          const particleCount = type === 'confetti' ? 20 : 10;
-          const newParticles = Array.from({ length: particleCount }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100 - 50,
-            y: Math.random() * 100 - 50,
-            rotation: Math.random() * 360,
-            color: ['#8B5CF6', '#06B6D4', '#EC4899', '#10B981', '#F59E0B'][
-              Math.floor(Math.random() * 5)
-            ]!,
-          }));
-
-          setParticles(newParticles);
-
-          // Clear after duration
-          setTimeout(() => {
-            setParticles([]);
-            setIsAnimating(false);
-            onComplete?.();
-          }, duration);
-        } catch (error) {
-          console.error('Failed to load sensory preferences:', error);
-          onComplete?.();
-        }
-      });
+    if (!animationEnabled) {
+      onComplete?.();
+      return;
     }
-  }, [trigger, type, duration, isAnimating, onComplete]);
+
+    setIsAnimating(true);
+
+    const particleCount = type === 'confetti' ? 20 : 10;
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100 - 50,
+      y: Math.random() * 100 - 50,
+      rotation: Math.random() * 360,
+      color: ['#22D3EE', '#38BDF8', '#84CC16', '#F97316', '#FBBF24'][
+        Math.floor(Math.random() * 5)
+      ]!,
+    }));
+
+    setParticles(newParticles);
+
+    const timer = setTimeout(() => {
+      setParticles([]);
+      setIsAnimating(false);
+      onComplete?.();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [trigger, type, duration, isAnimating, animationEnabled, onComplete]);
 
   if (particles.length === 0) return null;
 
@@ -90,7 +81,7 @@ const CelebrationEffect = ({
       {type === 'sparkle' && <div className="text-6xl animate-bounce">✨</div>}
 
       {type === 'pulse' && (
-        <div className="absolute inset-0 bg-green-500/20 animate-ping rounded-full" />
+        <div className="absolute inset-0 rounded-full bg-cyan-400/20 animate-ping" />
       )}
     </div>
   );

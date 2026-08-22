@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import type { HomeworkItem } from '../../types';
 import { generateProgressReport } from '../../services/reportGeneratorService';
 import { dataStore } from '../../services/dataStore';
+import { logger } from '../../utils/logger';
 
 interface ProgressReportsProps {
   items: HomeworkItem[];
@@ -12,7 +13,7 @@ const ProgressReports = ({ items }: ProgressReportsProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [studentPoints, setStudentPoints] = useState(0);
   const [focusSessions, setFocusSessions] = useState(0);
-  const [_isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   // Load student points and focus sessions from dataStore
   useEffect(() => {
@@ -29,7 +30,7 @@ const ProgressReports = ({ items }: ProgressReportsProps) => {
           setFocusSessions(sessionsCount);
         });
       } catch (error) {
-        console.error('[ProgressReports] Failed to load stats:', error);
+        logger.error('[ProgressReports] Failed to load stats:', error);
       }
     };
     void loadStats();
