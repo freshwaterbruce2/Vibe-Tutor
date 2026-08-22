@@ -1,11 +1,13 @@
 # Play Store Listing Copy
 
 ## App Title
+
 **Vibe-Tutor: Homework Helper for Teens**
 
 (Alternative: "Vibe-Tutor: ADHD Study Companion")
 
 ## Short Description (80 characters max)
+
 AI homework manager for students with ADHD/autism support & focus tools
 
 ## Full Description (4000 characters max)
@@ -23,7 +25,7 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 • One-tap task completion
 • Weekly progress charts
 
-**AI Tutor (Powered by DeepSeek)**
+**AI Tutor (Powered by Gemini with OpenRouter fallback)**
 • 24/7 homework help across all subjects
 • Step-by-step explanations
 • Adapts to your learning style
@@ -128,8 +130,9 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 
 ✓ No user accounts or registration required
 ✓ No personal information collected
-✓ All data stored locally on your device
+✓ Core learning data stored locally on your device
 ✓ AI chat not logged or stored
+✓ Limited pseudonymous app events may be processed to improve reliability
 ✓ HTTPS encryption for all network requests
 ✓ Parent-controlled data export/deletion
 ✓ Designed for ages 13-17
@@ -137,6 +140,7 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 ### ✨ WHY VIBE-TUTOR?
 
 **For Students:**
+
 - Never forget an assignment again
 - Get instant help when stuck
 - Learn at your own pace
@@ -145,6 +149,7 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 - Build healthy study habits
 
 **For Parents:**
+
 - Track your teen's progress
 - Support without hovering
 - Transparent app rules
@@ -153,6 +158,7 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 - No ads, no in-app purchases
 
 **For Educators:**
+
 - Supplement classroom learning
 - Encourage independent study
 - Visual progress tracking
@@ -187,11 +193,12 @@ No ads. No subscriptions. No in-app purchases. Just powerful tools to help you s
 **Download Vibe-Tutor today and turn homework from overwhelming to manageable!**
 
 Have feedback? Contact us at [support email]
-Privacy Policy: https://freshwaterbruce2.github.io/vibetech/Vibe-Tutor/docs/PRIVACY_POLICY.html
+Privacy Policy: <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
 
 ---
 
-*Note: AI features require internet connection. DeepSeek AI processes chat messages but does not store them. Music streaming requires internet; downloaded tracks work offline.*
+*Note: AI features require internet connection. Chat is processed via Google Gemini (primary) with OpenRouter fallback. Music streaming requires internet; downloaded tracks work offline.*
 
 ### KEYWORDS
+
 homework planner, ADHD app, autism support, student organizer, AI tutor, study helper, focus timer, Pomodoro, neurodivergent, executive function, educational app, teen productivity, school planner, task manager, learning disability support

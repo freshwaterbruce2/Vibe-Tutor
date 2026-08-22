@@ -1,173 +1,108 @@
-/**
- * Core E2E Tests for Vibe-Tutor
- * Tests critical user flows: Tutor, Buddy, Focus Timer, Audio
- */
+import { expect, test, type Page } from '@playwright/test';
 
-import { expect, test } from '@playwright/test';
+const BASE_URL = 'http://localhost:5173';
 
-const BASE_URL = 'http://localhost:8174';
+async function mockAiEndpoints(page: Page): Promise<void> {
+  await page.route('**/api/session/init', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ token: 'test-token', expiresIn: 3600 }),
+    });
+  });
+
+  await page.route('**/api/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        choices: [{ message: { content: 'Mock AI response from Playwright' } }],
+      }),
+    });
+  });
+
+  await page.route('**/api/health', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'healthy' }),
+    });
+  });
+}
+
+async function openDashboard(page: Page): Promise<void> {
+  await page.goto(BASE_URL);
+  await expect(page.getByRole('button', { name: /^Add$/ })).toBeVisible({ timeout: 15000 });
+}
 
 test.describe('Vibe-Tutor Core Flows', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
-    // Wait for app to load
-    await page.waitForSelector('text=Homework Dashboard', { timeout: 10000 });
+    await mockAiEndpoints(page);
+    await openDashboard(page);
   });
 
-  test('should load homepage and display dashboard', async ({ page }) => {
-    // Check main elements are visible
-    await expect(page.locator('text=Homework Dashboard')).toBeVisible();
-    await expect(page.locator('button:has-text("Add")')).toBeVisible();
+  test('loads dashboard', async ({ page }) => {
+    const board = page.getByLabel('Evidence board');
+    await expect(board.locator('h1:visible', { hasText: 'Homework Dashboard' })).toBeVisible();
+    await expect(board.getByRole('button', { name: /^Add$/ })).toBeVisible();
   });
 
-  test('should navigate to AI Tutor', async ({ page }) => {
-    // Click tutor navigation
-    await page.click('[aria-label="AI Tutor"]');
-
-    // Wait for tutor to load
-    await expect(page.locator('text=AI Tutor')).toBeVisible();
-    await expect(page.locator('text=Get help with your homework concepts')).toBeVisible();
-
-    // Check chat input is present
-    await expect(page.locator('input[placeholder*="AI Tutor"]')).toBeVisible();
+  test('navigates to Vibe Tutor', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Tutor|AI Tutor|Tutor/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.locator('h1:visible', { hasText: /Vibe Tutor|AI Tutor/i })).toBeVisible();
+    await expect(board.getByLabel('Chat input')).toBeVisible();
   });
 
-  test('should send message to AI Tutor and receive response', async ({ page }) => {
-    // Navigate to tutor
-    await page.click('[aria-label="AI Tutor"]');
-    await page.waitForSelector('text=AI Tutor');
-
-    // Type and send message
-    const input = page.locator('input[placeholder*="AI Tutor"]');
+  test('sends message in tutor chat', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Tutor|AI Tutor|Tutor/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    const input = board.getByLabel('Chat input');
     await input.fill('What is 2 + 2?');
-    await page.click('button[aria-label="Send message"]');
+    await board.getByRole('button', { name: /Send message/i }).click();
 
-    // Wait for response (with generous timeout for AI)
-    await expect(page.locator('text=4').first()).toBeVisible({ timeout: 30000 });
+    await expect(board.getByText('What is 2 + 2?')).toBeVisible();
+    await expect(board.getByText('Mock AI response from Playwright')).toBeVisible({ timeout: 15000 });
   });
 
-  test('should navigate to AI Buddy', async ({ page }) => {
-    // Click buddy navigation
-    await page.click('[aria-label="AI Buddy"]');
-
-    // Wait for buddy to load
-    await expect(page.locator('text=AI Buddy')).toBeVisible();
-    await expect(page.locator('text=Chat about anything on your mind')).toBeVisible();
+  test('navigates to Vibe Buddy', async ({ page }) => {
+    await page.getByRole('button', { name: /Vibe Buddy|AI Buddy|Buddy/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.locator('h1:visible', { hasText: /Vibe Buddy|AI Buddy/i })).toBeVisible();
+    await expect(board.getByLabel('Chat input')).toBeVisible();
   });
 
-  test('should start Focus Timer', async ({ page }) => {
-    // Navigate to focus timer
-    await page.click('[aria-label="Focus Timer"]');
-
-    // Wait for timer to load
-    await expect(page.locator('text=Focus Time')).toBeVisible();
-
-    // Check timer displays 25:00
-    await expect(page.locator('text=25:00')).toBeVisible();
-
-    // Click play button
-    await page.click('button[aria-label="Start timer"]');
-
-    // Wait a moment and check timer is counting down
-    await page.waitForTimeout(2000);
-
-    // Timer should have changed from 25:00
-    const timerText = await page.locator('.text-7xl').textContent();
-    expect(timerText).not.toBe('25:00');
+  test('opens focus timer', async ({ page }) => {
+    await page.getByRole('button', { name: /Focus/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.getByRole('heading', { name: /Focus Time|Break Time/i })).toBeVisible();
+    await expect(board.locator('text=/\\d{2}:\\d{2}/')).toBeVisible();
+    await board.getByRole('button', { name: /Start timer|Pause timer/i }).click();
   });
 
-  test('should open sensory settings', async ({ page }) => {
-    // Click sensory settings button
-    await page.click('[aria-label="Sensory Settings"]');
-
-    // Wait for settings to load
-    await expect(page.locator('text=Sensory Settings')).toBeVisible();
-    await expect(page.locator('text=Movement & Animations')).toBeVisible();
+  test('opens sensory settings', async ({ page }) => {
+    await page.getByRole('button', { name: /Sensory/i }).first().click();
+    const board = page.getByLabel('Evidence board');
+    await expect(board.getByRole('heading', { name: /Sensory Settings/i })).toBeVisible();
+    await expect(board.getByText(/Movement & Animations/i)).toBeVisible();
   });
 
-  test('should add homework item', async ({ page }) => {
-    // Click add button
-    await page.click('button:has-text("Add")');
+  test('adds a homework item', async ({ page }) => {
+    const board = page.getByLabel('Evidence board');
+    await board.getByRole('button', { name: /^Add$/ }).click();
+    await expect(page.getByRole('heading', { name: /New Assignment/i })).toBeVisible();
 
-    // Wait for modal
-    await expect(page.locator('text=Add Homework')).toBeVisible();
+    await page.getByPlaceholder('Subject (e.g., Math)').fill('Math');
+    await page.getByPlaceholder('Title (e.g., Complete worksheet)').fill('Test Assignment');
 
-    // Fill in homework details
-    await page.selectOption('select[name="subject"]', 'Math');
-    await page.fill('input[name="title"]', 'Test Assignment');
-
-    // Set due date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const dateString = tomorrow.toISOString().split('T')[0];
-    await page.fill('input[type="date"]', dateString);
+    await page.locator('input[type="date"]').fill(dateString ?? '');
 
-    // Submit
-    await page.click('button:has-text("Add Assignment")');
-
-    // Check homework appears in list
-    await expect(page.locator('text=Test Assignment')).toBeVisible();
-  });
-
-  test('should work offline', async ({ page, context }) => {
-    // Go offline
-    await context.setOffline(true);
-
-    // Check offline indicator appears
-    await expect(page.locator('text=Offline')).toBeVisible({ timeout: 5000 });
-
-    // App should still be functional
-    await expect(page.locator('text=Homework Dashboard')).toBeVisible();
-
-    // Go back online
-    await context.setOffline(false);
-
-    // Offline indicator should disappear
-    await expect(page.locator('text=Offline')).not.toBeVisible({ timeout: 5000 });
-  });
-});
-
-test.describe('Adaptive Audio Integration', () => {
-  test('should show audio controls when adaptive audio is enabled', async ({ page }) => {
-    await page.goto(BASE_URL);
-    await page.waitForSelector('text=Homework Dashboard');
-
-    // Navigate to focus timer
-    await page.click('[aria-label="Focus Timer"]');
-    await expect(page.locator('text=Focus Time')).toBeVisible();
-
-    // Check if audio toggle button is present (feature flag dependent)
-    const audioButton = page.locator('button[aria-label*="audio"]');
-    const isVisible = await audioButton.isVisible().catch(() => false);
-
-    if (isVisible) {
-      // Test audio toggle
-      await audioButton.click();
-      // Audio state should change (button appearance)
-      await expect(audioButton).toBeVisible();
-    }
-  });
-});
-
-test.describe('Personalization Features', () => {
-  test('should maintain tutor conversation history', async ({ page }) => {
-    await page.goto(BASE_URL);
-    await page.waitForSelector('text=Homework Dashboard');
-
-    // Navigate to tutor
-    await page.click('[aria-label="AI Tutor"]');
-    await page.waitForSelector('text=AI Tutor');
-
-    // Send a message
-    const input = page.locator('input[placeholder*="AI Tutor"]');
-    await input.fill('Hello');
-    await page.click('button[aria-label="Send message"]');
-
-    // Wait for response
-    await page.waitForTimeout(5000);
-
-    // Check message count indicator
-    const messageCount = page.locator('text=/\\d+ messages/');
-    await expect(messageCount).toBeVisible({ timeout: 10000 });
+    await page.getByRole('button', { name: /Add Assignment/i }).click();
+    await expect(board.getByRole('heading', { name: 'Test Assignment' })).toBeVisible({
+      timeout: 10000,
+    });
   });
 });

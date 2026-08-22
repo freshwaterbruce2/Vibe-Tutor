@@ -22,11 +22,35 @@ if (Test-Path "vibetutor-release.keystore") {
     exit 1
 }
 
-# Check if keytool is available
-try {
-    keytool -help | Out-Null
-} catch {
-    Write-Host "ERROR: keytool not found. Please install Java JDK." -ForegroundColor Red
+# Resolve keytool path from PATH, JAVA_HOME, or Android Studio defaults
+$keytoolPath = $null
+$keytoolCommand = Get-Command keytool -ErrorAction SilentlyContinue
+if ($keytoolCommand) {
+    $keytoolPath = $keytoolCommand.Source
+}
+
+if (-not $keytoolPath -and $env:JAVA_HOME) {
+    $candidate = Join-Path $env:JAVA_HOME "bin\\keytool.exe"
+    if (Test-Path $candidate) {
+        $keytoolPath = $candidate
+    }
+}
+
+if (-not $keytoolPath) {
+    $androidStudioCandidates = @(
+        "C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\keytool.exe",
+        "C:\\Program Files\\Android\\Android Studio\\jre\\bin\\keytool.exe"
+    )
+    foreach ($candidate in $androidStudioCandidates) {
+        if (Test-Path $candidate) {
+            $keytoolPath = $candidate
+            break
+        }
+    }
+}
+
+if (-not $keytoolPath) {
+    Write-Host "ERROR: keytool not found. Install JDK or set JAVA_HOME." -ForegroundColor Red
     exit 1
 }
 
@@ -34,7 +58,7 @@ Write-Host "Generating release keystore..." -ForegroundColor Yellow
 Write-Host ""
 
 # Generate keystore
-keytool -genkeypair -v -storetype PKCS12 `
+& $keytoolPath -genkeypair -v -storetype PKCS12 `
     -keystore vibetutor-release.keystore `
     -alias vibetutor `
     -keyalg RSA `
@@ -61,7 +85,7 @@ if ($LASTEXITCODE -eq 0) {
     # Create keystore.properties automatically
     if (-not (Test-Path "keystore.properties")) {
         @"
-storeFile=vibetutor-release.keystore
+storeFile=../vibetutor-release.keystore
 storePassword=$StorePassword
 keyAlias=vibetutor
 keyPassword=$KeyPassword
