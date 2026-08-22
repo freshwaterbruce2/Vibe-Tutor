@@ -9,6 +9,7 @@
 ## ✨ Design Highlights
 
 **Modern UI/UX (2025 Enhancement)**
+
 - 🎨 **Glassmorphism Design**: Semi-transparent surfaces with backdrop blur effects
 - 🌈 **Vibe-Tech Branding**: Custom gradient logo with neon purple, cyan, and pink color scheme
 - ⚡ **Smooth Animations**: Float, pulse, shimmer, and fade-in effects throughout the interface
@@ -16,6 +17,7 @@
 - 📱 **Responsive Layout**: Mobile-first design with touch-optimized interactions
 
 **Key Visual Features**
+
 - Custom SVG logo with multi-stop gradients and glow filters
 - Animated dashboard cards with staggered entrance animations
 - Neon text effects and gradient typography
@@ -24,30 +26,43 @@
 
 ## 🚀 Quick Start
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js 22+, pnpm 10+, and Windows 11 for the desktop build
 
 1. **Install dependencies:**
+
    ```bash
-   npm install
+   pnpm install
    ```
 
 2. **Set up environment:**
-   Create `.env.local` and add your DeepSeek API key:
+   Create `.env.local` and add your backend AI provider keys:
+
    ```
-   DEEPSEEK_API_KEY=your_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
    ```
 
 3. **Run the app:**
+
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 4. **Open your browser:**
    Navigate to `http://localhost:5173/`
 
+5. **Run validation:**
+
+   ```bash
+   pnpm typecheck
+   pnpm test:unit
+   pnpm build
+   pnpm build:desktop
+   ```
+
 ## 🎯 Features
 
-- **AI Homework Assistant**: Voice-to-text homework parsing with DeepSeek AI (90% cheaper)
+- **AI Homework Assistant**: Voice-to-text homework parsing with Gemini (primary) and OpenRouter fallback
 - **Smart Dashboard**: Glass-morphic interface with animated task cards
 - **Achievement System**: Gamified learning with 3D badges and progress tracking
 - **AI Tutor & AI Buddy**: Separate chat contexts for homework help and friendly conversation
@@ -60,14 +75,16 @@
 Turn your child's device into a **dedicated study device** by locking it to only run Vibe-Tutor. Perfect for focused learning without distractions.
 
 **Available Methods:**
+
 1. **Fully Single App Kiosk** (Recommended) - Secure, purpose-built solution
 2. **Built-in App Pinning** (Simple) - Quick setup using Samsung's native features
 
-**Setup Instructions:** See **[KIOSK_MODE_SETUP.md](KIOSK_MODE_SETUP.md)** for detailed step-by-step guides.
+**Setup Instructions:** See **[docs/KIOSK_MODE_SETUP.md](docs/KIOSK_MODE_SETUP.md)** for detailed step-by-step guides.
 
-**For Parents:** See **[KIOSK_UNLOCK_GUIDE.md](KIOSK_UNLOCK_GUIDE.md)** for unlock procedures, maintenance, and troubleshooting.
+**For Parents:** See **[docs/KIOSK_MODE_SETUP.md](docs/KIOSK_MODE_SETUP.md)** for setup, maintenance, and troubleshooting.
 
 **Benefits:**
+
 - Eliminates access to games, social media, and other distractions
 - Creates a focused learning environment
 - Gives parents peace of mind during study time
@@ -76,16 +93,27 @@ Turn your child's device into a **dedicated study device** by locking it to only
 ## 📱 Mobile Deployment
 
 For installing Vibe-Tutor as a native Android app, see:
-- **[ANDROID_INSTALL_INSTRUCTIONS.md](ANDROID_INSTALL_INSTRUCTIONS.md)** - Build and install APK
-- **[MOBILE-TROUBLESHOOTING.md](MOBILE-TROUBLESHOOTING.md)** - Common Android issues
-- **[VERSION.md](VERSION.md)** - Release history and version tracking
+
+- **[docs/ANDROID_INSTALL_INSTRUCTIONS.md](docs/ANDROID_INSTALL_INSTRUCTIONS.md)** - Build and install APK
+- **[docs/ANDROID_RELEASE_RUNBOOK.md](docs/ANDROID_RELEASE_RUNBOOK.md)** - Release process
+- **[docs/MOBILE-TROUBLESHOOTING.md](docs/MOBILE-TROUBLESHOOTING.md)** - Common Android issues
+
+## 🖥️ Windows Desktop Build
+
+Build the Windows 11 installer with:
+
+```bash
+pnpm build:desktop
+```
+
+Installer artifacts are written to `release/`, including `Vibe Tutor Setup <version>.exe`.
 
 ## 📚 Documentation
 
-- **[CLAUDE.md](CLAUDE.md)** - Development guidelines and architecture
-- **[GLASSMORPHISM_GUIDE.md](GLASSMORPHISM_GUIDE.md)** - UI design system
-- **[PARENT_GUIDE.md](PARENT_GUIDE.md)** - Guide for parents
-- **[TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)** - QA procedures
+- **[docs/index.md](docs/index.md)** - Documentation index
+- **[docs/QA_TESTING_CHECKLIST.md](docs/QA_TESTING_CHECKLIST.md)** - QA procedures
+- **[docs/USER_MANUAL.md](docs/USER_MANUAL.md)** - Family-facing usage guide
+- **[docs/PRIVACY_POLICY.md](docs/PRIVACY_POLICY.md)** - Privacy policy source
 
 ## 🤝 Contributing
 
@@ -97,4 +125,4 @@ MIT License - See LICENSE file for details
 
 ## 🆘 Support
 
-For issues, questions, or feature requests, please open an issue on GitHub or refer to the documentation files listed above.
+For issues, questions, or feature requests, please open an issue on [GitHub](https://github.com/freshwaterbruce2/vibe-tutor/issues) or refer to the documentation files listed above.
