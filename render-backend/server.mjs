@@ -40,17 +40,17 @@ const PORT = process.env.PORT || 3001;
 // Google Gemini (Primary AI provider)
 const GEMINI_CONFIG = {
   model: 'gemini-2.0-flash', // Fast, cheap, great for education
-  systemInstruction: `You are Vibe Tutor, a friendly and patient AI learning companion designed for children and young learners. You specialize in making education fun, engaging, and accessible.
+  systemInstruction: `You are Vibe Tutor, a friendly and patient AI learning companion for teen students aged 13 and older. You specialize in making education engaging and accessible.
 
 Key behaviors:
-- Use simple, encouraging language appropriate for children
+- Use clear, encouraging language appropriate for teenagers
 - Break complex topics into small, digestible steps
 - Celebrate effort and progress, not just correct answers
 - Use analogies, examples, and gentle humor
-- If a child seems frustrated, offer encouragement and a different approach
+- If a student seems frustrated, offer encouragement and a different approach
 - Never use sarcasm, condescension, or inappropriate content
 - Keep responses concise (2-3 paragraphs max unless explaining a complex topic)
-- Use emoji sparingly to keep things fun 🌟`,
+- Use emoji sparingly when it helps keep things approachable`,
 };
 
 // Moonshot / Kimi AI (Fallback provider — OpenAI-compatible)
@@ -505,15 +505,15 @@ const UPDATED_PRIVACY_POLICY_HTML = `<!DOCTYPE html>
 <title>Vibe Tutor - Privacy Policy</title>
 <style>body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:860px;margin:0 auto;padding:24px;line-height:1.6;color:#111827;background:#f8fafc}main{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:32px;box-shadow:0 10px 30px rgba(15,23,42,.08)}h1,h2{line-height:1.2;color:#0f172a}.updated{color:#64748b}ul{padding-left:20px}li,p{color:#334155}</style></head><body><main>
 <h1>Privacy Policy for Vibe Tutor</h1>
-<p class="updated"><strong>Effective Date:</strong> March 9, 2026<br><strong>Last Updated:</strong> March 9, 2026</p>
+<p class="updated"><strong>Effective Date:</strong> March 9, 2026<br><strong>Last Updated:</strong> August 24, 2026</p>
 <h2>Overview</h2><p>Vibe Tutor is an educational app from <strong>VibeTech</strong>. It helps users study, manage assignments, use optional AI tutoring features, and access optional audio features such as internet radio. This Privacy Policy explains how Vibe Tutor accesses, stores, uses, and shares data.</p><p>Vibe Tutor is intended for users age 13 and older and is not directed to children under 13.</p>
 <h2>Who We Are</h2><ul><li><strong>Developer:</strong> VibeTech</li><li><strong>App:</strong> Vibe Tutor</li><li><strong>Privacy Contact:</strong> freshwaterbruce2@gmail.com</li></ul>
 <h2>Data We Access, Collect, Use, and Share</h2>
 <h3>Data stored locally on your device</h3><p>Vibe Tutor stores educational and app data locally on your device. Depending on platform, this may be stored in local browser storage, app storage, or SQLite databases.</p><ul><li>homework and assignment entries</li><li>progress and learning-session records</li><li>rewards, achievements, and points</li><li>schedules, preferences, and parent-control settings</li><li>chat history saved locally in the app</li><li>local export files you choose to create</li></ul>
 <h3>Data sent to our backend and service providers</h3><p>When you use networked features, Vibe Tutor sends limited data off-device.</p><ul><li>chat prompts and related conversation context when you use AI chat or tutoring features</li><li>homework transcript text when you use voice homework entry and choose to send the resulting transcript for parsing</li><li>temporary session tokens used to authorize app requests</li><li>pseudonymous analytics and operational event data, such as feature events, model usage metrics, and request timing</li><li>radio-stream request information needed to fetch or proxy audio streams</li></ul>
 <h3>Microphone and voice input</h3><p>If you choose to use voice input, Vibe Tutor may request microphone access. On supported platforms, microphone audio may first be processed by your browser, operating system, or speech-recognition provider to create transcript text. Vibe Tutor then uses that transcript text to help structure homework details. Typed input remains available if you do not want to use voice input.</p>
-<h3>Files and storage access</h3><p>On some platforms, Vibe Tutor may request media or file-storage access for user-initiated local export, sync, or audio-related features. These permissions are optional and feature-specific.</p>
-<h2>Third Parties We Share Data With</h2><p>Vibe Tutor shares data only as needed to provide app features.</p><ul><li><strong>AI providers</strong>, including Google Gemini and OpenRouter</li><li><strong>audio and radio providers</strong>, such as Jamendo and radio-stream hosts</li><li><strong>hosting and infrastructure providers</strong> that run the app backend and related services</li></ul><p>We do <strong>not</strong> sell personal data.</p>
+<h3>Files and storage access</h3><p>On some platforms, Vibe Tutor may request file-storage access for user-initiated local export or backup. The app does not read your device music library. These permissions are optional and feature-specific.</p>
+<h2>Third Parties We Share Data With</h2><p>Vibe Tutor shares data only as needed to provide app features.</p><ul><li><strong>AI providers</strong>, including Google Gemini and OpenRouter</li><li><strong>audio and radio providers</strong>, such as internet radio-stream hosts, when you use optional radio features</li><li><strong>hosting and infrastructure providers</strong> that run the app backend and related services</li></ul><p>We do <strong>not</strong> sell personal data. Vibe Tutor does not use a third-party crash-reporting SDK.</p>
 <h2>Data We Do Not Intentionally Collect as Account Identity</h2><p>Vibe Tutor does not require account registration to use core features. We do not intentionally require users to provide:</p><ul><li>full name</li><li>email address for account creation</li><li>phone number</li><li>precise device location</li><li>contacts</li><li>SMS or call logs</li></ul>
 <h2>How We Use Data</h2><ul><li>provide tutoring, homework, and study-support features</li><li>save progress, preferences, and local settings</li><li>support optional voice-entry workflows</li><li>support optional radio and streaming features</li><li>maintain app security, session management, and abuse prevention</li><li>troubleshoot reliability and improve feature quality</li></ul>
 <h2>Retention</h2><ul><li><strong>Local device data:</strong> remains on your device until you delete it, uninstall the app, clear app storage, or use in-app data-clearing tools.</li><li><strong>Session tokens:</strong> are temporary and expire automatically.</li><li><strong>Backend operational logs and analytics events:</strong> may be retained for limited operational, debugging, and reliability purposes.</li><li><strong>AI provider handling:</strong> prompts and responses sent to third-party AI providers may be retained and processed under those providers' own terms and privacy policies.</li></ul><p>Vibe Tutor does not maintain long-term user account profiles for general app usage.</p>
@@ -541,7 +541,7 @@ app.get('/privacy-legacy', (req, res) => {
 <h2>Data We Collect</h2><ul><li><strong>Chat Messages:</strong> Processed in real-time for educational responses. <strong>Not stored permanently</strong> on our backend.</li><li><strong>Session Tokens:</strong> Temporary, anonymous tokens used for API sessions.</li><li><strong>Analytics Events:</strong> Lightweight, pseudonymous usage data to improve reliability and learning experience quality. No PII is required.</li></ul>
 <h2>Data We Do NOT Collect</h2><ul><li>Names, emails, or account credentials</li><li>Location data</li><li>Photos, videos, or device files</li><li>We do not sell personal data</li></ul>
 <h2>AI Processing</h2><p>Chat messages are sent to Google Gemini (primary) or OpenRouter (fallback) for educational responses. We do not permanently store chat content on our backend. Third-party AI providers may process and retain request data according to their own policies.</p>
-<h2>Content Safety</h2><p>All AI responses pass through content filtering to ensure child-appropriate content. Inappropriate language, violence, and adult content are blocked.</p>
+<h2>Content Safety</h2><p>All AI responses pass through content filtering to keep tutoring content age-appropriate for teens (13+). Inappropriate language, violence, and adult content are blocked.</p>
 <h2>Data Storage</h2><ul><li><strong>On-device:</strong> Progress, preferences, and token balances are stored locally. This data never leaves the device.</li><li><strong>Server-side:</strong> No long-term personal profile is maintained. Sessions are ephemeral, and limited pseudonymous operational logs may be retained for reliability.</li></ul>
 <h2>Age Scope</h2><p>Vibe Tutor is intended for users ages 13 and older and is not directed to children under 13. No account creation is required, and parent settings are PIN-protected.</p>
 <h2>Data Deletion</h2><p>You can clear local data in-app from Settings → Data Management → Clear All Data.</p>

@@ -335,7 +335,7 @@ const ScreenTimeSettings = () => {
         <div className="mt-6 bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4">
           <p className="text-yellow-400 text-sm">
             <strong>Admin Mode Active:</strong> All screen time limits are currently disabled.
-            This is intended for testing and parent use only. Remember to disable admin mode when your child uses the app.
+            This is intended for testing and parent use only. Remember to disable admin mode when the student uses the app.
           </p>
         </div>
       )}

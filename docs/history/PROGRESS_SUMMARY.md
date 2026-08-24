@@ -1,5 +1,7 @@
 # Vibe-Tutor v1.4.0 - Progress Summary
 
+> **Historical (November 2024).** Do not treat this as current Play Store status. The privacy URL, signed AAB, GitHub Pages, and store-asset claims in this file are stale. See `docs/PLAY_STORE_RELEASE_CHECKLIST.md`.
+
 **Date:** November 14, 2024
 **Status:** READY - Waiting for Google ID Verification
 

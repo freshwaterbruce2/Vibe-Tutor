@@ -282,7 +282,7 @@ export async function generateScheduleSuggestion(context: {
       messages: [
         {
           role: 'system',
-          content: `You are a smart schedule builder for a child with ADHD. Create a 3–6 hour after-school schedule.
+          content: `You are a smart schedule builder for a teen student with ADHD. Create a 3–6 hour after-school schedule.
 Rules:
 - Schedule hard homework during peak hours: ${peakLabel}
 - Always add a 10-minute break after any homework block

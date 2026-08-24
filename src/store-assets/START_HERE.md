@@ -1,5 +1,7 @@
 # Store Assets Creation - START HERE
 
+**Generated listing files now live in `/store-assets`.** Use those for Play Console upload. This guide remains if you want to redesign them.
+
 **Welcome!** This guide will help you create all required Play Store graphics.
 
 ---

@@ -170,7 +170,7 @@ const ParentRulesPage = ({ onClose }: ParentRulesPageProps) => {
                     className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                   <p className="text-xs text-white/50 mt-1">
-                    Child must complete {firstThenSteps} routine step
+                    Student must complete {firstThenSteps} routine step
                     {firstThenSteps !== 1 ? 's' : ''} to unlock games
                   </p>
                 </div>
@@ -309,7 +309,7 @@ const ParentRulesPage = ({ onClose }: ParentRulesPageProps) => {
                 <div>
                   <h3 className="text-lg font-bold text-white mb-1">Require Active Schedule</h3>
                   <p className="text-sm text-white/60">
-                    Child must have a morning or evening schedule set up
+                    Student must have a morning or evening schedule set up
                   </p>
                 </div>
                 <button

@@ -5,23 +5,22 @@
 - Confirm `applicationId` is final: `android/app/build.gradle` -> `com.vibetech.tutor`
 - Create signing key + config (LOCAL ONLY)
   - `android/generate-keystore.ps1`
-  - Fill `android/keystore.properties` (do not commit)
-  - Verify it actually signs:
-    - `storeFile` points to the keystore file that exists
-    - `storePassword` matches the keystore password
-    - `keyAlias` exists in the keystore
-    - `keyPassword` matches the key’s password
+  - Set env vars or `~/.gradle/gradle.properties` (see `android/keystore.properties.template`)
+  - Gradle does **not** read `keystore.properties`
+  - Verify:
+    - `VIBE_TUTOR_KEYSTORE_PATH` / `VIBE_TUTOR_RELEASE_STORE_FILE` points to a keystore **outside** the git tree
+    - store password, alias, and key password match
 
 ## 2) Backend (required for AI + analytics)
 
-- Ensure your production backend is deployed (Render etc)
+- Ensure your production backend is deployed (Cloud Run / Render)
 - Set secrets in the host dashboard (never commit):
   - `GEMINI_API_KEY` (primary provider)
   - `OPENROUTER_API_KEY` (fallback provider)
 
 ## 3) Point the app at production
 
-- Update `src/config.ts` -> `PRODUCTION_BACKEND_URL`
+- `src/config.ts` -> `PRODUCTION_BACKEND_URL` (already `https://vibe-tutor-api-734857480460.us-east4.run.app`)
 - For local Android debugging, keep the `adb reverse tcp:3001 tcp:3001` flow
 
 ## 4) Build release bundle (AAB)
@@ -33,21 +32,26 @@ From repo root:
 - `pnpm exec cap sync android`
 - `pnpm run android:bundle:release:clean`
 
-If you see `:app:signReleaseBundle` failing with “keystore password was incorrect”, update `android/keystore.properties` with the real values (the repo ships placeholders).
+If `:app:signReleaseBundle` fails, the `VIBE_TUTOR_*` signing values are missing or wrong.
 
 Output:
 
 - AAB: `android/app/build/outputs/bundle/release/app-release.aab`
 
+`targetSdk` / `compileSdk` must be **36** (Play requirement from 31 Aug 2026).
+
 ## 5) Play Console
 
 - Upload `app-release.aab`
-- Complete required store listing assets (see `store-assets/`)
-- Provide a Privacy Policy URL (you can host `public/privacy-policy.html` or use `docs/PRIVACY_POLICY.md` as the source)
-- Declare permissions:
-  - Microphone is used for voice input (see `components/dashboard/AddHomeworkModal.tsx`)
+- Store listing graphics: `store-assets/` (512 icon, 1024×500 feature graphic, 3 phone screenshots)
+- Privacy policy URL (live): `https://vibe-tutor-api-734857480460.us-east4.run.app/privacy`
+- Data Safety + permissions: `docs/PLAY_CONSOLE_ANSWER_SHEET.md`
+- Microphone: optional voice **homework** entry only (`src/components/dashboard/AddHomeworkModal.tsx`)
+- Declare generative AI chat (Tutor + Buddy) and that in-app reporting exists
+- Target audience: 13–15 and 16–17 only (not under 13)
 
 ## 6) Quick sanity checks
 
 - Release build uses HTTPS-only (debug allows localhost via debug manifest)
 - App launches offline without crashing (AI features will show fallback messaging)
+- First-run 13+ confirmation is shown before role selection

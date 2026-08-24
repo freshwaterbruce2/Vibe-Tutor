@@ -1,7 +1,7 @@
 # Privacy Policy for Vibe Tutor
 
 **Effective Date:** March 9, 2026  
-**Last Updated:** March 9, 2026
+**Last Updated:** August 24, 2026
 
 ## Overview
 
@@ -48,7 +48,7 @@ If you choose to use voice input, Vibe Tutor may request microphone access. On s
 
 ### Files and storage access
 
-On some platforms, Vibe Tutor may request media or file-storage access for user-initiated local export, sync, or audio-related features. These permissions are optional and feature-specific.
+On some platforms, Vibe Tutor may request file-storage access for user-initiated local export or backup. The app does not read your device music library. These permissions are optional and feature-specific.
 
 ## Third Parties We Share Data With
 
@@ -57,10 +57,10 @@ Vibe Tutor shares data only as needed to provide app features.
 Current categories of third parties include:
 
 - **AI providers**, including Google Gemini and OpenRouter, for AI tutoring, chat, and structured homework parsing
-- **audio and radio providers**, such as Jamendo and radio-stream hosts, when you use audio features
+- **audio and radio providers**, such as internet radio-stream hosts, when you use optional radio features
 - **hosting and infrastructure providers** that run the app backend and related services
 
-We do **not** sell personal data.
+We do **not** sell personal data. Vibe Tutor does not use a third-party crash-reporting SDK.
 
 ## Data We Do Not Intentionally Collect as Account Identity
 

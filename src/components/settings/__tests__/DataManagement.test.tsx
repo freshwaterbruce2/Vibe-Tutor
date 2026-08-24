@@ -19,5 +19,9 @@ describe('DataManagement — privacy policy (Play 13+)', () => {
     // Key 13+ / data-handling statements are present.
     expect(screen.getByText(/13 and older/i)).toBeInTheDocument();
     expect(screen.getByText(/does not sell your data/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /read the full privacy policy/i })).toHaveAttribute(
+      'href',
+      'https://vibe-tutor-api-734857480460.us-east4.run.app/privacy',
+    );
   });
 });

@@ -246,7 +246,7 @@ const ParentDashboard = ({
 
             <div className="rounded-xl px-4 py-3 bg-slate-900/40 border border-slate-700/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <p className="text-sm text-slate-300">
-                Review the child&apos;s check-ins and thought journal activity to spot support moments early.
+                Review the student&apos;s check-ins and thought journal activity to spot support moments early.
               </p>
               {onNavigate && (
                 <button

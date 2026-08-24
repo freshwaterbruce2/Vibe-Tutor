@@ -2,7 +2,7 @@
 
 **App:** Vibe Tutor  
 **Reviewed Against Code:** March 9, 2026  
-**Policy Baseline:** [PRIVACY_POLICY.md](V:\monorepo\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
+**Policy Baseline:** [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 
 This file is the working source of truth for Play Console Data safety answers.
 
@@ -147,16 +147,15 @@ Current manifest permissions reviewed:
 1. `android.permission.INTERNET`
 2. `android.permission.RECORD_AUDIO`
 3. `android.permission.READ_EXTERNAL_STORAGE` (`maxSdkVersion=32`)
-4. `android.permission.READ_MEDIA_AUDIO`
-5. `android.permission.WAKE_LOCK`
-6. `android.permission.FOREGROUND_SERVICE`
-7. `android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK`
+4. `android.permission.WAKE_LOCK`
+5. `android.permission.FOREGROUND_SERVICE`
+6. `android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK`
 
 Recommended Play Console explanations:
 
 - `RECORD_AUDIO`: optional voice homework entry
-- `READ_MEDIA_AUDIO` / `READ_EXTERNAL_STORAGE`: optional user-initiated audio / export-related functionality where applicable
-- foreground service permissions: background audio playback
+- `READ_EXTERNAL_STORAGE`: optional user-initiated local export/backup on Android 12 and below
+- foreground service permissions: background radio playback
 - `WAKE_LOCK`: audio / session continuity
 
 ## Store Reviewer Notes
@@ -182,7 +181,8 @@ Use this posture:
 Verify all of the following match each other:
 
 - Play Console Data Safety answers
-- [PRIVACY_POLICY.md](V:\monorepo\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
-- [privacy-policy.html](V:\monorepo\apps\vibe-tutor\public\privacy-policy.html)
+- [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
+- [privacy-policy.html](../public/privacy-policy.html)
+- live URL `https://vibe-tutor-api-734857480460.us-east4.run.app/privacy`
 - target audience / age settings
 - any future telemetry or crash-reporting SDKs added after this review

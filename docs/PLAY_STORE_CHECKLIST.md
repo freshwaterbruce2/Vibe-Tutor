@@ -139,10 +139,10 @@ See `PLAY_STORE_DESCRIPTION.md` for complete store listing copy.
 
 #### Privacy Policy URL
 
-After GitHub Pages setup:
+Paste this live URL in Play Console:
 
 ```
-https://freshwaterbruce2.github.io/vibetech/privacy-policy/
+https://vibe-tutor-api-734857480460.us-east4.run.app/privacy
 ```
 
 ### 5. Content Rating

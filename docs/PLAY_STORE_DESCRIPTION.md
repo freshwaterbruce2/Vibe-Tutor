@@ -108,10 +108,7 @@ Designed specifically for students aged 13-17 with ADHD and autism, Vibe-Tutor c
 ### 🎵 ADDITIONAL FEATURES
 
 **Music Library**
-• Free, legal music streaming (Jamendo)
 • Internet radio stations
-• Download tracks for offline listening
-• Lofi, classical, Christian, anime genres
 • Native Android audio playback
 
 **Subject Cards**
@@ -193,7 +190,7 @@ No ads. No subscriptions. No in-app purchases. Just powerful tools to help you s
 **Download Vibe-Tutor today and turn homework from overwhelming to manageable!**
 
 Have feedback? Contact us at [support email]
-Privacy Policy: <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
+Privacy Policy: <https://vibe-tutor-api-734857480460.us-east4.run.app/privacy>
 
 ---
 

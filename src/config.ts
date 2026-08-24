@@ -28,6 +28,7 @@ const isNativeCapacitor =
 // ============== URL CONFIGURATION ==============
 // Production: Google Cloud Run
 const PRODUCTION_BACKEND_URL = 'https://vibe-tutor-api-734857480460.us-east4.run.app';
+export const PRIVACY_POLICY_URL = `${PRODUCTION_BACKEND_URL}/privacy`;
 const allowNativeLocalApi = import.meta.env.VITE_ALLOW_NATIVE_LOCAL_API === 'true';
 const runtimeApiUrl =
   typeof window !== 'undefined'
