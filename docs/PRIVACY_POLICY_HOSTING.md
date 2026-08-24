@@ -1,23 +1,29 @@
-# Privacy Policy Hosting (GitHub Pages)
+# Privacy Policy Hosting
 
 Google Play requires a publicly accessible privacy policy URL.
-This app uses `apps/vibe-tutor/privacy-policy.html` as the source.
 
-## Recommended URL
+## URL to paste in Play Console (live now)
 
-Host as a static page on GitHub Pages (or equivalent static hosting) and use a stable URL like:
+`https://vibe-tutor-api-734857480460.us-east4.run.app/privacy`
 
-- `https://freshwaterbruce2.github.io/vibetech/privacy-policy/`
+This is served from the production API (`GET /privacy` in `render-backend/server.mjs`). Confirm it returns 200 before every submission.
 
-## Publish Steps
+## Canonical source files (keep in sync)
 
-1. Copy current policy content from `apps/vibe-tutor/privacy-policy.html`.
-2. Publish it to your static site repo/page path for `privacy-policy`.
-3. Confirm URL is reachable without authentication.
-4. Update Play Console Privacy Policy field to this URL.
-5. Update in-app settings/help links to the same URL.
+- `docs/PRIVACY_POLICY.md`
+- `docs/privacy-policy/index.html`
+- `public/privacy-policy.html`
+- `privacy-policy.html`
+- the `/privacy` HTML string in `render-backend/server.mjs`
+- in-app copy in `src/components/settings/PrivacyPolicy.tsx`
 
-## Change Control
+The in-app settings screen also links to the live URL above.
+
+## Optional GitHub Pages
+
+A workflow at `.github/workflows/privacy-policy-pages.yml` can publish `docs/privacy-policy/index.html` to GitHub Pages if you enable Pages → GitHub Actions on this repo. Until that is live, **do not** use `https://freshwaterbruce2.github.io/vibetech/privacy-policy/` (that URL 404s).
+
+## Change control
 
 - Update the "Last updated" date whenever policy text changes.
 - Keep Play Console Data Safety answers aligned with this document.

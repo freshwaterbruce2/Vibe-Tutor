@@ -147,7 +147,7 @@
 **Privacy policy URL:**
 
 ```
-https://freshwaterbruce2.github.io/vibetech/privacy-policy/
+https://vibe-tutor-api-734857480460.us-east4.run.app/privacy
 ```
 
 **Click:** Save
@@ -160,10 +160,12 @@ https://freshwaterbruce2.github.io/vibetech/privacy-policy/
 
 In App content / permissions declarations, ensure wording matches manifest permissions:
 
-- `RECORD_AUDIO`: voice input for chat
-- `READ_MEDIA_AUDIO` and `READ_EXTERNAL_STORAGE (maxSdkVersion=32)`: audio library/file access where used
-- `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MEDIA_PLAYBACK`: background audio playback
+- `RECORD_AUDIO`: optional voice homework entry (not chat). Users can type instead.
+- `READ_EXTERNAL_STORAGE (maxSdkVersion=32)`: optional local export/backup on Android 12 and below
+- `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MEDIA_PLAYBACK`: background radio playback
 - `WAKE_LOCK`: focus timer/session continuity
+
+Do **not** declare `READ_MEDIA_AUDIO`. The app streams radio URLs and does not read the device audio library.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **App:** Vibe Tutor  
 **Prepared:** March 10, 2026  
-**Use with:** [DATA_SAFETY.md](V:\monorepo\apps\vibe-tutor\docs\DATA_SAFETY.md), [PRIVACY_POLICY.md](V:\monorepo\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
+**Use with:** [DATA_SAFETY.md](DATA_SAFETY.md), [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 
 This sheet is written as a fill-in guide for Play Console screens.
 
@@ -167,9 +167,9 @@ Use the public URL you actually host.
 
 Recommended format from current repo notes:
 
-`https://freshwaterbruce2.github.io/vibetech/privacy-policy/`
+`https://vibe-tutor-api-734857480460.us-east4.run.app/privacy`
 
-Do not submit with an unreachable URL.
+Do not submit with an unreachable URL. Do not use `https://freshwaterbruce2.github.io/vibetech/privacy-policy/` (404).
 
 ## 8. Permissions Cross-Check
 
@@ -179,13 +179,9 @@ Use these explanations if Play asks about permissions elsewhere in App content.
 
 `Used only for optional in-app voice homework entry. Users can type instead of using the microphone.`
 
-### `READ_MEDIA_AUDIO`
-
-`Used for optional audio-related features where audio/media access is needed on supported Android versions.`
-
 ### `READ_EXTERNAL_STORAGE` (`maxSdkVersion=32`)
 
-`Legacy permission used only on older Android versions for optional media/file-related functionality.`
+`Legacy permission used only on Android 12 and below for optional user-initiated local export/backup. The app does not read the device music library.`
 
 ### `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`
 
@@ -208,17 +204,29 @@ If reviewer clarification is needed:
 
 `The app includes private user-to-AI tutoring chat only. User messages are not posted publicly and are not visible to other users.`
 
-## 10. Final Submission Check
+## 10. Generative AI
+
+AI Tutor and AI Buddy are text-to-text chatbots (a central feature).
+
+Play Console answers:
+
+- The app generates AI content: `Yes`
+- Users can report or flag AI content in-app without leaving the app: `Yes` (report control on chat bubbles)
+- Restricted content is filtered: `Yes` (safety classifier + crisis responses + provider filters)
+
+Listing copy should say tutoring replies are AI-generated.
+
+## 11. Final Submission Check
 
 Before clicking submit in Play Console, verify all of these match:
 
-- [DATA_SAFETY.md](V:\monorepo\apps\vibe-tutor\docs\DATA_SAFETY.md)
-- [PRIVACY_POLICY.md](V:\monorepo\apps\vibe-tutor\docs\PRIVACY_POLICY.md)
+- [DATA_SAFETY.md](DATA_SAFETY.md)
+- [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 - hosted privacy-policy URL
 - Android manifest permissions
 - target audience selections
 
-## 11. Recommended Final Answer Set
+## 12. Recommended Final Answer Set
 
 Use this exact short version:
 

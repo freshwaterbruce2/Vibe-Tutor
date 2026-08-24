@@ -14,9 +14,10 @@ interface FirstRunOnboardingProps {
 }
 
 const WELCOME_TOKENS = 25;
+const ONBOARDING_STEPS = 4;
 
 const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
-  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [userType, setUserType] = useState<'kid' | 'parent' | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -45,10 +46,10 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
       <div className="w-full max-w-md glass-card rounded-2xl p-8 border border-[var(--glass-border)] space-y-6">
         <div className="space-y-2">
           <p className="text-center text-sm text-[var(--text-secondary)]" aria-live="polite">
-            Step {step + 1} of 3
+            Step {step + 1} of {ONBOARDING_STEPS}
           </p>
           <div className="flex justify-center gap-2" aria-label="Onboarding progress">
-            {[0, 1, 2].map((i) => (
+            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
               <div
                 key={i}
                 aria-hidden="true"
@@ -70,6 +71,26 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
                 </div>
               </div>
             </div>
+            <h1 className="text-3xl font-bold neon-text-primary">Before you start</h1>
+            <p className="text-[var(--text-secondary)]">
+              Vibe Tutor is for students aged <strong>13 and older</strong>. It is not directed to
+              children under 13.
+            </p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              If you are a parent, confirm that the student who will use this app is 13 or older.
+            </p>
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="glass-button w-full py-4 rounded-xl font-semibold text-white hover:scale-105 transition-transform focus-glow"
+            >
+              I confirm I am 13 or older
+            </button>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="space-y-6 text-center">
             <h1 className="text-3xl font-bold neon-text-primary">Welcome to {ONBOARDING_BRAND.title}</h1>
             <p className="text-sm text-[var(--text-secondary)]">{ONBOARDING_BRAND.subtitle}</p>
             <p className="text-[var(--text-secondary)]">Who&apos;s using this app?</p>
@@ -78,31 +99,38 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
                 type="button"
                 onClick={() => {
                   setUserType('kid');
-                  setStep(1);
+                  setStep(2);
                 }}
                 className="glass-card p-6 rounded-xl hover:scale-105 transition-transform border-2 border-transparent hover:border-[var(--primary-accent)] focus-glow"
               >
-                <div className="font-semibold">I&apos;m the kid</div>
+                <div className="font-semibold">I&apos;m the student</div>
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setUserType('parent');
-                  setStep(1);
+                  setStep(2);
                 }}
                 className="glass-card p-6 rounded-xl hover:scale-105 transition-transform border-2 border-transparent hover:border-[var(--primary-accent)] focus-glow"
               >
                 <div className="font-semibold">I&apos;m the parent</div>
               </button>
             </div>
+            <button
+              type="button"
+              onClick={() => setStep(0)}
+              className="glass-card w-full py-3 rounded-xl font-semibold text-[var(--text-primary)] transition-transform hover:scale-[1.02] focus-glow"
+            >
+              Back
+            </button>
           </div>
         )}
 
-        {step === 1 && (
+        {step === 2 && (
           <div className="space-y-6 text-center">
             <h1 className="text-2xl font-bold neon-text-primary">Pick your avatar</h1>
             <p className="text-[var(--text-secondary)]">
-              {userType === 'kid' ? 'This will be you!' : 'Pick one for your kid.'}
+              {userType === 'kid' ? 'This will be you!' : 'Pick one for the student.'}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {ONBOARDING_AVATARS.map((option) => (
@@ -144,14 +172,14 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => setStep(0)}
+                onClick={() => setStep(1)}
                 className="glass-card flex-1 py-3 rounded-xl font-semibold text-[var(--text-primary)] transition-transform hover:scale-[1.02] focus-glow"
               >
                 Back
               </button>
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 disabled={!avatar}
                 className="glass-button flex-1 py-3 rounded-xl font-semibold text-white transition-transform hover:scale-[1.02] focus-glow disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
               >
@@ -161,7 +189,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
           </div>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <div className="space-y-6 text-center">
             <div className="flex justify-center">
               {selectedAvatar ? (
@@ -208,7 +236,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 disabled={isSubmitting}
                 className="glass-card flex-1 py-4 rounded-xl font-semibold text-[var(--text-primary)] transition-transform hover:scale-[1.02] focus-glow disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
               >

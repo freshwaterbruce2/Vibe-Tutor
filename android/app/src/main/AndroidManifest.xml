@@ -54,10 +54,10 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Needed for in-app voice input (Web Speech API / mic access) -->
+    <!-- Optional voice homework entry (Web Speech API). Users can type instead. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Legacy local export/sync on Android 12 and below. Radio streams URLs; no device audio library. -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- Required since Android 14 (SDK 34) — native audio plugin uses foreground service for playback -->

@@ -2,11 +2,27 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import FirstRunOnboarding from '../FirstRunOnboarding';
 
+function completeAgeGate() {
+  fireEvent.click(screen.getByRole('button', { name: /i confirm i am 13 or older/i }));
+}
+
 describe('FirstRunOnboarding', () => {
+  it('requires a 13+ confirmation before role selection', () => {
+    render(<FirstRunOnboarding onComplete={vi.fn()} />);
+
+    expect(screen.getByText(/students aged/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /i'm the student/i })).not.toBeInTheDocument();
+
+    completeAgeGate();
+
+    expect(screen.getByRole('button', { name: /i'm the student/i })).toBeInTheDocument();
+  });
+
   it('lets users go back from avatar selection to role selection', () => {
     render(<FirstRunOnboarding onComplete={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /i'm the kid/i }));
+    completeAgeGate();
+    fireEvent.click(screen.getByRole('button', { name: /i'm the student/i }));
 
     expect(screen.getByText('Pick your avatar')).toBeInTheDocument();
 
@@ -18,7 +34,8 @@ describe('FirstRunOnboarding', () => {
   it('requires explicit confirmation after selecting an avatar', () => {
     render(<FirstRunOnboarding onComplete={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /i'm the kid/i }));
+    completeAgeGate();
+    fireEvent.click(screen.getByRole('button', { name: /i'm the student/i }));
 
     const continueButton = screen.getByRole('button', { name: /continue/i });
     expect(continueButton).toBeDisabled();
@@ -41,7 +58,8 @@ describe('FirstRunOnboarding', () => {
 
     render(<FirstRunOnboarding onComplete={onComplete} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /i'm the kid/i }));
+    completeAgeGate();
+    fireEvent.click(screen.getByRole('button', { name: /i'm the student/i }));
     fireEvent.click(screen.getByRole('button', { name: /choose avatar focus gamer/i }));
     fireEvent.click(screen.getByRole('button', { name: /continue/i }));
 
@@ -63,7 +81,8 @@ describe('FirstRunOnboarding', () => {
     const onComplete = vi.fn().mockResolvedValue(undefined);
     render(<FirstRunOnboarding onComplete={onComplete} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /i'm the kid/i }));
+    completeAgeGate();
+    fireEvent.click(screen.getByRole('button', { name: /i'm the student/i }));
     fireEvent.click(screen.getByRole('button', { name: /choose avatar focus gamer/i }));
     fireEvent.click(screen.getByRole('button', { name: /continue/i }));
 

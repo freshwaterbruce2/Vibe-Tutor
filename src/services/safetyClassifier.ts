@@ -22,8 +22,8 @@ import { logger } from '../utils/logger';
 export const SAFETY_CLASSIFIER_MODEL = 'deepseek/deepseek-v3.2';
 
 const CLASSIFIER_SYSTEM_PROMPT = [
-  "You are a child-safety classifier for a kids' homework and companion chat app.",
-  "Classify ONLY the child's latest message for a genuine crisis disclosure.",
+  "You are a safety classifier for a teen homework and companion chat app (ages 13+).",
+  "Classify ONLY the student's latest message for a genuine crisis disclosure.",
   '',
   'Categories:',
   '- "self-harm": suicidal thoughts, intent or planning; wanting to die or',

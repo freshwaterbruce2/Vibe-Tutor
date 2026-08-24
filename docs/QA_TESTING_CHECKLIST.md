@@ -1111,9 +1111,8 @@ adb shell "watch -n 1 'dumpsys meminfo com.vibetech.tutor | grep TOTAL'"
   - [ ] Target SDK: 34 (Android 14)
   - [ ] Required permissions documented:
     - [ ] INTERNET (required)
-    - [ ] RECORD_AUDIO (voice input)
-    - [ ] READ_EXTERNAL_STORAGE (maxSdkVersion=32, legacy media read)
-    - [ ] READ_MEDIA_AUDIO (Android 13+ media read)
+    - [ ] RECORD_AUDIO (optional voice homework entry)
+    - [ ] READ_EXTERNAL_STORAGE (maxSdkVersion=32, legacy local export)
     - [ ] WAKE_LOCK (focus timer)
     - [ ] FOREGROUND_SERVICE (media playback service)
     - [ ] FOREGROUND_SERVICE_MEDIA_PLAYBACK (Android 14+ media playback)
@@ -1140,7 +1139,7 @@ adb shell "watch -n 1 'dumpsys meminfo com.vibetech.tutor | grep TOTAL'"
   - [ ] Logcat shows no cleartext traffic
 
 - [ ] **Data Privacy**
-  - [ ] Privacy Policy accessible at: <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
+  - [ ] Privacy Policy accessible at: <https://vibe-tutor-api-734857480460.us-east4.run.app/privacy>
   - [ ] Privacy Policy explains:
     - [ ] What data is collected
     - [ ] How data is used
@@ -1162,7 +1161,7 @@ adb shell "watch -n 1 'dumpsys meminfo com.vibetech.tutor | grep TOTAL'"
 
 - [ ] **Privacy Policy**
   - [ ] URL verified and accessible
-  - [ ] URL in Play Console matches: <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
+  - [ ] URL in Play Console matches: <https://vibe-tutor-api-734857480460.us-east4.run.app/privacy>
   - [ ] Policy explains data handling
   - [ ] Policy mentions Families policy (if applicable)
 

@@ -1,5 +1,7 @@
 # 🚀 Vibe-Tutor v1.4.0 - Submission Ready Summary
 
+> **Historical (November 2024).** Do not treat this as current Play Store status. See `docs/PLAY_STORE_RELEASE_CHECKLIST.md`.
+
 **Date:** November 14, 2024
 **Status:** ✅ 95% READY FOR SUBMISSION
 

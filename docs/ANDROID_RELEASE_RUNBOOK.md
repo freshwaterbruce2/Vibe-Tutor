@@ -6,21 +6,17 @@ This runbook prepares `vibe-tutor` for Google Play internal testing and producti
 
 - JDK 17 installed and available in `PATH`
 - Android SDK + build tools installed
-- `pnpm install` completed at repo root (`V:\monorepo`)
+- `pnpm install` completed at repo root
 - Play Console app created for package id `com.vibetech.tutor`
 - Play App Signing enabled in Play Console
 
 ## 2) Signing Setup (Upload Key)
 
-From `apps/vibe-tutor/android`:
+From `android/`:
 
 1. Generate upload keystore:
-   - `.\generate-keystore.ps1 -StorePassword "<strong-password>"`
-2. Ensure `keystore.properties` exists in `apps/vibe-tutor/android` with:
-   - `storeFile`
-   - `storePassword`
-   - `keyAlias`
-   - `keyPassword`
+   - `.\generate-keystore.ps1 -StorePassword "<strong-password>"` (store the file **outside** the git tree)
+2. Set signing credentials via env vars or `~/.gradle/gradle.properties` (see `android/keystore.properties.template`). Gradle does **not** read `keystore.properties`.
 3. Confirm no secrets are tracked:
    - `.gitignore` excludes `*.keystore` and `**/android/keystore.properties`
 
@@ -32,16 +28,16 @@ From `apps/vibe-tutor/android`:
   - `versionCode` from semver as `major * 10000 + minor * 100 + patch`.
 - Keep package version monotonic for every release (`1.5.8` -> `1.5.9`, etc.).
 
-## 4) Build and Validate with Nx
+## 4) Build and Validate
 
-Run from repo root (`V:\monorepo`):
+Run from repo root:
 
-```powershell
-pnpm nx run vibe-tutor:build
-pnpm nx run vibe-tutor:test
-pnpm nx run vibe-tutor:android:sync
-pnpm nx run vibe-tutor:android:build
-pnpm nx run vibe-tutor:android:full-release
+```bash
+pnpm run typecheck
+pnpm run test:unit
+pnpm run build
+pnpm exec cap sync android
+pnpm run android:full-release
 ```
 
 Expected release artifact:

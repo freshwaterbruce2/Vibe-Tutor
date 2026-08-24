@@ -277,7 +277,7 @@ When releasing new versions:
 
 If Google requests additional information, provide:
 
-1. **Privacy Policy** - <https://freshwaterbruce2.github.io/vibetech/privacy-policy/>
+1. **Privacy Policy** - <https://vibe-tutor-api-734857480460.us-east4.run.app/privacy>
 2. **Data Safety Documentation** - docs/DATA_SAFETY.md
 3. **Screenshots** - Show no inappropriate content
 4. **AI Moderation Statement**:

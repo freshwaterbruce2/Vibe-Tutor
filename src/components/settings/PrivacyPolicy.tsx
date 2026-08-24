@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
+import { PRIVACY_POLICY_URL } from '../../config';
+
 /**
  * Collapsible privacy policy shown in the Data Management settings area.
  * Content reflects how Vibe Tutor actually handles data: local-first storage,
- * an AI proxy, anonymous crash reporting, no ads, and no data sale. Written for
+ * an AI proxy, no crash-reporting SDK, no ads, and no data sale. Written for
  * the Teens (13+) audience the app targets on the Play Store.
  */
 const PrivacyPolicy = () => {
@@ -37,8 +39,9 @@ const PrivacyPolicy = () => {
           </p>
           <p>
             <strong>AI features.</strong> When you use the AI Tutor or AI Buddy, your messages are
-            sent through our backend to an AI model provider (OpenRouter / DeepSeek) only to generate
-            a reply. Messages are not used to build a personal profile and are never sold.
+            sent through our backend to an AI model provider (Google Gemini, or OpenRouter as a
+            fallback) only to generate a reply. Messages are not used to build a personal profile
+            and are never sold.
           </p>
           <p>
             <strong>Safety.</strong> Chat includes an automatic safety check that responds to
@@ -46,12 +49,8 @@ const PrivacyPolicy = () => {
             resources, independent of the AI model.
           </p>
           <p>
-            <strong>Error reporting.</strong> We use anonymous crash and error diagnostics (Sentry)
-            to fix bugs. These include device and error details, not your chat content.
-          </p>
-          <p>
             <strong>No ads, no data sale.</strong> Vibe Tutor shows no third-party advertising and
-            does not sell your data.
+            does not sell your data. The app does not use a third-party crash-reporting SDK.
           </p>
           <p>
             <strong>Parental controls.</strong> A parent can set screen-time limits and quiet hours
@@ -62,8 +61,20 @@ const PrivacyPolicy = () => {
             time from this Data Management screen.
           </p>
           <p>
-            <strong>Contact.</strong> Questions about privacy? Reach the developer at the support
-            contact listed on the app&apos;s store page.
+            <strong>Full policy.</strong>{' '}
+            <a
+              href={PRIVACY_POLICY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-[var(--secondary-accent)]"
+            >
+              Read the full privacy policy
+            </a>
+            .
+          </p>
+          <p>
+            <strong>Contact.</strong> Questions about privacy? Email freshwaterbruce2@gmail.com or
+            use the support contact listed on the app&apos;s store page.
           </p>
         </div>
       )}
