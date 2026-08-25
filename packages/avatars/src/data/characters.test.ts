@@ -10,7 +10,7 @@ describe('AVATAR_CHARACTERS', () => {
 
     expect(new Set(imagePaths).size).toBe(6);
     expect(new Set(fallbacks).size).toBe(6);
-    expect(imagePaths.every((path) => path.includes('avatar-'))).toBe(true);
+    expect(imagePaths.every((path) => path.startsWith('data:image/png;base64,'))).toBe(true);
     expect(fallbacks).not.toContain('🎭');
   });
 });

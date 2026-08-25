@@ -27,10 +27,11 @@ describe('FirstRunOnboarding', () => {
     expect(screen.getByText('Pick your avatar')).toBeInTheDocument();
     const portraitSrcs = screen
       .getAllByRole('img')
-      .map((node) => node.getAttribute('src') ?? node.textContent)
+      .map((node) => node.getAttribute('src'))
       .filter((value): value is string => Boolean(value));
     expect(portraitSrcs).toHaveLength(6);
     expect(new Set(portraitSrcs).size).toBe(6);
+    expect(portraitSrcs.every((src) => src.startsWith('data:image/png;base64,'))).toBe(true);
 
     fireEvent.click(screen.getByRole('button', { name: /back/i }));
 
@@ -47,7 +48,7 @@ describe('FirstRunOnboarding', () => {
     expect(continueButton).toBeDisabled();
 
     const avatarImage = screen.getByRole('img', { name: /focus gamer/i });
-    expect(avatarImage).toHaveAttribute('src', expect.stringContaining('avatar-boy-headphones'));
+    expect(avatarImage).toHaveAttribute('src', expect.stringMatching(/^data:image\/png;base64,/));
 
     fireEvent.click(screen.getByRole('button', { name: /choose avatar focus gamer/i }));
 

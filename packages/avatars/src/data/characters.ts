@@ -1,10 +1,12 @@
 import type { AvatarCharacter } from '../types';
-import aiBuddy from '../assets/avatar-ai-buddy.png';
-import boyHeadphones from '../assets/avatar-boy-headphones.png';
-import calmReader from '../assets/avatar-calm-reader.png';
-import girlGlasses from '../assets/avatar-girl-glasses.png';
-import teenCap from '../assets/avatar-teen-cap.png';
-import teenNeonHair from '../assets/avatar-teen-neon-hair.png';
+import {
+  aiBuddy,
+  boyHeadphones,
+  calmReader,
+  girlGlasses,
+  teenCap,
+  teenNeonHair,
+} from './avatarDataUris';
 
 export const DEFAULT_AVATAR_IMAGE = boyHeadphones;
 

@@ -41,7 +41,7 @@ describe('AvatarShopUnified', () => {
     render(<AvatarShopUnified userTokens={0} onSpendTokens={vi.fn()} />);
 
     const scienceAvatar = await screen.findByRole('img', { name: /science star/i });
-    expect(scienceAvatar).toHaveAttribute('src', expect.stringContaining('avatar-girl-glasses'));
+    expect(scienceAvatar).toHaveAttribute('src', expect.stringMatching(/^data:image\/png;base64,/));
 
     dataStoreMock.saveAvatarState.mockClear();
 
