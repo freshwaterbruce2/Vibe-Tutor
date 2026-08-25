@@ -10,8 +10,9 @@ describe('shared neon glass page chrome', () => {
     expect(theme).toContain('.vibe-page-shell');
     expect(theme).toContain('.vibe-hero-title');
     expect(theme).toContain('.vibe-cta');
-    expect(theme).toContain('--primary-accent: #e879f9');
+    expect(theme).toContain('--primary-accent: #ec4899');
     expect(theme).toContain('--secondary-accent: #f9a8d4');
+    expect(theme).toContain('--background-main: #0c0618');
   });
 
   it('keeps Learning Realms on the shared shell instead of navy/gold', () => {
