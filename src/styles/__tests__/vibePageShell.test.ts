@@ -16,6 +16,8 @@ describe('shared neon glass page chrome', () => {
     expect(theme).toContain('.circuit-bg');
     expect(theme).toContain('.vibe-page-shell__content');
     expect(theme).toContain('.subject-card');
+    expect(theme).toContain('.quick-stat-card');
+    expect(theme).toContain('overflow-wrap: anywhere');
   });
 
   it('keeps Learning Realms on the shared shell instead of navy/gold', () => {
