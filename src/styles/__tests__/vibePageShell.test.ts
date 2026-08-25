@@ -13,12 +13,16 @@ describe('shared neon glass page chrome', () => {
     expect(theme).toContain('--primary-accent: #ec4899');
     expect(theme).toContain('--secondary-accent: #f9a8d4');
     expect(theme).toContain('--background-main: #0c0618');
+    expect(theme).toContain('rgba(236, 72, 153, 0.28)');
+    expect(theme).toContain('rgba(124, 58, 237, 0.32)');
   });
 
   it('keeps Learning Realms on the shared shell instead of navy/gold', () => {
     const realms = read('../../components/dashboard/SubjectCards.tsx');
     expect(realms).toContain('vibe-page-shell');
     expect(realms).toContain('vibe-hero-title');
+    expect(realms).toContain('Pick a subject');
+    expect(realms).not.toContain('Enter Realm!');
     expect(realms).not.toContain('#0a0f1c');
     expect(realms).not.toContain('from-yellow-400 via-orange-500 to-red-500');
   });

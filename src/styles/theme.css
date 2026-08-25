@@ -120,10 +120,15 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
-/* Match the approved onboarding canvas: night sky, no extra orbs */
+/* Realms + Shop keep the richer magenta/violet/cyan orbs.
+   Onboarding stays on glass-panel + the body night-sky canvas. */
 .vibe-page-shell {
   min-height: 100%;
-  background: transparent;
+  background:
+    radial-gradient(ellipse 80% 50% at 12% -6%, rgba(236, 72, 153, 0.28), transparent 55%),
+    radial-gradient(ellipse 70% 48% at 92% 0%, rgba(124, 58, 237, 0.32), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(34, 211, 238, 0.1), transparent 50%),
+    transparent;
 }
 
 .vibe-hero-title {

@@ -40,7 +40,7 @@ const navItems = [
   },
   { view: 'tutor', icon: GraduationCap, label: 'Vibe Tutor', gradient: 'vibe-gradient-secondary' },
   { view: 'friend', icon: Heart, label: 'Vibe Buddy', gradient: 'vibe-gradient-accent' },
-  { view: 'cards', icon: Layers, label: 'Learning Realms', gradient: 'vibe-gradient-primary' },
+  { view: 'cards', icon: Layers, label: 'Subjects', gradient: 'vibe-gradient-primary' },
   { view: 'shop', icon: Coins, label: '🛒 Reward Shop', gradient: 'vibe-gradient-secondary' },
   { view: 'games', icon: Brain, label: 'Brain Gym', gradient: 'vibe-gradient-accent' },
   { view: 'schedules', icon: Calendar, label: 'Schedules', gradient: 'vibe-gradient-primary' },
