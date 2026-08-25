@@ -441,7 +441,7 @@ const App = () => {
               minLeftPercent={25}
               maxLeftPercent={55}
               leftClassName="h-full overflow-hidden bg-[var(--background-main)]"
-              rightClassName="h-full overflow-hidden bg-[var(--background-card)]"
+              rightClassName="h-full overflow-hidden bg-[var(--background-main)]"
               left={
                 <ErrorBoundary>
                   <div className="h-full overflow-hidden">

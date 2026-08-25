@@ -1,7 +1,6 @@
 import { ChevronLeft, Star } from 'lucide-react';
 import { useState } from 'react';
-import type { ShopItem } from '@vibetech/avatars';
-import { AvatarImage } from '@vibetech/avatars';
+import { AVATAR_CHARACTERS, AvatarImage, type ShopItem } from '@vibetech/avatars';
 import { AvatarPreview } from './AvatarPreview';
 import { useAvatarShop } from './useAvatarShop';
 
@@ -58,7 +57,12 @@ function ItemCard({ item, isOwned, isEquipped, canBuy, purchaseCount, userTokens
             <span className="relative z-10 text-2xl">{item.imageUrl}</span>
           </>
         ) : item.type === 'avatar' ? (
-          <AvatarImage src={item.imageUrl} alt={item.name} size={72} />
+          <AvatarImage
+            src={item.imageUrl}
+            alt={item.name}
+            size={72}
+            fallback={AVATAR_CHARACTERS.find((character) => character.id === item.id)?.fallbackEmoji}
+          />
         ) : (
           <span className="text-4xl">
             {item.type === 'badge' ? (item.badgeEmoji ?? item.imageUrl) : item.imageUrl}

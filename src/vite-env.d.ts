@@ -15,3 +15,8 @@ interface ImportMeta {
 }
 
 declare module 'sudoku-umd';
+
+declare module '*.png?inline' {
+  const src: string;
+  export default src;
+}

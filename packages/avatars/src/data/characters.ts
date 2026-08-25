@@ -1,10 +1,21 @@
 import type { AvatarCharacter } from '../types';
+import {
+  aiBuddy,
+  boyHeadphones,
+  calmReader,
+  girlGlasses,
+  teenCap,
+  teenNeonHair,
+} from './avatarDataUris';
+
+export const DEFAULT_AVATAR_IMAGE = boyHeadphones;
 
 export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-boy-headphones',
     name: 'Focus Gamer',
-    imagePath: '/avatars/avatar-boy-headphones.png',
+    imagePath: boyHeadphones,
+    fallbackEmoji: '🎧',
     rarity: 'common',
     unlockLevel: 1,
     description: 'A focused gamer ready to learn.',
@@ -12,7 +23,8 @@ export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-girl-glasses',
     name: 'Science Star',
-    imagePath: '/avatars/avatar-girl-glasses.png',
+    imagePath: girlGlasses,
+    fallbackEmoji: '👓',
     rarity: 'common',
     unlockLevel: 1,
     description: 'Sharp eyes, sharper mind.',
@@ -20,7 +32,8 @@ export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-teen-cap',
     name: 'Street Scholar',
-    imagePath: '/avatars/avatar-teen-cap.png',
+    imagePath: teenCap,
+    fallbackEmoji: '🧢',
     rarity: 'rare',
     unlockLevel: 5,
     description: 'Cool, calm, and knowledgeable.',
@@ -28,7 +41,8 @@ export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-teen-neon-hair',
     name: 'Neon Thinker',
-    imagePath: '/avatars/avatar-teen-neon-hair.png',
+    imagePath: teenNeonHair,
+    fallbackEmoji: '💡',
     rarity: 'rare',
     unlockLevel: 5,
     description: 'Bright ideas, brighter style.',
@@ -36,7 +50,8 @@ export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-ai-buddy',
     name: 'AI Buddy',
-    imagePath: '/avatars/avatar-ai-buddy.png',
+    imagePath: aiBuddy,
+    fallbackEmoji: '🤖',
     rarity: 'epic',
     unlockLevel: 10,
     description: 'A digital companion for deep learning.',
@@ -44,7 +59,8 @@ export const AVATAR_CHARACTERS: AvatarCharacter[] = [
   {
     id: 'avatar-calm-reader',
     name: 'Calm Reader',
-    imagePath: '/avatars/avatar-calm-reader.png',
+    imagePath: calmReader,
+    fallbackEmoji: '📖',
     rarity: 'common',
     unlockLevel: 1,
     description: 'Patient, thoughtful, always learning.',

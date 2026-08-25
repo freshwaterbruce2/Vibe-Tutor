@@ -1,58 +1,49 @@
-import {
-  Atom,
-  BookOpen,
-  Clock,
-  Heart,
-  PlayCircle,
-  Sparkles,
-  Star,
-  TrendingUp,
-  Trophy,
-  Zap,
-} from 'lucide-react';
+import { PlayCircle, Star, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { BLAKE_CONFIG } from '../../config/blakeConfig';
+import { SUBJECTS, SUBJECT_THEME } from '../realms/subjectTheme';
 import { getAllProgress } from '../../services/progressionService';
 import { getTodayEarnings } from '../../services/tokenService';
 import type { SubjectProgress, SubjectType } from '../../types';
 import { logger } from '../../utils/logger';
+import VibePageShell from '../ui/VibePageShell';
 
 interface SubjectCardsProps {
   onStartWorksheet: (subject: SubjectType) => void;
   userTokens: number;
 }
 
-const CARD_CONFIG: Record<SubjectType, { icon: typeof Zap; color: string; bgColor: string }> = {
-  Math: { icon: Zap, color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-500/10' },
-  Science: { icon: Atom, color: 'from-sky-500 to-violet-500', bgColor: 'bg-sky-500/10' },
-  History: { icon: Clock, color: 'from-violet-500 to-sky-500', bgColor: 'bg-violet-500/10' },
-  Bible: { icon: Heart, color: 'from-sky-500 to-violet-500', bgColor: 'bg-sky-500/10' },
-  'Language Arts': {
-    icon: BookOpen,
-    color: 'from-blue-500 to-cyan-500',
-    bgColor: 'bg-blue-500/10',
-  },
-};
+function fallbackProgress(subject: SubjectType): SubjectProgress {
+  return {
+    subject,
+    currentDifficulty: 'Beginner',
+    starsCollected: 0,
+    totalWorksheetsCompleted: 0,
+    averageScore: 0,
+    bestScore: 0,
+    currentStreak: 0,
+    history: [],
+    unlockedAt: 0,
+  };
+}
 
-const SUBJECTS: SubjectType[] = ['Math', 'Science', 'History', 'Bible', 'Language Arts'];
-
-/** Render n stars: filled up to `filledCount`, the rest gray */
 function Stars({
   filled,
+  filledClass,
   total = 5,
   size = 20,
 }: {
   filled: number;
+  filledClass: string;
   total?: number;
   size?: number;
 }) {
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-0.5" aria-hidden="true">
       {Array.from({ length: total }, (_, i) => (
         <Star
           key={i}
           size={size}
-          className={i < filled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}
+          className={i < filled ? filledClass : 'text-white/40'}
         />
       ))}
     </div>
@@ -75,252 +66,184 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
     void load();
   }, []);
 
-  // Pick today's daily challenge from blakeConfig (rotate by day-of-year, stable per mount)
-  const [dailyChallenge] = useState(() => {
-    const challenges = BLAKE_CONFIG.dailyChallenges;
-    if (!challenges || challenges.length === 0) {
-      return { task: 'Complete any quest today!', reward: 10 };
-    }
-    const dayIndex = Math.floor(Date.now() / 86_400_000) % challenges.length;
-    return challenges[dayIndex]!;
-  });
+  const recommendedSubject = useMemo(() => {
+    const unstarted = SUBJECTS.find((subject) => {
+      const progress = allProgress[subject];
+      return !progress || progress.totalWorksheetsCompleted === 0;
+    });
+    if (unstarted) return unstarted;
 
-  // Count today's total worksheets completed across all subjects
-  const todayWorksheets = useMemo(() => {
-    return Object.values(allProgress).reduce(
-      (sum, p) => sum + (p?.totalWorksheetsCompleted ?? 0),
-      0,
-    );
+    return SUBJECTS.reduce((lowest, subject) => {
+      const lowestStars = allProgress[lowest]?.starsCollected ?? 0;
+      const subjectStars = allProgress[subject]?.starsCollected ?? 0;
+      return subjectStars < lowestStars ? subject : lowest;
+    }, SUBJECTS[0]!);
   }, [allProgress]);
 
+  const orderedSubjects = useMemo(
+    () =>
+      [...SUBJECTS].sort((a, b) => {
+        if (a === recommendedSubject) return -1;
+        if (b === recommendedSubject) return 1;
+        return 0;
+      }),
+    [recommendedSubject],
+  );
+
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-900/20 via-[#0a0f1c] to-[#0a0f1c]">
-      {/* Header — Gaming Style */}
-      <div className="text-center mb-8 md:mb-12">
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-          <Trophy size={40} className="text-yellow-500 animate-bounce" />
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 drop-shadow-lg tracking-wide">
-            Learning Realms
-          </h1>
-          <Sparkles size={32} className="text-violet-500 animate-pulse" />
-        </div>
-        <p className="text-gray-300 font-medium text-base md:text-lg px-4">
-          Embark on epic quests to earn stars, collect tokens, and level up! 🚀
+    <VibePageShell className="min-h-screen p-4 md:p-8 pb-36 md:pb-8">
+      <div className="text-center mb-8 md:mb-10">
+        <h1 className="vibe-hero-title text-4xl md:text-5xl lg:text-6xl font-black tracking-wide">
+          Pick a subject
+        </h1>
+        <p className="text-[var(--text-secondary)] font-medium text-base md:text-lg px-4 mt-3">
+          Tap a card to practice questions or play a game.
+        </p>
+        <p className="text-[var(--text-muted)] text-sm px-4 mt-2">
+          Tap a card · Practice or play · Earn stars
         </p>
 
-        {/* Token Balance HUD */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-          <div className="glass-card px-5 py-2.5 rounded-full flex items-center gap-2 border-[1px] border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-            <span className="text-2xl animate-pulse">🪙</span>
-            <span className="font-black text-xl text-yellow-400 tracking-wider">{userTokens}</span>
-            <span className="text-sm font-bold tracking-widest uppercase text-gray-400">Tokens</span>
+          <div className="vibe-chip glass-card px-5 py-2.5 rounded-full flex items-center gap-2">
+            <span className="text-2xl" aria-hidden="true">
+              🪙
+            </span>
+            <span className="font-black text-xl text-[var(--token-color)] tracking-wider">
+              {userTokens}
+            </span>
+            <span className="text-sm font-bold tracking-widest uppercase text-[var(--text-secondary)]">
+              Tokens
+            </span>
           </div>
           {todayEarnings > 0 && (
-            <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
-              <TrendingUp size={14} className="text-sky-400" />
-              <span className="text-sky-400 font-medium">+{todayEarnings} today</span>
+            <div className="vibe-chip glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+              <TrendingUp size={14} className="text-[var(--secondary-accent)]" />
+              <span className="text-[var(--secondary-accent)] font-medium">
+                +{todayEarnings} today
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Subject Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        {SUBJECTS.map((subject) => {
-          const progress = allProgress[subject];
-          const config = CARD_CONFIG[subject];
-          const Icon = config.icon;
-
-          if (!progress) return null;
-
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-7xl mx-auto">
+        {orderedSubjects.map((subject) => {
+          const progress = allProgress[subject] ?? fallbackProgress(subject);
+          const theme = SUBJECT_THEME[subject];
+          const Icon = theme.icon;
           const starsToNextLevel = 5 - progress.starsCollected;
           const progressPct = (progress.starsCollected / 5) * 100;
           const isMaxLevel =
             progress.currentDifficulty === 'Master' && progress.starsCollected >= 5;
+          const isRecommended = subject === recommendedSubject;
+          const starMessage = isMaxLevel
+            ? 'Max level — keep practicing!'
+            : progress.starsCollected === 0
+              ? 'No stars yet — tap to start'
+              : `${starsToNextLevel} star${starsToNextLevel !== 1 ? 's' : ''} to the next level`;
 
           return (
-            <div
+            <button
               key={subject}
-              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 border-[var(--glass-border)] hover:border-yellow-500/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(234,179,8,0.3)] ${config.bgColor}`}
+              type="button"
+              onClick={() => onStartWorksheet(subject)}
+              aria-label={`Practice ${subject}. ${progress.currentDifficulty}. ${progress.starsCollected} of 5 stars.`}
+              className={`subject-card relative group glass-card p-6 rounded-3xl border-2 transition-all duration-300 text-left ${theme.wash} ${theme.restBorder} ${theme.hoverBorder} ${theme.glow} ${
+                isRecommended ? `md:col-span-2 md:p-8 ring-2 ${theme.ring}` : ''
+              }`}
             >
-              {/* Subject Icon & Name */}
-              <div className="text-center mb-5">
-                <div
-                  className={`inline-flex p-5 rounded-3xl bg-gradient-to-br ${config.color} mb-4 shadow-xl group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}
-                >
-                  <Icon size={48} className="text-white drop-shadow-md" />
-                </div>
-                <h3
-                  className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${config.color}`}
-                >
-                  {subject}
-                </h3>
-              </div>
+              <div
+                className={`pointer-events-none absolute -top-16 -right-10 h-44 w-44 rounded-full blur-3xl opacity-50 ${theme.orb}`}
+              />
 
-              {/* Difficulty Badge */}
-              <div className="text-center mb-4">
+              {isRecommended && (
                 <span
-                  className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${config.color} text-white text-sm font-bold shadow-sm`}
+                  className={`absolute top-4 right-4 z-10 vibe-chip px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${theme.accentText}`}
                 >
-                  {progress.currentDifficulty} Level
+                  Start here
                 </span>
-              </div>
-
-              {/* Stars Display */}
-              <div className="mb-4">
-                <div className="flex justify-center mb-2">
-                  <Stars filled={progress.starsCollected} size={24} />
-                </div>
-                <p className="text-center text-sm text-gray-400">
-                  {isMaxLevel
-                    ? '🌟 Max Level!'
-                    : `${starsToNextLevel} star${starsToNextLevel !== 1 ? 's' : ''} to next level`}
-                </p>
-              </div>
-
-              {/* Progress Bar */}
-              {!isMaxLevel && (
-                <div className="mb-4">
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full bg-gradient-to-r ${config.color} transition-all duration-500 progress-bar-fill`}
-                      style={{ '--bar-width': `${progressPct}%` } as React.CSSProperties}
-                    />
-                  </div>
-                </div>
               )}
 
-              {/* Stats */}
-              <div className="space-y-1.5 mb-4 text-sm">
-                <div className="flex justify-between text-gray-400">
-                  <span>Quests</span>
-                  <span className="font-bold text-white">{progress.totalWorksheetsCompleted}</span>
-                </div>
-                <div className="flex justify-between text-gray-400">
-                  <span>Avg Score</span>
-                  <span className="font-bold text-white">
-                    {globalThis.Math.round(progress.averageScore)}%
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-400">
-                  <span>Best</span>
-                  <span className="font-bold text-white">
-                    {globalThis.Math.round(progress.bestScore)}%
-                  </span>
-                </div>
-                {progress.currentStreak > 0 && (
-                  <div className="flex justify-between text-gray-400">
-                    <span>Streak</span>
-                    <span className="font-bold text-orange-400">{progress.currentStreak} 🔥</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Motivational Message */}
-              <div className="mb-4 p-2.5 bg-white/5 rounded-lg border border-white/10">
-                <p className="text-xs text-center text-gray-400">
-                  {isMaxLevel
-                    ? "🌟 You're a master! Try another subject!"
-                    : progress.starsCollected === 0
-                      ? '🚀 Start your journey!'
-                      : starsToNextLevel === 1
-                        ? '🎯 One more star to level up!'
-                        : '💪 Keep practicing!'}
-                </p>
-              </div>
-
-              {/* Start Worksheet Button */}
-              <button
-                onClick={() => onStartWorksheet(subject)}
-                className={`w-full px-6 py-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 active:scale-95 transition-all bg-gradient-to-r ${config.color} shadow-lg hover:shadow-xl hover:brightness-110 text-white touch-manipulation group-hover:animate-pulse`}
+              <div
+                className={`relative z-10 ${
+                  isRecommended
+                    ? 'flex flex-col md:flex-row md:items-center md:gap-8 md:text-left'
+                    : 'text-center'
+                }`}
               >
-                <PlayCircle size={28} className="drop-shadow-sm" />
-                <span className="tracking-wide text-shadow-sm">Enter Realm!</span>
-              </button>
-            </div>
+                <div className={isRecommended ? 'text-center md:text-left shrink-0' : ''}>
+                  <div className="relative inline-flex mb-4 md:mb-0">
+                    <div
+                      className={`absolute inset-0 rounded-full blur-xl opacity-80 bg-gradient-to-br ${theme.gradient}`}
+                    />
+                    <div
+                      className={`relative inline-flex p-5 rounded-full bg-gradient-to-br ${theme.gradient} shadow-xl group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <Icon
+                        size={isRecommended ? 56 : 44}
+                        className="text-white drop-shadow-md"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`min-w-0 ${isRecommended ? 'md:flex-1' : ''}`}>
+                  <div
+                    className={`flex flex-wrap items-center gap-2 mb-1 ${
+                      isRecommended ? 'justify-center md:justify-start' : 'justify-center'
+                    }`}
+                  >
+                    <h3
+                      className={`text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.gradient}`}
+                    >
+                      {subject}
+                    </h3>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${theme.accentText} ${theme.well}`}
+                    >
+                      {progress.currentDifficulty}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[var(--text-primary)]/90">{theme.prompt}</p>
+
+                  <div
+                    className={`mt-3 ${isRecommended ? 'flex justify-center md:justify-start' : 'flex justify-center'}`}
+                  >
+                    <Stars
+                      filled={progress.starsCollected}
+                      filledClass={theme.starFilled}
+                      size={isRecommended ? 26 : 22}
+                    />
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--text-primary)]/85">{starMessage}</p>
+
+                  {!isMaxLevel && (
+                    <div className="mt-3 mb-4">
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500 progress-bar-fill`}
+                          style={{ '--bar-width': `${progressPct}%` } as React.CSSProperties}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <span
+                    className={`px-6 py-4 rounded-2xl font-black text-lg inline-flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-[0_12px_28px_-8px_rgba(0,0,0,0.65)] ring-1 ring-white/25 ${
+                      isRecommended ? 'w-full md:w-auto md:min-w-[240px]' : 'w-full'
+                    }`}
+                  >
+                    <PlayCircle size={26} className="drop-shadow-sm" />
+                    Practice {subject}
+                  </span>
+                </div>
+              </div>
+            </button>
           );
         })}
       </div>
-
-      {/* Real Daily Challenge Banner */}
-      <div className="mt-10 max-w-4xl mx-auto px-2 md:px-0">
-        <div className="glass-card p-4 md:p-6 rounded-2xl border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-orange-500/10">
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="text-4xl md:text-5xl shrink-0">🎯</div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg md:text-xl font-bold text-yellow-400 mb-1 truncate">Daily Challenge</h3>
-              <p className="text-white text-xs md:text-base mb-3 break-words">{dailyChallenge.task}</p>
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="flex-1 h-2.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full transition-all duration-500 progress-bar-fill"
-                    style={
-                      {
-                        '--bar-width': `${Math.min((todayWorksheets / 3) * 100, 100)}%`,
-                      } as React.CSSProperties
-                    }
-                  />
-                </div>
-                <span className="text-sm font-medium text-gray-300">
-                  {Math.min(todayWorksheets, 3)}/3
-                </span>
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-sky-400">+{dailyChallenge.reward}</div>
-              <div className="text-xs text-gray-400">tokens</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works Section */}
-      <div className="mt-10 max-w-4xl mx-auto glass-card p-6 rounded-xl">
-        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <Sparkles size={20} className="text-yellow-500" />
-          How It Works
-        </h3>
-        <ul className="space-y-2 text-gray-400 text-sm">
-          <li className="flex items-start gap-2">
-            <Star className="text-yellow-500 flex-shrink-0 mt-0.5" size={16} />
-            <span>Complete 10-question quests to earn 1–5 stars based on your score</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <TrendingUp className="text-sky-500 flex-shrink-0 mt-0.5" size={16} />
-            <span>Collect 5 stars to explore new zones and unlock harder challenges</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <Trophy className="text-purple-500 flex-shrink-0 mt-0.5" size={16} />
-            <span>Difficulty tiers: Beginner → Intermediate → Advanced → Expert → Master</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <PlayCircle className="text-blue-500 flex-shrink-0 mt-0.5" size={16} />
-            <span>Practice makes perfect! Embark on as many quests as you want</span>
-          </li>
-        </ul>
-
-        {/* Star Rating Guide — collapsed with loop */}
-        <div className="mt-5 pt-5 border-t border-white/10">
-          <h4 className="font-bold mb-3 text-white text-sm">Star Rating Guide</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            {[
-              { filled: 5, label: '90–100%' },
-              { filled: 4, label: '80–89%' },
-              { filled: 3, label: '70–79%' },
-              { filled: 2, label: '60–69%' },
-              { filled: 1, label: '50–59%' },
-            ].map(({ filled, label }) => (
-              <div key={filled} className="flex items-center gap-2">
-                <Stars filled={filled} size={14} />
-                <span className="text-gray-400">
-                  {label} = {filled} star{filled !== 1 ? 's' : ''}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    </VibePageShell>
   );
 };
 
