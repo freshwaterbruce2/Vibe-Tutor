@@ -1,11 +1,16 @@
 :root {
-  /* Vibe Neon Glass — light pink + electric purple */
-  --background-main: #14081f;
-  --background-card: #241036;
-  --background-surface: #35164d;
+  /* Vibe Neon Glass — brighter pink + electric purple */
+  --background-main: #2a1450;
+  --background-card: #3b1d68;
+  --background-surface: #4c2a7c;
   --background: var(--background-main);
-  --glass-surface: rgba(251, 207, 232, 0.1);
-  --glass-border: rgba(244, 114, 182, 0.34);
+  --glass-surface: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(251, 207, 232, 0.14) 46%,
+    rgba(192, 132, 252, 0.1) 100%
+  );
+  --glass-border: rgba(255, 228, 246, 0.42);
 
   /* Primary accents */
   --primary-accent: #e879f9; /* Neon fuchsia */
@@ -15,19 +20,22 @@
   --energy-accent: #f472b6; /* Hot pink bursts */
 
   /* Text Colors */
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
+  --text-primary: #fff7fb;
+  --text-secondary: #f5d0fe;
+  --text-muted: #e9d5ff;
   --text-glow: #ffffff;
 
   /* Border & Effects */
-  --border-color: rgba(244, 114, 182, 0.28);
-  --border-hover: rgba(240, 171, 252, 0.7);
-  --shadow-glow: 0 16px 42px rgba(232, 121, 249, 0.22);
+  --border-color: rgba(255, 228, 246, 0.34);
+  --border-hover: rgba(255, 255, 255, 0.72);
+  --shadow-glow:
+    0 18px 44px rgba(232, 121, 249, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -1px 0 rgba(244, 114, 182, 0.16);
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  --gradient-surface: linear-gradient(135deg, rgba(249, 168, 212, 0.16), rgba(192, 132, 252, 0.1));
+  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(249, 168, 212, 0.14));
   --gradient-glow: linear-gradient(135deg, var(--secondary-accent), var(--tertiary-accent));
 
   /* Neon effects */
@@ -40,7 +48,7 @@
   --neon-glow-accent:
     0 0 10px var(--tertiary-accent), 0 0 20px var(--tertiary-accent),
     0 0 36px rgba(192, 132, 252, 0.55);
-  --neon-glow-soft: 0 0 18px rgba(249, 168, 212, 0.4), 0 0 34px rgba(232, 121, 249, 0.28);
+  --neon-glow-soft: 0 0 22px rgba(255, 255, 255, 0.28), 0 0 40px rgba(249, 168, 212, 0.45);
 
   /* Semantic state colors */
   --error-accent: #ef4444;
@@ -49,8 +57,8 @@
   --success-surface: rgba(74, 222, 128, 0.12);
 
   /* Token economy — rose gold so currency still pops without a second theme */
-  --token-color: #fbcfe8;
-  --token-surface: rgba(251, 207, 232, 0.18);
+  --token-color: #ffe4f4;
+  --token-surface: rgba(255, 228, 246, 0.28);
 
   /* Extended text grays */
   --text-tertiary: #475569;
@@ -70,10 +78,10 @@ body {
   background-color: var(--background-main);
   color: var(--text-primary);
   background-image:
-    radial-gradient(circle at 16% 8%, rgba(249, 168, 212, 0.34) 0%, transparent 46%),
-    radial-gradient(circle at 86% 14%, rgba(232, 121, 249, 0.3) 0%, transparent 44%),
-    radial-gradient(circle at 58% 88%, rgba(192, 132, 252, 0.22) 0%, transparent 46%),
-    linear-gradient(180deg, rgba(20, 8, 31, 0.82) 0%, rgba(20, 8, 31, 1) 100%);
+    radial-gradient(circle at 16% 8%, rgba(255, 182, 221, 0.48) 0%, transparent 48%),
+    radial-gradient(circle at 86% 14%, rgba(240, 171, 252, 0.42) 0%, transparent 46%),
+    radial-gradient(circle at 58% 88%, rgba(196, 181, 253, 0.32) 0%, transparent 48%),
+    linear-gradient(180deg, rgba(42, 20, 80, 0.55) 0%, rgba(42, 20, 80, 0.92) 100%);
   background-size:
     100% 100%,
     100% 100%,
@@ -87,8 +95,8 @@ body {
 /* Glassmorphism Classes */
 .glass-card {
   background: var(--glass-surface);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(170%);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   box-shadow: var(--shadow-glow);
@@ -96,9 +104,14 @@ body {
 }
 
 .glass-card:hover {
-  background: rgba(249, 168, 212, 0.16);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(251, 207, 232, 0.2) 50%,
+    rgba(232, 121, 249, 0.14) 100%
+  );
   border-color: var(--border-hover);
-  box-shadow: var(--neon-glow-soft);
+  box-shadow: var(--neon-glow-soft), var(--shadow-glow);
   transform: translateY(-2px) scale(1.01);
 }
 
@@ -106,17 +119,17 @@ body {
 .vibe-page-shell {
   min-height: 100%;
   background:
-    radial-gradient(ellipse 90% 55% at 18% -8%, rgba(249, 168, 212, 0.26), transparent 58%),
-    radial-gradient(ellipse 80% 50% at 92% 0%, rgba(232, 121, 249, 0.24), transparent 52%),
+    radial-gradient(ellipse 90% 55% at 18% -8%, rgba(255, 182, 221, 0.4), transparent 58%),
+    radial-gradient(ellipse 80% 50% at 92% 0%, rgba(240, 171, 252, 0.36), transparent 52%),
     transparent;
 }
 
 .vibe-hero-title {
-  background-image: linear-gradient(120deg, #fbcfe8 0%, #f0abfc 42%, #c084fc 100%);
+  background-image: linear-gradient(120deg, #fff 0%, #fbcfe8 38%, #f0abfc 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 18px rgba(240, 171, 252, 0.5));
+  filter: drop-shadow(0 0 20px rgba(255, 182, 221, 0.7));
 }
 
 .vibe-cta {
@@ -136,17 +149,19 @@ body {
 
 .vibe-chip {
   border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.06);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 0 18px rgba(249, 168, 212, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(251, 207, 232, 0.1));
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  box-shadow:
+    0 0 20px rgba(249, 168, 212, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .glass-button {
   background: var(--gradient-primary);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 12px;
   transition: all var(--transition-fast);
   position: relative;
@@ -321,13 +336,13 @@ body {
   width: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(18, 10, 46, 0.8);
+  background: rgba(42, 20, 80, 0.55);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--gradient-primary);
   border-radius: 10px;
-  border: 2px solid rgba(18, 10, 46, 0.8);
+  border: 2px solid rgba(42, 20, 80, 0.55);
   box-shadow: var(--shadow-glow);
 }
 ::-webkit-scrollbar-thumb:hover {
