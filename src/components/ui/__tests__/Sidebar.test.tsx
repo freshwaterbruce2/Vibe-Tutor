@@ -34,4 +34,12 @@ describe('Sidebar', () => {
     );
     expect(subtitles.length).toBeGreaterThan(0);
   });
+
+  it('shows the Vibe-Tech company mark separately from the Vibe Tutor app nav', () => {
+    render(<Sidebar {...defaultProps} />);
+
+    expect(screen.getByRole('img', { name: 'Vibe-Tech' })).toBeInTheDocument();
+    expect(screen.getAllByText('Vibe-Tech').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Vibe Tutor').length).toBeGreaterThan(0);
+  });
 });

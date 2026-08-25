@@ -99,10 +99,11 @@ const Sidebar = ({
             className={`p-6 flex items-center gap-3 border-b border-[var(--glass-border)] backdrop-blur-sm ${isCollapsed ? 'justify-center' : 'justify-between'}`}
           >
             <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-              <VibeTechLogo className="w-12 h-12 float-animation" />
+              {/* Company mark: Vibe-Tech logo + name. The app is Vibe Tutor in the nav. */}
+              <VibeTechLogo className="w-12 h-12 float-animation" alt="Vibe-Tech" />
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold neon-text-primary">Vibe-Tech</h1>
+                  <p className="text-xl font-bold neon-text-primary leading-tight">Vibe-Tech</p>
                   <p className="text-sm text-[var(--text-secondary)] opacity-80">
                     {welcomeMessage}
                   </p>

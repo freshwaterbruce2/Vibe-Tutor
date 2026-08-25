@@ -1,7 +1,7 @@
 import type { FC, ImgHTMLAttributes } from 'react';
 
 export const VibeTechLogo: FC<ImgHTMLAttributes<HTMLImageElement>> = ({
-  alt = 'Vibe Tutor',
+  alt = 'Vibe-Tech',
   className,
   ...props
 }) => (
