@@ -55,7 +55,6 @@ describe('Sidebar', () => {
 
     // Use getAllByText since there may be multiple nav instances (main + mobile)
     expect(screen.getAllByText('Dashboard').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Vibe-Tech').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Vibe Tutor').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Vibe Buddy').length).toBeGreaterThan(0);
   });

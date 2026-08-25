@@ -69,7 +69,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
               <div className="relative">
                 <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-[var(--tertiary-accent)]/35 to-[var(--quaternary-accent)]/30 blur-xl" />
                 <div className="relative flex items-center justify-center rounded-3xl border border-[var(--glass-border)] bg-white/5 p-4">
-                  <VibeTechLogo className="w-20 h-20" aria-label="Vibe-Tech" />
+                  <VibeTechLogo className="w-20 h-20" />
                 </div>
               </div>
             </div>
