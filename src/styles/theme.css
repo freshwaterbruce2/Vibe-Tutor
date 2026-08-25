@@ -138,12 +138,81 @@ body {
   color: var(--text-glow);
   text-shadow: var(--neon-glow-primary);
   transition: all var(--transition-normal);
+  animation: neonShine 4.5s ease-in-out infinite;
 }
 
 .neon-text-secondary {
   color: var(--text-glow);
   text-shadow: var(--neon-glow-secondary);
   transition: all var(--transition-normal);
+  animation: neonShineSecondary 4.5s ease-in-out infinite;
+}
+
+/*
+ * Gentle "shine": the white text core brightens on a slow loop so glowing
+ * headings feel glossy instead of flat. Sensory prefs disable this via the
+ * global [data-animation-speed] rules in index.css.
+ */
+@keyframes neonShine {
+  0%,
+  100% {
+    text-shadow: var(--neon-glow-primary);
+  }
+  50% {
+    text-shadow:
+      0 0 4px #ffffff,
+      0 0 12px var(--primary-accent),
+      0 0 24px var(--primary-accent),
+      0 0 46px var(--primary-accent);
+  }
+}
+
+@keyframes neonShineSecondary {
+  0%,
+  100% {
+    text-shadow: var(--neon-glow-secondary);
+  }
+  50% {
+    text-shadow:
+      0 0 4px #ffffff,
+      0 0 12px var(--secondary-accent),
+      0 0 22px var(--secondary-accent),
+      0 0 42px var(--secondary-accent);
+  }
+}
+
+/*
+ * Premium glossy specular sweep for prominent WHITE headings/labels.
+ * A moving highlight travels across the letters (like light catching glass)
+ * while a soft purple/pink glow keeps it on-brand and readable.
+ */
+.shine-text {
+  background-image: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #ffffff 40%,
+    #fdefff 47%,
+    #ffffff 50%,
+    #ffe3f6 57%,
+    #ffffff 64%,
+    #ffffff 100%
+  );
+  background-size: 220% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.5)) drop-shadow(0 0 20px rgba(244, 114, 182, 0.28));
+  animation: shineSweep 5.5s ease-in-out infinite;
+}
+
+@keyframes shineSweep {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 220% center;
+  }
 }
 
 .glow-on-hover:hover {

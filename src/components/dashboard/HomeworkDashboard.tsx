@@ -88,7 +88,7 @@ const HomeworkDashboard = ({
       <header className="relative z-10 glass-card p-4 md:p-6 mb-4 md:mb-8 rounded-2xl border border-[var(--glass-border)]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1 md:space-y-2">
-            <h1 className="text-2xl md:text-4xl font-bold neon-text-primary glow-on-hover">
+            <h1 className="text-2xl md:text-4xl font-bold shine-text glow-on-hover">
               Homework Dashboard
             </h1>
             <p className="text-[var(--text-secondary)] text-sm md:text-lg">
@@ -155,7 +155,7 @@ const HomeworkDashboard = ({
 
         <section ref={toDoSectionRef} className="space-y-6" aria-label="Task list">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold neon-text-secondary">To Do</h2>
+            <h2 className="text-2xl font-bold shine-text">To Do</h2>
             <div className="glass-card px-4 py-2 rounded-full">
               <span className="text-sm font-semibold text-[var(--text-primary)]">
                 {activeItems.length}
