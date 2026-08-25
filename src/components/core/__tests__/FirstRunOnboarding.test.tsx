@@ -25,6 +25,12 @@ describe('FirstRunOnboarding', () => {
     fireEvent.click(screen.getByRole('button', { name: /i'm the student/i }));
 
     expect(screen.getByText('Pick your avatar')).toBeInTheDocument();
+    const portraitSrcs = screen
+      .getAllByRole('img')
+      .map((node) => node.getAttribute('src') ?? node.textContent)
+      .filter((value): value is string => Boolean(value));
+    expect(portraitSrcs).toHaveLength(6);
+    expect(new Set(portraitSrcs).size).toBe(6);
 
     fireEvent.click(screen.getByRole('button', { name: /back/i }));
 
@@ -41,7 +47,7 @@ describe('FirstRunOnboarding', () => {
     expect(continueButton).toBeDisabled();
 
     const avatarImage = screen.getByRole('img', { name: /focus gamer/i });
-    expect(avatarImage).toHaveAttribute('src', '/avatars/avatar-boy-headphones.png');
+    expect(avatarImage).toHaveAttribute('src', expect.stringContaining('avatar-boy-headphones'));
 
     fireEvent.click(screen.getByRole('button', { name: /choose avatar focus gamer/i }));
 

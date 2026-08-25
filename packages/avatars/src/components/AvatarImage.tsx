@@ -7,12 +7,24 @@ interface AvatarImageProps {
   size?: number;
   className?: string;
   style?: CSSProperties;
+  fallback?: string;
 }
 
-export function AvatarImage({ src, alt, size = 40, className, style }: AvatarImageProps) {
+function isRenderableImageSrc(src: string): boolean {
+  return /^(?:\/|https?:|data:|blob:|file:|\.\/|\.\.\/)/.test(src) || /\.(?:png|jpe?g|webp|gif|svg)(?:[?#].*)?$/i.test(src);
+}
+
+export function AvatarImage({
+  src,
+  alt,
+  size = 40,
+  className,
+  style,
+  fallback = '🎭',
+}: AvatarImageProps) {
   const [imgError, setImgError] = useState(false);
 
-  if (src.startsWith('/') && !imgError) {
+  if (isRenderableImageSrc(src) && !imgError) {
     return (
       <img
         src={src}
@@ -21,7 +33,9 @@ export function AvatarImage({ src, alt, size = 40, className, style }: AvatarIma
         height={size}
         className={className}
         style={{ objectFit: 'cover', borderRadius: '4px', ...style }}
-        onError={() => { setImgError(true); }}
+        onError={() => {
+          setImgError(true);
+        }}
       />
     );
   }
@@ -33,7 +47,7 @@ export function AvatarImage({ src, alt, size = 40, className, style }: AvatarIma
       className={className}
       style={{ fontSize: size * 0.7, lineHeight: 1, display: 'inline-block', ...style }}
     >
-      {imgError ? '🎭' : src}
+      {imgError ? fallback : src}
     </span>
   );
 }

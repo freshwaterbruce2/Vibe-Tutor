@@ -155,6 +155,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
                         <AvatarImage
                           src={option.imagePath}
                           alt={option.name}
+                          fallback={option.fallbackEmoji}
                           size={96}
                           className="h-full w-full"
                           style={{ borderRadius: '10px' }}
@@ -196,6 +197,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
                 <AvatarImage
                   src={selectedAvatar.imagePath}
                   alt={selectedAvatar.name}
+                  fallback={selectedAvatar.fallbackEmoji}
                   size={112}
                   className="rounded-2xl border border-[var(--glass-border)] shadow-[0_0_24px_rgba(56,189,248,0.25)]"
                   style={{ borderRadius: '16px' }}

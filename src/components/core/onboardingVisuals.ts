@@ -3,6 +3,7 @@ import { AVATAR_CHARACTERS } from '@vibetech/avatars';
 export interface OnboardingAvatarOption {
   id: string;
   imagePath: string;
+  fallbackEmoji: string;
   name: string;
   subtitle: string;
   gradientClass: string;
@@ -26,6 +27,7 @@ export const ONBOARDING_AVATARS: OnboardingAvatarOption[] = AVATAR_CHARACTERS.ma
   (character, index) => ({
     id: character.id,
     imagePath: character.imagePath,
+    fallbackEmoji: character.fallbackEmoji,
     name: character.name,
     subtitle: character.description,
     gradientClass: AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length],
