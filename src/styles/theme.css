@@ -1,18 +1,18 @@
 :root {
-  /* Vibe Aurora — warm purple / magenta-pink / amber (2026) */
-  --background-main: #120a2e;
-  --background-card: #1e1147;
-  --background-surface: #2c1a63;
+  /* Vibe Neon Glass — light pink + electric purple */
+  --background-main: #14081f;
+  --background-card: #241036;
+  --background-surface: #35164d;
   --background: var(--background-main);
-  --glass-surface: rgba(192, 132, 252, 0.1);
-  --glass-border: rgba(244, 114, 182, 0.22);
+  --glass-surface: rgba(251, 207, 232, 0.1);
+  --glass-border: rgba(244, 114, 182, 0.34);
 
   /* Primary accents */
-  --primary-accent: #c084fc; /* Purple */
-  --secondary-accent: #f472b6; /* Magenta pink */
-  --tertiary-accent: #fb923c; /* Warm orange */
-  --quaternary-accent: #fbbf24; /* Solar amber */
-  --energy-accent: #84cc16; /* Electric lime — achievement bursts */
+  --primary-accent: #e879f9; /* Neon fuchsia */
+  --secondary-accent: #f9a8d4; /* Light pink */
+  --tertiary-accent: #c084fc; /* Soft purple */
+  --quaternary-accent: #f0abfc; /* Pale orchid */
+  --energy-accent: #f472b6; /* Hot pink bursts */
 
   /* Text Colors */
   --text-primary: #f8fafc;
@@ -21,14 +21,14 @@
   --text-glow: #ffffff;
 
   /* Border & Effects */
-  --border-color: rgba(244, 114, 182, 0.2);
-  --border-hover: rgba(251, 146, 60, 0.5);
-  --shadow-glow: 0 16px 42px rgba(18, 10, 46, 0.6);
+  --border-color: rgba(244, 114, 182, 0.28);
+  --border-hover: rgba(240, 171, 252, 0.7);
+  --shadow-glow: 0 16px 42px rgba(232, 121, 249, 0.22);
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  --gradient-surface: linear-gradient(135deg, rgba(192, 132, 252, 0.12), rgba(244, 114, 182, 0.07));
-  --gradient-glow: linear-gradient(135deg, var(--primary-accent), var(--tertiary-accent));
+  --gradient-surface: linear-gradient(135deg, rgba(249, 168, 212, 0.16), rgba(192, 132, 252, 0.1));
+  --gradient-glow: linear-gradient(135deg, var(--secondary-accent), var(--tertiary-accent));
 
   /* Neon effects */
   --neon-glow-primary:
@@ -39,8 +39,8 @@
     0 0 40px var(--secondary-accent);
   --neon-glow-accent:
     0 0 10px var(--tertiary-accent), 0 0 20px var(--tertiary-accent),
-    0 0 36px rgba(251, 146, 60, 0.55);
-  --neon-glow-soft: 0 0 18px rgba(192, 132, 252, 0.35), 0 0 34px rgba(244, 114, 182, 0.22);
+    0 0 36px rgba(192, 132, 252, 0.55);
+  --neon-glow-soft: 0 0 18px rgba(249, 168, 212, 0.4), 0 0 34px rgba(232, 121, 249, 0.28);
 
   /* Semantic state colors */
   --error-accent: #ef4444;
@@ -48,9 +48,9 @@
   --success-accent: #4ade80;
   --success-surface: rgba(74, 222, 128, 0.12);
 
-  /* Token economy */
-  --token-color: #fbbf24;
-  --token-surface: rgba(251, 191, 36, 0.15);
+  /* Token economy — rose gold so currency still pops without a second theme */
+  --token-color: #fbcfe8;
+  --token-surface: rgba(251, 207, 232, 0.18);
 
   /* Extended text grays */
   --text-tertiary: #475569;
@@ -70,10 +70,10 @@ body {
   background-color: var(--background-main);
   color: var(--text-primary);
   background-image:
-    radial-gradient(circle at 18% 18%, rgba(192, 132, 252, 0.28) 0%, transparent 46%),
-    radial-gradient(circle at 82% 24%, rgba(244, 114, 182, 0.18) 0%, transparent 42%),
-    radial-gradient(circle at 62% 78%, rgba(251, 146, 60, 0.14) 0%, transparent 44%),
-    linear-gradient(180deg, rgba(18, 10, 46, 0.88) 0%, rgba(18, 10, 46, 1) 100%);
+    radial-gradient(circle at 16% 8%, rgba(249, 168, 212, 0.34) 0%, transparent 46%),
+    radial-gradient(circle at 86% 14%, rgba(232, 121, 249, 0.3) 0%, transparent 44%),
+    radial-gradient(circle at 58% 88%, rgba(192, 132, 252, 0.22) 0%, transparent 46%),
+    linear-gradient(180deg, rgba(20, 8, 31, 0.82) 0%, rgba(20, 8, 31, 1) 100%);
   background-size:
     100% 100%,
     100% 100%,
@@ -96,10 +96,50 @@ body {
 }
 
 .glass-card:hover {
-  background: rgba(192, 132, 252, 0.16);
+  background: rgba(249, 168, 212, 0.16);
   border-color: var(--border-hover);
   box-shadow: var(--neon-glow-soft);
   transform: translateY(-2px) scale(1.01);
+}
+
+/* Shared page chrome — Realms, Shop, and future hubs stay in one neon language */
+.vibe-page-shell {
+  min-height: 100%;
+  background:
+    radial-gradient(ellipse 90% 55% at 18% -8%, rgba(249, 168, 212, 0.26), transparent 58%),
+    radial-gradient(ellipse 80% 50% at 92% 0%, rgba(232, 121, 249, 0.24), transparent 52%),
+    transparent;
+}
+
+.vibe-hero-title {
+  background-image: linear-gradient(120deg, #fbcfe8 0%, #f0abfc 42%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(240, 171, 252, 0.5));
+}
+
+.vibe-cta {
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow:
+    0 10px 36px -8px rgba(244, 114, 182, 0.62),
+    0 0 22px rgba(232, 121, 249, 0.28);
+}
+
+.vibe-cta:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 12px 42px -6px rgba(244, 114, 182, 0.75),
+    0 0 28px rgba(232, 121, 249, 0.4);
+}
+
+.vibe-chip {
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 18px rgba(249, 168, 212, 0.16);
 }
 
 .glass-button {

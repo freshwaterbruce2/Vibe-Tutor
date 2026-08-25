@@ -12,37 +12,37 @@ interface GradientIconProps {
 export const GradientDefs: FC = () => (
   <svg width="0" height="0" className="gradient-defs-svg">
     <defs>
-      {/* Primary gradient: Cyan to lime to pink */}
+      {/* Primary gradient: light pink to neon fuchsia */}
       <linearGradient id="vibe-gradient-primary" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="var(--success-accent)" />
-        <stop offset="52%" stopColor="#38BDF8" />
-        <stop offset="100%" stopColor="#38BDF8" />
+        <stop offset="0%" stopColor="var(--secondary-accent)" />
+        <stop offset="52%" stopColor="var(--primary-accent)" />
+        <stop offset="100%" stopColor="var(--tertiary-accent)" />
       </linearGradient>
 
-      {/* Secondary gradient: Cyan to hot pink */}
+      {/* Secondary gradient: orchid to pink */}
       <linearGradient id="vibe-gradient-secondary" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="var(--success-accent)" />
-        <stop offset="100%" stopColor="#38BDF8" />
+        <stop offset="0%" stopColor="var(--quaternary-accent)" />
+        <stop offset="100%" stopColor="var(--secondary-accent)" />
       </linearGradient>
 
-      {/* Accent gradient: Lime to cyan */}
+      {/* Accent gradient: purple to hot pink */}
       <linearGradient id="vibe-gradient-accent" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#38BDF8" />
-        <stop offset="100%" stopColor="var(--success-accent)" />
+        <stop offset="0%" stopColor="var(--tertiary-accent)" />
+        <stop offset="100%" stopColor="var(--energy-accent)" />
       </linearGradient>
 
       {/* Radial glow gradient */}
       <radialGradient id="vibe-gradient-glow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="var(--success-accent)" stopOpacity="0.82" />
-        <stop offset="50%" stopColor="#38BDF8" stopOpacity="0.38" />
-        <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.1" />
+        <stop offset="0%" stopColor="var(--secondary-accent)" stopOpacity="0.86" />
+        <stop offset="50%" stopColor="var(--primary-accent)" stopOpacity="0.4" />
+        <stop offset="100%" stopColor="var(--tertiary-accent)" stopOpacity="0.1" />
       </radialGradient>
 
       {/* Mobile-optimized gradient with higher contrast */}
       <linearGradient id="vibe-gradient-mobile" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#6EE7F9" />
-        <stop offset="50%" stopColor="#38BDF8" />
-        <stop offset="100%" stopColor="#8B5CF6" />
+        <stop offset="0%" stopColor="#FBCFE8" />
+        <stop offset="50%" stopColor="#E879F9" />
+        <stop offset="100%" stopColor="#C084FC" />
       </linearGradient>
     </defs>
   </svg>

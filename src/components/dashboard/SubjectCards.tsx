@@ -23,14 +23,14 @@ interface SubjectCardsProps {
 }
 
 const CARD_CONFIG: Record<SubjectType, { icon: typeof Zap; color: string; bgColor: string }> = {
-  Math: { icon: Zap, color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-500/10' },
-  Science: { icon: Atom, color: 'from-sky-500 to-violet-500', bgColor: 'bg-sky-500/10' },
-  History: { icon: Clock, color: 'from-violet-500 to-sky-500', bgColor: 'bg-violet-500/10' },
-  Bible: { icon: Heart, color: 'from-sky-500 to-violet-500', bgColor: 'bg-sky-500/10' },
+  Math: { icon: Zap, color: 'from-fuchsia-400 to-pink-400', bgColor: 'bg-fuchsia-500/10' },
+  Science: { icon: Atom, color: 'from-violet-400 to-fuchsia-500', bgColor: 'bg-violet-500/10' },
+  History: { icon: Clock, color: 'from-purple-400 to-pink-400', bgColor: 'bg-purple-500/10' },
+  Bible: { icon: Heart, color: 'from-pink-400 to-violet-500', bgColor: 'bg-pink-500/10' },
   'Language Arts': {
     icon: BookOpen,
-    color: 'from-blue-500 to-cyan-500',
-    bgColor: 'bg-blue-500/10',
+    color: 'from-rose-400 to-purple-500',
+    bgColor: 'bg-rose-500/10',
   },
 };
 
@@ -52,7 +52,11 @@ function Stars({
         <Star
           key={i}
           size={size}
-          className={i < filled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}
+          className={
+            i < filled
+              ? 'fill-pink-300 text-pink-300 drop-shadow-[0_0_6px_rgba(249,168,212,0.85)]'
+              : 'text-purple-800'
+          }
         />
       ))}
     </div>
@@ -94,31 +98,31 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
   }, [allProgress]);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-900/20 via-[#0a0f1c] to-[#0a0f1c]">
+    <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[var(--background-main)]">
       {/* Header — Gaming Style */}
       <div className="text-center mb-8 md:mb-12">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-          <Trophy size={40} className="text-yellow-500 animate-bounce" />
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 drop-shadow-lg tracking-wide">
+          <Trophy size={40} className="text-[var(--secondary-accent)] animate-bounce" />
+          <h1 className="vibe-hero-title text-4xl md:text-5xl lg:text-6xl font-black tracking-wide">
             Learning Realms
           </h1>
-          <Sparkles size={32} className="text-violet-500 animate-pulse" />
+          <Sparkles size={32} className="text-[var(--primary-accent)] animate-pulse" />
         </div>
-        <p className="text-gray-300 font-medium text-base md:text-lg px-4">
+        <p className="text-[var(--text-secondary)] font-medium text-base md:text-lg px-4">
           Embark on epic quests to earn stars, collect tokens, and level up! 🚀
         </p>
 
         {/* Token Balance HUD */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-          <div className="glass-card px-5 py-2.5 rounded-full flex items-center gap-2 border-[1px] border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+          <div className="vibe-chip glass-card px-5 py-2.5 rounded-full flex items-center gap-2">
             <span className="text-2xl animate-pulse">🪙</span>
-            <span className="font-black text-xl text-yellow-400 tracking-wider">{userTokens}</span>
-            <span className="text-sm font-bold tracking-widest uppercase text-gray-400">Tokens</span>
+            <span className="font-black text-xl text-[var(--token-color)] tracking-wider">{userTokens}</span>
+            <span className="text-sm font-bold tracking-widest uppercase text-[var(--text-secondary)]">Tokens</span>
           </div>
           {todayEarnings > 0 && (
-            <div className="glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
-              <TrendingUp size={14} className="text-sky-400" />
-              <span className="text-sky-400 font-medium">+{todayEarnings} today</span>
+            <div className="vibe-chip glass-card px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs">
+              <TrendingUp size={14} className="text-[var(--secondary-accent)]" />
+              <span className="text-[var(--secondary-accent)] font-medium">+{todayEarnings} today</span>
             </div>
           )}
         </div>
@@ -141,7 +145,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
           return (
             <div
               key={subject}
-              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 border-[var(--glass-border)] hover:border-yellow-500/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(234,179,8,0.3)] ${config.bgColor}`}
+              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 border-[var(--glass-border)] hover:border-[var(--secondary-accent)]/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(244,114,182,0.35)] ${config.bgColor}`}
             >
               {/* Subject Icon & Name */}
               <div className="text-center mb-5">
@@ -171,7 +175,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                 <div className="flex justify-center mb-2">
                   <Stars filled={progress.starsCollected} size={24} />
                 </div>
-                <p className="text-center text-sm text-gray-400">
+                <p className="text-center text-sm text-[var(--text-secondary)]">
                   {isMaxLevel
                     ? '🌟 Max Level!'
                     : `${starsToNextLevel} star${starsToNextLevel !== 1 ? 's' : ''} to next level`}
@@ -192,33 +196,33 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
 
               {/* Stats */}
               <div className="space-y-1.5 mb-4 text-sm">
-                <div className="flex justify-between text-gray-400">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Quests</span>
                   <span className="font-bold text-white">{progress.totalWorksheetsCompleted}</span>
                 </div>
-                <div className="flex justify-between text-gray-400">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Avg Score</span>
                   <span className="font-bold text-white">
                     {globalThis.Math.round(progress.averageScore)}%
                   </span>
                 </div>
-                <div className="flex justify-between text-gray-400">
+                <div className="flex justify-between text-[var(--text-secondary)]">
                   <span>Best</span>
                   <span className="font-bold text-white">
                     {globalThis.Math.round(progress.bestScore)}%
                   </span>
                 </div>
                 {progress.currentStreak > 0 && (
-                  <div className="flex justify-between text-gray-400">
+                  <div className="flex justify-between text-[var(--text-secondary)]">
                     <span>Streak</span>
-                    <span className="font-bold text-orange-400">{progress.currentStreak} 🔥</span>
+                    <span className="font-bold text-[var(--energy-accent)]">{progress.currentStreak} 🔥</span>
                   </div>
                 )}
               </div>
 
               {/* Motivational Message */}
-              <div className="mb-4 p-2.5 bg-white/5 rounded-lg border border-white/10">
-                <p className="text-xs text-center text-gray-400">
+              <div className="mb-4 p-2.5 bg-white/5 rounded-lg border border-[var(--glass-border)]">
+                <p className="text-xs text-center text-[var(--text-secondary)]">
                   {isMaxLevel
                     ? "🌟 You're a master! Try another subject!"
                     : progress.starsCollected === 0
@@ -232,7 +236,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
               {/* Start Worksheet Button */}
               <button
                 onClick={() => onStartWorksheet(subject)}
-                className={`w-full px-6 py-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 active:scale-95 transition-all bg-gradient-to-r ${config.color} shadow-lg hover:shadow-xl hover:brightness-110 text-white touch-manipulation group-hover:animate-pulse`}
+                className={`w-full px-6 py-4 rounded-2xl font-black text-xl flex items-center justify-center gap-3 active:scale-95 transition-all vibe-cta bg-gradient-to-r ${config.color} text-white touch-manipulation group-hover:animate-pulse`}
               >
                 <PlayCircle size={28} className="drop-shadow-sm" />
                 <span className="tracking-wide text-shadow-sm">Enter Realm!</span>
@@ -244,16 +248,16 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
 
       {/* Real Daily Challenge Banner */}
       <div className="mt-10 max-w-4xl mx-auto px-2 md:px-0">
-        <div className="glass-card p-4 md:p-6 rounded-2xl border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 to-orange-500/10">
+        <div className="glass-card p-4 md:p-6 rounded-2xl border-2 border-[var(--glass-border)] bg-gradient-to-br from-pink-400/15 to-fuchsia-500/10">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="text-4xl md:text-5xl shrink-0">🎯</div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg md:text-xl font-bold text-yellow-400 mb-1 truncate">Daily Challenge</h3>
+              <h3 className="text-lg md:text-xl font-bold text-[var(--secondary-accent)] mb-1 truncate">Daily Challenge</h3>
               <p className="text-white text-xs md:text-base mb-3 break-words">{dailyChallenge.task}</p>
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="flex-1 h-2.5 bg-white/10 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full transition-all duration-500 progress-bar-fill"
+                    className="h-full bg-gradient-to-r from-pink-400 to-fuchsia-500 rounded-full transition-all duration-500 progress-bar-fill"
                     style={
                       {
                         '--bar-width': `${Math.min((todayWorksheets / 3) * 100, 100)}%`,
@@ -261,14 +265,14 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                     }
                   />
                 </div>
-                <span className="text-sm font-medium text-gray-300">
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {Math.min(todayWorksheets, 3)}/3
                 </span>
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-sky-400">+{dailyChallenge.reward}</div>
-              <div className="text-xs text-gray-400">tokens</div>
+              <div className="text-2xl font-bold text-[var(--token-color)]">+{dailyChallenge.reward}</div>
+              <div className="text-xs text-[var(--text-secondary)]">tokens</div>
             </div>
           </div>
         </div>
@@ -277,24 +281,24 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
       {/* How It Works Section */}
       <div className="mt-10 max-w-4xl mx-auto glass-card p-6 rounded-xl">
         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <Sparkles size={20} className="text-yellow-500" />
+          <Sparkles size={20} className="text-[var(--secondary-accent)]" />
           How It Works
         </h3>
-        <ul className="space-y-2 text-gray-400 text-sm">
+        <ul className="space-y-2 text-[var(--text-secondary)] text-sm">
           <li className="flex items-start gap-2">
-            <Star className="text-yellow-500 flex-shrink-0 mt-0.5" size={16} />
+            <Star className="text-[var(--secondary-accent)] flex-shrink-0 mt-0.5" size={16} />
             <span>Complete 10-question quests to earn 1–5 stars based on your score</span>
           </li>
           <li className="flex items-start gap-2">
-            <TrendingUp className="text-sky-500 flex-shrink-0 mt-0.5" size={16} />
+            <TrendingUp className="text-[var(--primary-accent)] flex-shrink-0 mt-0.5" size={16} />
             <span>Collect 5 stars to explore new zones and unlock harder challenges</span>
           </li>
           <li className="flex items-start gap-2">
-            <Trophy className="text-purple-500 flex-shrink-0 mt-0.5" size={16} />
+            <Trophy className="text-[var(--tertiary-accent)] flex-shrink-0 mt-0.5" size={16} />
             <span>Difficulty tiers: Beginner → Intermediate → Advanced → Expert → Master</span>
           </li>
           <li className="flex items-start gap-2">
-            <PlayCircle className="text-blue-500 flex-shrink-0 mt-0.5" size={16} />
+            <PlayCircle className="text-[var(--quaternary-accent)] flex-shrink-0 mt-0.5" size={16} />
             <span>Practice makes perfect! Embark on as many quests as you want</span>
           </li>
         </ul>
@@ -312,7 +316,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
             ].map(({ filled, label }) => (
               <div key={filled} className="flex items-center gap-2">
                 <Stars filled={filled} size={14} />
-                <span className="text-gray-400">
+                <span className="text-[var(--text-secondary)]">
                   {label} = {filled} star{filled !== 1 ? 's' : ''}
                 </span>
               </div>
