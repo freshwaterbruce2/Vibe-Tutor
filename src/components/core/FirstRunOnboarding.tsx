@@ -43,7 +43,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 bg-[var(--background-main)]">
-      <div className="w-full max-w-md glass-card rounded-2xl p-8 border border-[var(--glass-border)] space-y-6">
+      <div className="w-full max-w-md glass-panel rounded-2xl p-8 space-y-6">
         <div className="space-y-2">
           <p className="text-center text-sm text-[var(--text-secondary)]" aria-live="polite">
             Step {step + 1} of {ONBOARDING_STEPS}
@@ -54,7 +54,9 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
                 key={i}
                 aria-hidden="true"
                 className={`h-2 w-8 rounded-full transition-colors ${
-                  i <= step ? 'bg-[var(--primary-accent)]' : 'bg-[var(--glass-border)]'
+                  i <= step
+                    ? 'bg-[var(--primary-accent)] shadow-[0_0_12px_rgba(236,72,153,0.75)]'
+                    : 'bg-[var(--glass-border)]'
                 }`}
               />
             ))}
@@ -65,7 +67,7 @@ const FirstRunOnboarding = ({ onComplete }: FirstRunOnboardingProps) => {
           <div className="space-y-6 text-center">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-violet-500/30 to-sky-500/30 blur-xl" />
+                <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-[var(--tertiary-accent)]/35 to-[var(--quaternary-accent)]/30 blur-xl" />
                 <div className="relative flex items-center justify-center rounded-3xl border border-[var(--glass-border)] bg-white/5 p-4">
                   <VibeTechLogo className="w-20 h-20" aria-label="Vibe-Tech" />
                 </div>

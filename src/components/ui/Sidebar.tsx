@@ -91,7 +91,7 @@ const Sidebar = ({
 
       {/* Desktop Sidebar - hidden on mobile */}
       <div
-        className={`hidden md:flex ${isCollapsed ? 'w-[72px]' : 'w-64'} glass-card border-r border-[var(--glass-border)] flex-col shrink-0 relative overflow-hidden transition-[width] duration-300`}
+        className={`hidden md:flex ${isCollapsed ? 'w-[72px]' : 'w-64'} glass-panel border-r border-[var(--glass-border)] flex-col shrink-0 relative overflow-hidden transition-[width] duration-300`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--glass-surface)] to-transparent pointer-events-none"></div>
         <div className="relative z-10">
