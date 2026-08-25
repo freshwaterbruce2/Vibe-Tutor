@@ -17,5 +17,7 @@ describe('subject theme', () => {
     expect(SUBJECT_THEME.Bible.gradient).toContain('violet');
     expect(SUBJECT_THEME['Language Arts'].gradient).toContain('fuchsia');
     expect(icons).toEqual(['Calculator', 'FlaskConical', 'Landmark', 'BookMarked', 'PenLine']);
+    expect(SUBJECT_THEME.Math.wash).toContain('0.94');
+    expect(SUBJECT_THEME.Science.wash).toContain('0.94');
   });
 });
