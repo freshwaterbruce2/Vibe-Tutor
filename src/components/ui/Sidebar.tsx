@@ -63,6 +63,10 @@ const MOBILE_PRIMARY: View[] = ['dashboard', 'tutor', 'friend', 'music', 'sensor
 const primaryNavItems = navItems.filter((item) => MOBILE_PRIMARY.includes(item.view as View));
 const secondaryNavItems = navItems.filter((item) => !MOBILE_PRIMARY.includes(item.view as View));
 
+function navLabelClass(isActive: boolean): string {
+  return `nav-label transition-all duration-300 ${isActive ? 'nav-label--active' : 'nav-label--idle'}`;
+}
+
 const Sidebar = ({
   currentView,
   onNavigate,
@@ -144,7 +148,7 @@ const Sidebar = ({
                   gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
                   className="transition-all duration-300"
                 />
-                {!isCollapsed && <span className="transition-all duration-300">{label}</span>}
+                {!isCollapsed && <span className={navLabelClass(currentView === view)}>{label}</span>}
                 {currentView === view && (
                   <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
                 )}
@@ -170,7 +174,9 @@ const Sidebar = ({
                 }
                 className="transition-all duration-300"
               />
-              {!isCollapsed && <span className="transition-all duration-300">Parent Zone</span>}
+              {!isCollapsed && (
+                <span className={navLabelClass(currentView === 'parent')}>Parent Zone</span>
+              )}
               {currentView === 'parent' && (
                 <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
               )}
@@ -217,7 +223,7 @@ const Sidebar = ({
                     gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
                     className="mb-1"
                   />
-                  <span className="text-[10px] font-medium leading-tight text-center break-words w-full truncate text-wrap">
+                  <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                     {label}
                   </span>
                 </button>
@@ -239,7 +245,7 @@ const Sidebar = ({
                   }
                   className="mb-1"
                 />
-                <span className="text-[10px] font-medium leading-tight text-center break-words w-full truncate text-wrap">
+                <span className={`${navLabelClass(currentView === 'parent')} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                   Parent
                 </span>
               </button>
@@ -272,7 +278,7 @@ const Sidebar = ({
                   gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
                   className="mb-0.5"
                 />
-                <span className="text-[10px] font-medium leading-tight text-center break-words w-full truncate text-wrap">
+                <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                   {label}
                 </span>
               </button>
@@ -289,7 +295,7 @@ const Sidebar = ({
               title="More"
             >
               <Menu className="w-[22px] h-[22px] mb-0.5" />
-              <span className="text-[10px] font-medium leading-tight text-center break-words w-full truncate text-wrap">
+              <span className={`${navLabelClass(moreOpen)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                 More
               </span>
             </button>

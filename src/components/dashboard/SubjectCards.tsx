@@ -94,7 +94,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
   }, [allProgress]);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-yellow-900/20 via-[#0a0f1c] to-[#0a0f1c]">
+    <div className="min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-400/10 via-transparent to-transparent">
       {/* Header — Gaming Style */}
       <div className="text-center mb-8 md:mb-12">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-4">

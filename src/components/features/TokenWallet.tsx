@@ -73,7 +73,7 @@ const TokenWallet = ({ onClose, onNavigate, compact = false }: TokenWalletProps)
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background-main)] p-4 pb-36 md:pb-8">
+    <div className="min-h-screen bg-transparent p-4 pb-36 md:pb-8">
       <div className="max-w-2xl mx-auto space-y-5">
         {/* Header */}
         <div className="glass-card p-4">

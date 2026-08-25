@@ -29,7 +29,7 @@ const VibebuxRewardShop = ({
   } = useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete });
 
   return (
-    <div className="min-h-full bg-[var(--background-main)] p-4 md:p-6">
+    <div className="min-h-full bg-transparent p-4 md:p-6">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
         <div className="mb-6 rounded-3xl border border-[var(--glass-border)] bg-gradient-to-br from-violet-500/10 via-slate-900/40 to-sky-500/10 p-4 md:p-6">

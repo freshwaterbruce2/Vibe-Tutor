@@ -112,7 +112,7 @@ export default function RealmView({ subject, onStartWorksheet, onBack, onEarnTok
   const games = REALM_GAMES[subject] || [];
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-36 font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-[#0a0f1c] to-[#0a0f1c]">
+    <div className="min-h-screen p-4 md:p-8 pb-36 font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-400/10 via-transparent to-transparent">
        <div className="max-w-4xl mx-auto">
           <button onClick={onBack} className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
             <ChevronLeft size={20} /> Back to Realms
