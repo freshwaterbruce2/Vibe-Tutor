@@ -15,6 +15,13 @@ const CircuitBackground = () => {
         <span className="circuit-bg__pad" />
         <span className="circuit-bg__core" />
       </div>
+      <div className="circuit-bg__die circuit-bg__die--aux">
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__core" />
+      </div>
       <span className="circuit-bg__scan circuit-bg__scan--h circuit-bg__scan--a" />
       <span className="circuit-bg__scan circuit-bg__scan--h circuit-bg__scan--b" />
       <span className="circuit-bg__scan circuit-bg__scan--v circuit-bg__scan--c" />
@@ -27,9 +34,9 @@ const CircuitBackground = () => {
       >
         <defs>
           <linearGradient id={strokeId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--circuit-cyan)" stopOpacity="0.15" />
-            <stop offset="50%" stopColor="var(--circuit-cyan)" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="var(--circuit-violet)" stopOpacity="0.2" />
+            <stop offset="0%" stopColor="var(--circuit-cyan)" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="var(--circuit-cyan)" stopOpacity="1" />
+            <stop offset="100%" stopColor="var(--circuit-violet)" stopOpacity="0.45" />
           </linearGradient>
         </defs>
         <path

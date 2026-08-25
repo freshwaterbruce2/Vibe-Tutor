@@ -186,10 +186,10 @@ body {
   z-index: 1;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 78% 68% at 50% 36%,
-    transparent 18%,
-    rgba(12, 6, 24, 0.42) 72%,
-    rgba(12, 6, 24, 0.8) 100%
+    ellipse 88% 78% at 50% 38%,
+    transparent 42%,
+    rgba(12, 6, 24, 0.28) 78%,
+    rgba(12, 6, 24, 0.55) 100%
   );
 }
 
@@ -459,45 +459,55 @@ body {
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.16) 0%, transparent 36%),
-    radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.2) 0%, transparent 40%),
-    radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.12) 0%, transparent 38%),
-    linear-gradient(180deg, #0a0718 0%, #0c0618 55%, #080614 100%);
+    radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.28) 0%, transparent 36%),
+    radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.32) 0%, transparent 40%),
+    radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.18) 0%, transparent 38%),
+    linear-gradient(180deg, #07101f 0%, #0c0618 55%, #08061a 100%);
 }
 
 .circuit-bg__grid {
   position: absolute;
   inset: -48px;
-  opacity: 0.72;
+  opacity: 1;
   background-image:
-    linear-gradient(rgba(34, 211, 238, 0.13) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(167, 139, 250, 0.12) 1px, transparent 1px),
-    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(34, 211, 238, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.2) 1px, transparent 1px),
+    linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px);
   background-size:
     48px 48px,
     48px 48px,
     12px 12px,
     12px 12px;
   animation: circuit-grid-shift 22s linear infinite;
-  mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
+  mask-image: radial-gradient(circle at center, black 58%, transparent 96%);
 }
 
 .circuit-bg__die {
   position: absolute;
-  top: 10%;
-  right: 6%;
-  width: min(220px, 26vw);
-  height: min(220px, 26vw);
-  border: 1px solid rgba(34, 211, 238, 0.4);
+  top: 8%;
+  right: 4%;
+  width: min(260px, 30vw);
+  height: min(260px, 30vw);
+  border: 1px solid rgba(34, 211, 238, 0.55);
   border-radius: 18px;
   background:
-    repeating-linear-gradient(90deg, rgba(34, 211, 238, 0.08) 0 10px, transparent 10px 18px),
-    repeating-linear-gradient(0deg, rgba(167, 139, 250, 0.08) 0 10px, transparent 10px 18px),
-    rgba(8, 16, 48, 0.4);
+    repeating-linear-gradient(90deg, rgba(34, 211, 238, 0.14) 0 10px, transparent 10px 18px),
+    repeating-linear-gradient(0deg, rgba(167, 139, 250, 0.14) 0 10px, transparent 10px 18px),
+    rgba(8, 16, 48, 0.55);
   box-shadow:
-    0 0 40px rgba(34, 211, 238, 0.16),
-    inset 0 0 30px rgba(167, 139, 250, 0.16);
+    0 0 48px rgba(34, 211, 238, 0.28),
+    inset 0 0 30px rgba(167, 139, 250, 0.22);
+}
+
+.circuit-bg__die--aux {
+  top: auto;
+  right: auto;
+  bottom: 8%;
+  left: 5%;
+  width: min(170px, 22vw);
+  height: min(170px, 22vw);
+  opacity: 0.72;
 }
 
 .circuit-bg__core {
@@ -548,10 +558,10 @@ body {
 
 .circuit-bg__trace {
   fill: none;
-  stroke-width: 1.7;
+  stroke-width: 2.2;
   stroke-linecap: square;
   stroke-linejoin: miter;
-  stroke-dasharray: 14 22;
+  stroke-dasharray: 16 18;
   animation: circuit-flow 9s linear infinite;
 }
 
@@ -575,12 +585,12 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(34, 211, 238, 0.75),
-    rgba(167, 139, 250, 0.65),
+    rgba(34, 211, 238, 0.95),
+    rgba(167, 139, 250, 0.85),
     transparent
   );
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.4);
-  opacity: 0.7;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+  opacity: 0.9;
 }
 
 .circuit-bg__scan--h {
