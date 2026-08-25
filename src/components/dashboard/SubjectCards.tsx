@@ -1,15 +1,6 @@
-import {
-  Atom,
-  BookOpen,
-  Clock,
-  Heart,
-  PlayCircle,
-  Sparkles,
-  Star,
-  TrendingUp,
-  Zap,
-} from 'lucide-react';
+import { PlayCircle, Sparkles, Star, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { SUBJECTS, SUBJECT_THEME } from '../realms/subjectTheme';
 import { getAllProgress } from '../../services/progressionService';
 import { getTodayEarnings } from '../../services/tokenService';
 import type { SubjectProgress, SubjectType } from '../../types';
@@ -19,44 +10,6 @@ interface SubjectCardsProps {
   onStartWorksheet: (subject: SubjectType) => void;
   userTokens: number;
 }
-
-const CARD_CONFIG: Record<
-  SubjectType,
-  { icon: typeof Zap; color: string; bgColor: string; prompt: string }
-> = {
-  Math: {
-    icon: Zap,
-    color: 'from-fuchsia-400 to-pink-400',
-    bgColor: 'bg-fuchsia-500/10',
-    prompt: 'Numbers, puzzles, and games',
-  },
-  Science: {
-    icon: Atom,
-    color: 'from-violet-400 to-fuchsia-500',
-    bgColor: 'bg-violet-500/10',
-    prompt: 'How the world works',
-  },
-  History: {
-    icon: Clock,
-    color: 'from-purple-400 to-pink-400',
-    bgColor: 'bg-purple-500/10',
-    prompt: 'People, places, and the past',
-  },
-  Bible: {
-    icon: Heart,
-    color: 'from-pink-400 to-violet-500',
-    bgColor: 'bg-pink-500/10',
-    prompt: 'Stories and questions',
-  },
-  'Language Arts': {
-    icon: BookOpen,
-    color: 'from-rose-400 to-purple-500',
-    bgColor: 'bg-rose-500/10',
-    prompt: 'Words, reading, and writing',
-  },
-};
-
-const SUBJECTS: SubjectType[] = ['Math', 'Science', 'History', 'Bible', 'Language Arts'];
 
 const HOW_IT_WORKS = [
   { step: '1', title: 'Tap a card', detail: 'Any subject works.' },
@@ -78,13 +31,14 @@ function fallbackProgress(subject: SubjectType): SubjectProgress {
   };
 }
 
-/** Render n stars: filled up to `filledCount`, the rest gray */
 function Stars({
   filled,
+  filledClass,
   total = 5,
   size = 20,
 }: {
   filled: number;
+  filledClass: string;
   total?: number;
   size?: number;
 }) {
@@ -94,11 +48,7 @@ function Stars({
         <Star
           key={i}
           size={size}
-          className={
-            i < filled
-              ? 'fill-pink-300 text-pink-300 drop-shadow-[0_0_6px_rgba(249,168,212,0.85)]'
-              : 'text-purple-800'
-          }
+          className={i < filled ? filledClass : 'text-white/20'}
         />
       ))}
     </div>
@@ -188,8 +138,8 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {SUBJECTS.map((subject) => {
           const progress = allProgress[subject] ?? fallbackProgress(subject);
-          const config = CARD_CONFIG[subject];
-          const Icon = config.icon;
+          const theme = SUBJECT_THEME[subject];
+          const Icon = theme.icon;
           const starsToNextLevel = 5 - progress.starsCollected;
           const progressPct = (progress.starsCollected / 5) * 100;
           const isMaxLevel =
@@ -202,33 +152,35 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
               type="button"
               onClick={() => onStartWorksheet(subject)}
               aria-label={`Practice ${subject}. ${progress.currentDifficulty}. ${progress.starsCollected} of 5 stars.`}
-              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 border-[var(--glass-border)] hover:border-[var(--secondary-accent)]/70 transition-all duration-300 text-left ${config.bgColor} ${
-                isRecommended ? 'ring-2 ring-[var(--secondary-accent)]/70' : ''
+              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 transition-all duration-300 text-left ${theme.wash} ${theme.restBorder} ${theme.hoverBorder} ${
+                isRecommended ? `ring-2 ${theme.ring}` : ''
               }`}
             >
               {isRecommended && (
-                <span className="absolute top-4 right-4 vibe-chip px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-[var(--secondary-accent)]">
+                <span
+                  className={`absolute top-4 right-4 vibe-chip px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${theme.accentText}`}
+                >
                   Start here
                 </span>
               )}
 
               <div className="text-center mb-5">
                 <div
-                  className={`inline-flex p-5 rounded-3xl bg-gradient-to-br ${config.color} mb-4 shadow-xl group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}
+                  className={`inline-flex p-5 rounded-3xl bg-gradient-to-br ${theme.gradient} mb-4 shadow-xl group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}
                 >
-                  <Icon size={48} className="text-white drop-shadow-md" />
+                  <Icon size={48} className="text-white drop-shadow-md" aria-hidden="true" />
                 </div>
                 <h3
-                  className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${config.color}`}
+                  className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme.gradient}`}
                 >
                   {subject}
                 </h3>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">{config.prompt}</p>
+                <p className="mt-1 text-sm text-[var(--text-secondary)]">{theme.prompt}</p>
               </div>
 
               <div className="text-center mb-4">
                 <span
-                  className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${config.color} text-white text-sm font-bold shadow-sm`}
+                  className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${theme.gradient} text-white text-sm font-bold shadow-sm`}
                 >
                   {progress.currentDifficulty}
                 </span>
@@ -236,7 +188,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
 
               <div className="mb-4">
                 <div className="flex justify-center mb-2">
-                  <Stars filled={progress.starsCollected} size={24} />
+                  <Stars filled={progress.starsCollected} filledClass={theme.starFilled} size={24} />
                 </div>
                 <p className="text-center text-sm text-[var(--text-secondary)]">
                   {isMaxLevel
@@ -251,7 +203,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                 <div className="mb-5">
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className={`h-full bg-gradient-to-r ${config.color} transition-all duration-500 progress-bar-fill`}
+                      className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500 progress-bar-fill`}
                       style={{ '--bar-width': `${progressPct}%` } as React.CSSProperties}
                     />
                   </div>
@@ -259,7 +211,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
               )}
 
               <span
-                className={`w-full px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 vibe-cta bg-gradient-to-r ${config.color} text-white`}
+                className={`w-full px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-lg`}
               >
                 <PlayCircle size={26} className="drop-shadow-sm" />
                 Practice {subject}
