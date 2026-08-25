@@ -29,6 +29,7 @@ import {
 import { useTokenEconomy } from './hooks/useTokenEconomy';
 import { useWorksheet } from './hooks/useWorksheet';
 import { logger } from './utils/logger';
+import { applySensoryDom, readSensoryPreferences } from './utils/sensoryPrefs';
 
 // Static imports — core views needed at first paint
 import { TokenEarnAnimation } from './components/features/TokenEarnAnimation';
@@ -164,6 +165,10 @@ const App = () => {
   });
 
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
+
+  useEffect(() => {
+    applySensoryDom(readSensoryPreferences());
+  }, []);
 
   // Database Migration: Initialize dataStore and app integration
   useEffect(() => {

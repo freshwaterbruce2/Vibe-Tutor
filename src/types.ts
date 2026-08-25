@@ -181,6 +181,7 @@ export interface SensoryPreferences {
   fontSize: 'small' | 'medium' | 'large';
   dyslexiaFont: boolean;
   colorMode: 'default' | 'high-contrast' | 'warm' | 'cool';
+  circuitMotionEnabled: boolean;
 }
 
 // Focus Timer / Pomodoro

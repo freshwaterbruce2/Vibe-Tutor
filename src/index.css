@@ -53,6 +53,11 @@
   transition-duration: 0.15s !important;
 }
 
+[data-animation-speed='reduced'] .circuit-bg,
+[data-animation-speed='reduced'] .circuit-bg * {
+  animation: none !important;
+}
+
 /* Font size controls */
 [data-font-size='small'] {
   font-size: 14px;

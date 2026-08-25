@@ -1,6 +1,7 @@
 import React, { useRef, useTransition } from 'react';
 import { dataStore } from '../../services/dataStore';
 import { logger } from '../../utils/logger';
+import { DEFAULT_SENSORY_PREFERENCES } from '../../utils/sensoryPrefs';
 import PrivacyPolicy from './PrivacyPolicy';
 
 const DataManagement = () => {
@@ -143,14 +144,7 @@ const DataManagement = () => {
                     await dataStore.saveAchievements([]);
                     await dataStore.saveStudentPoints(0);
                     await dataStore.saveRewards([]);
-                    await dataStore.saveSensoryPreferences({
-                      animationSpeed: 'normal',
-                      soundEnabled: true,
-                      hapticEnabled: true,
-                      fontSize: 'medium',
-                      dyslexiaFont: false,
-                      colorMode: 'default'
-                    });
+                    await dataStore.saveSensoryPreferences({ ...DEFAULT_SENSORY_PREFERENCES });
 
                     alert('Application data has been reset. The app will now reload.');
                     window.location.reload();

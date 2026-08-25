@@ -588,3 +588,15 @@ body {
   }
 }
 
+[data-circuit-motion='off'] .circuit-bg__grid,
+[data-circuit-motion='off'] .circuit-bg__trace,
+[data-circuit-motion='off'] .circuit-bg__scan,
+[data-animation-speed='none'] .circuit-bg__grid,
+[data-animation-speed='none'] .circuit-bg__trace,
+[data-animation-speed='none'] .circuit-bg__scan,
+[data-animation-speed='reduced'] .circuit-bg__grid,
+[data-animation-speed='reduced'] .circuit-bg__trace,
+[data-animation-speed='reduced'] .circuit-bg__scan {
+  animation: none !important;
+}
+
