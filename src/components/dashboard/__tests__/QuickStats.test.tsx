@@ -5,26 +5,25 @@ import { resolve } from 'node:path';
 import QuickStats from '../QuickStats';
 
 describe('QuickStats', () => {
-  it('keeps every stat label inside an overflow-safe stacked card', () => {
+  it('renders all four stats as two-column tiles, not squeezed glass cards', () => {
     const { container } = render(<QuickStats items={[]} />);
 
-    expect(container.querySelector('.quick-stats-grid')).not.toBeNull();
+    expect(screen.getByRole('region', { name: 'Quick stats' })).toHaveClass('grid-cols-2');
     expect(screen.getByText('Completed Today')).toBeInTheDocument();
     expect(screen.getByText('Due Today')).toBeInTheDocument();
     expect(screen.getByText('Overdue')).toBeInTheDocument();
-    expect(screen.getByText('Completion Rate')).toHaveClass('quick-stat-label');
-
-    const cards = container.querySelectorAll('.quick-stat-card');
-    expect(cards).toHaveLength(4);
+    expect(screen.getByText('Completion Rate')).toBeInTheDocument();
+    expect(container.querySelector('.glass-card')).toBeNull();
     expect(container.querySelector('.lg\\:grid-cols-4')).toBeNull();
-    expect(container.querySelector('.hover\\:scale-105')).toBeNull();
   });
 
-  it('does not use a four-column grid that squeezes split-pane cards', () => {
+  it('does not clip labels with overflow-hidden or a four-column split-pane grid', () => {
     const source = readFileSync(resolve(__dirname, '../QuickStats.tsx'), 'utf8');
     expect(source).not.toContain('lg:grid-cols-4');
+    expect(source).not.toContain('overflow-hidden');
     expect(source).not.toContain('hover:scale-105');
-    expect(source).toContain('quick-stat-card');
-    expect(source).toContain('quick-stat-label');
+    expect(source).not.toContain('glass-card');
+    expect(source).toContain('grid-cols-2');
+    expect(source).toContain('pr-8');
   });
 });

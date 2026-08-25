@@ -68,27 +68,28 @@ const QuickStats = ({ items }: QuickStatsProps) => {
   ];
 
   return (
-    <div className="quick-stats-grid">
+    <section aria-label="Quick stats" className="grid w-full grid-cols-2 gap-3">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
-          <div
+          <article
             key={stat.label}
-            className={`quick-stat-card glass-card p-3 rounded-xl border ${stat.borderColor} ${stat.bgColor}`}
+            className={`relative min-w-0 rounded-2xl border p-4 ${stat.borderColor} ${stat.bgColor}`}
           >
-            <div className={`mb-2 inline-flex p-2 rounded-lg ${stat.bgColor}`}>
-              <Icon className={`w-5 h-5 ${stat.color}`} aria-hidden="true" />
-            </div>
-            <p className="quick-stat-label text-xs text-[var(--text-secondary)] leading-snug">
+            <Icon
+              className={`pointer-events-none absolute right-3 top-3 h-4 w-4 ${stat.color}`}
+              aria-hidden="true"
+            />
+            <p className="pr-8 text-xs font-medium leading-4 text-[var(--text-secondary)]">
               {stat.label}
             </p>
-            <p className={`mt-1 text-2xl font-bold tabular-nums leading-none ${stat.color}`}>
+            <p className={`mt-2 text-2xl font-bold tabular-nums leading-none ${stat.color}`}>
               {stat.value}
             </p>
-          </div>
+          </article>
         );
       })}
-    </div>
+    </section>
   );
 };
 
