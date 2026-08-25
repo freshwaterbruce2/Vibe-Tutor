@@ -1,4 +1,4 @@
-import { PlayCircle, Sparkles, Star, TrendingUp } from 'lucide-react';
+import { PlayCircle, Star, TrendingUp } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { SUBJECTS, SUBJECT_THEME } from '../realms/subjectTheme';
 import { getAllProgress } from '../../services/progressionService';
@@ -10,12 +10,6 @@ interface SubjectCardsProps {
   onStartWorksheet: (subject: SubjectType) => void;
   userTokens: number;
 }
-
-const HOW_IT_WORKS = [
-  { step: '1', title: 'Tap a card', detail: 'Any subject works.' },
-  { step: '2', title: 'Practice or play', detail: '10 questions, or a game.' },
-  { step: '3', title: 'Earn stars', detail: '5 stars unlocks the next level.' },
-] as const;
 
 function fallbackProgress(subject: SubjectType): SubjectProgress {
   return {
@@ -85,6 +79,16 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
     }, SUBJECTS[0]!);
   }, [allProgress]);
 
+  const orderedSubjects = useMemo(
+    () =>
+      [...SUBJECTS].sort((a, b) => {
+        if (a === recommendedSubject) return -1;
+        if (b === recommendedSubject) return 1;
+        return 0;
+      }),
+    [recommendedSubject],
+  );
+
   return (
     <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 md:pb-8 bg-[var(--background-main)]">
       <div className="text-center mb-8 md:mb-10">
@@ -93,6 +97,9 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
         </h1>
         <p className="text-[var(--text-secondary)] font-medium text-base md:text-lg px-4 mt-3">
           Tap a card to practice questions or play a game.
+        </p>
+        <p className="text-[var(--text-muted)] text-sm px-4 mt-2">
+          Tap a card · Practice or play · Earn stars
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
@@ -118,25 +125,8 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto mb-8">
-        {HOW_IT_WORKS.map((item) => (
-          <div
-            key={item.step}
-            className="glass-card rounded-2xl px-4 py-3 text-left flex items-start gap-3"
-          >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-sm font-black text-white">
-              {item.step}
-            </span>
-            <div>
-              <p className="font-bold text-white text-sm">{item.title}</p>
-              <p className="text-xs text-[var(--text-secondary)]">{item.detail}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        {SUBJECTS.map((subject) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-7xl mx-auto">
+        {orderedSubjects.map((subject) => {
           const progress = allProgress[subject] ?? fallbackProgress(subject);
           const theme = SUBJECT_THEME[subject];
           const Icon = theme.icon;
@@ -145,6 +135,11 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
           const isMaxLevel =
             progress.currentDifficulty === 'Master' && progress.starsCollected >= 5;
           const isRecommended = subject === recommendedSubject;
+          const starMessage = isMaxLevel
+            ? 'Max level — keep practicing!'
+            : progress.starsCollected === 0
+              ? 'No stars yet — tap to start'
+              : `${starsToNextLevel} star${starsToNextLevel !== 1 ? 's' : ''} to the next level`;
 
           return (
             <button
@@ -152,81 +147,100 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
               type="button"
               onClick={() => onStartWorksheet(subject)}
               aria-label={`Practice ${subject}. ${progress.currentDifficulty}. ${progress.starsCollected} of 5 stars.`}
-              className={`relative group glass-card p-6 md:p-8 rounded-3xl border-2 transition-all duration-300 text-left ${theme.wash} ${theme.restBorder} ${theme.hoverBorder} ${
-                isRecommended ? `ring-2 ${theme.ring}` : ''
+              className={`subject-card relative group glass-card p-6 rounded-3xl border-2 transition-all duration-300 text-left ${theme.wash} ${theme.restBorder} ${theme.hoverBorder} ${theme.glow} ${
+                isRecommended ? `md:col-span-2 md:p-8 ring-2 ${theme.ring}` : ''
               }`}
             >
+              <div
+                className={`pointer-events-none absolute -top-16 -right-10 h-44 w-44 rounded-full blur-3xl opacity-50 ${theme.orb}`}
+              />
+
               {isRecommended && (
                 <span
-                  className={`absolute top-4 right-4 vibe-chip px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${theme.accentText}`}
+                  className={`absolute top-4 right-4 z-10 vibe-chip px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${theme.accentText}`}
                 >
                   Start here
                 </span>
               )}
 
-              <div className="text-center mb-5">
-                <div
-                  className={`inline-flex p-5 rounded-3xl bg-gradient-to-br ${theme.gradient} mb-4 shadow-xl group-hover:scale-110 transition-transform duration-300 group-hover:rotate-3`}
-                >
-                  <Icon size={48} className="text-white drop-shadow-md" aria-hidden="true" />
-                </div>
-                <h3
-                  className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${theme.gradient}`}
-                >
-                  {subject}
-                </h3>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">{theme.prompt}</p>
-              </div>
-
-              <div className="text-center mb-4">
-                <span
-                  className={`inline-block px-4 py-1.5 rounded-full bg-gradient-to-r ${theme.gradient} text-white text-sm font-bold shadow-sm`}
-                >
-                  {progress.currentDifficulty}
-                </span>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex justify-center mb-2">
-                  <Stars filled={progress.starsCollected} filledClass={theme.starFilled} size={24} />
-                </div>
-                <p className="text-center text-sm text-[var(--text-secondary)]">
-                  {isMaxLevel
-                    ? 'Max level — keep practicing!'
-                    : progress.starsCollected === 0
-                      ? 'No stars yet — tap to start'
-                      : `${starsToNextLevel} star${starsToNextLevel !== 1 ? 's' : ''} to the next level`}
-                </p>
-              </div>
-
-              {!isMaxLevel && (
-                <div className="mb-5">
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`relative z-10 ${
+                  isRecommended
+                    ? 'flex flex-col md:flex-row md:items-center md:gap-8 md:text-left'
+                    : 'text-center'
+                }`}
+              >
+                <div className={isRecommended ? 'text-center md:text-left shrink-0' : ''}>
+                  <div className="relative inline-flex mb-4 md:mb-0">
                     <div
-                      className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500 progress-bar-fill`}
-                      style={{ '--bar-width': `${progressPct}%` } as React.CSSProperties}
+                      className={`absolute inset-0 rounded-full blur-xl opacity-80 bg-gradient-to-br ${theme.gradient}`}
                     />
+                    <div
+                      className={`relative inline-flex p-5 rounded-full bg-gradient-to-br ${theme.gradient} shadow-xl group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <Icon
+                        size={isRecommended ? 56 : 44}
+                        className="text-white drop-shadow-md"
+                        aria-hidden="true"
+                      />
+                    </div>
                   </div>
                 </div>
-              )}
 
-              <span
-                className={`w-full px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-lg`}
-              >
-                <PlayCircle size={26} className="drop-shadow-sm" />
-                Practice {subject}
-              </span>
+                <div className={`min-w-0 ${isRecommended ? 'md:flex-1' : ''}`}>
+                  <div
+                    className={`flex flex-wrap items-center gap-2 mb-1 ${
+                      isRecommended ? 'justify-center md:justify-start' : 'justify-center'
+                    }`}
+                  >
+                    <h3
+                      className={`text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.gradient}`}
+                    >
+                      {subject}
+                    </h3>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold ${theme.accentText} ${theme.well}`}
+                    >
+                      {progress.currentDifficulty}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)]">{theme.prompt}</p>
+
+                  <div
+                    className={`mt-3 ${isRecommended ? 'flex justify-center md:justify-start' : 'flex justify-center'}`}
+                  >
+                    <Stars
+                      filled={progress.starsCollected}
+                      filledClass={theme.starFilled}
+                      size={isRecommended ? 26 : 22}
+                    />
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">{starMessage}</p>
+
+                  {!isMaxLevel && (
+                    <div className="mt-3 mb-4">
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500 progress-bar-fill`}
+                          style={{ '--bar-width': `${progressPct}%` } as React.CSSProperties}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <span
+                    className={`px-6 py-4 rounded-2xl font-black text-lg inline-flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-lg ${
+                      isRecommended ? 'w-full md:w-auto md:min-w-[240px]' : 'w-full'
+                    }`}
+                  >
+                    <PlayCircle size={26} className="drop-shadow-sm" />
+                    Practice {subject}
+                  </span>
+                </div>
+              </div>
             </button>
           );
         })}
-      </div>
-
-      <div className="mt-10 max-w-4xl mx-auto glass-card p-5 rounded-2xl flex items-start gap-3">
-        <Sparkles size={20} className="text-[var(--secondary-accent)] shrink-0 mt-0.5" />
-        <p className="text-sm text-[var(--text-secondary)]">
-          Score 90% or higher on a practice set to earn 5 stars. Collect 5 stars to move up a
-          level.
-        </p>
       </div>
     </div>
   );

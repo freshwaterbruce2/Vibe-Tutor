@@ -63,9 +63,9 @@ describe('SubjectCards', () => {
   it('explains the three steps in plain language', () => {
     render(<SubjectCards onStartWorksheet={vi.fn()} userTokens={0} />);
 
-    expect(screen.getByText('Tap a card')).toBeInTheDocument();
-    expect(screen.getByText('Practice or play')).toBeInTheDocument();
-    expect(screen.getByText('Earn stars')).toBeInTheDocument();
+    expect(
+      screen.getByText('Tap a card · Practice or play · Earn stars'),
+    ).toBeInTheDocument();
   });
 
   it('keeps a Start here badge on the first unfinished subject after progress loads', async () => {

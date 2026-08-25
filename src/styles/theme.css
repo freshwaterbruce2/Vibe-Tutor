@@ -111,6 +111,38 @@ body {
   transform: translateY(-2px) scale(1.01);
 }
 
+/* Subject hub cards keep their own hue instead of the pink hover wash */
+.glass-card.subject-card:hover {
+  background: var(--glass-surface);
+  border-color: inherit;
+  transform: translateY(-6px) scale(1.02);
+}
+
+.subject-card {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.subject-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    rgba(255, 255, 255, 0.16) 48%,
+    transparent 68%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.subject-card:hover::after {
+  transform: translateX(130%);
+}
+
 /* Large shells (onboarding, sidebar) — frost without the lift */
 .glass-panel {
   background: var(--glass-surface);

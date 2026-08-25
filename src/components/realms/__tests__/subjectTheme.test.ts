@@ -8,6 +8,9 @@ describe('subject theme', () => {
 
     expect(new Set(gradients).size).toBe(SUBJECTS.length);
     expect(new Set(icons).size).toBe(SUBJECTS.length);
+    expect(new Set(SUBJECTS.map((subject) => SUBJECT_THEME[subject].glow)).size).toBe(
+      SUBJECTS.length,
+    );
     expect(SUBJECT_THEME.Math.gradient).toContain('cyan');
     expect(SUBJECT_THEME.Science.gradient).toContain('emerald');
     expect(SUBJECT_THEME.History.gradient).toContain('amber');

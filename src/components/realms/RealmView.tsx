@@ -203,15 +203,23 @@ export default function RealmView({
         </button>
 
         <div
-          className={`glass-card p-8 rounded-3xl mb-8 border-2 ${theme.restBorder} text-center shadow-lg relative overflow-hidden ${theme.wash}`}
+          className={`subject-card glass-card p-8 rounded-3xl mb-8 border-2 ${theme.restBorder} text-center relative overflow-hidden ${theme.wash} ${theme.glow}`}
         >
+          <div
+            className={`pointer-events-none absolute -top-16 -right-10 h-52 w-52 rounded-full blur-3xl opacity-45 ${theme.orb}`}
+          />
           <div
             className={`absolute inset-0 bg-gradient-to-br ${theme.overlay} pointer-events-none`}
           ></div>
-          <div
-            className={`relative z-10 inline-flex p-4 rounded-3xl bg-gradient-to-br ${theme.gradient} mb-4 shadow-xl`}
-          >
-            <SubjectIcon size={40} className="text-white" aria-hidden="true" />
+          <div className="relative z-10 inline-flex mb-4">
+            <div
+              className={`absolute inset-0 rounded-full blur-xl opacity-80 bg-gradient-to-br ${theme.gradient}`}
+            />
+            <div
+              className={`relative inline-flex p-5 rounded-full bg-gradient-to-br ${theme.gradient} shadow-xl`}
+            >
+              <SubjectIcon size={44} className="text-white" aria-hidden="true" />
+            </div>
           </div>
           <h1
             className={`relative z-10 text-4xl md:text-5xl font-black mb-3 text-transparent bg-clip-text bg-gradient-to-r ${theme.gradient}`}
@@ -245,7 +253,7 @@ export default function RealmView({
                     key={game.id}
                     type="button"
                     onClick={() => setActiveGame(game.id)}
-                    className={`glass-card p-6 rounded-2xl border-2 ${theme.restBorder} ${theme.hoverBorder} text-left transition-all duration-300 hover:-translate-y-2 group flex flex-col h-full ${theme.wash}`}
+                    className={`subject-card glass-card p-6 rounded-2xl border-2 ${theme.restBorder} ${theme.hoverBorder} text-left group flex flex-col h-full ${theme.wash} ${theme.glow}`}
                   >
                     <div className={`inline-flex p-4 rounded-xl mb-4 shadow-inner ${theme.well}`}>
                       <Icon

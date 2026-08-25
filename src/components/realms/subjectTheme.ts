@@ -23,6 +23,8 @@ export interface SubjectTheme {
   overlay: string;
   accentText: string;
   well: string;
+  glow: string;
+  orb: string;
 }
 
 /** One hue family per subject so the hub scans as five different places. */
@@ -39,6 +41,8 @@ export const SUBJECT_THEME: Record<SubjectType, SubjectTheme> = {
     overlay: 'from-cyan-400/25 to-sky-500/10',
     accentText: 'text-cyan-300',
     well: 'bg-cyan-500/20',
+    glow: 'shadow-[0_18px_50px_-12px_rgba(34,211,238,0.5)]',
+    orb: 'bg-cyan-400',
   },
   Science: {
     icon: FlaskConical,
@@ -52,6 +56,8 @@ export const SUBJECT_THEME: Record<SubjectType, SubjectTheme> = {
     overlay: 'from-emerald-400/25 to-teal-500/10',
     accentText: 'text-emerald-300',
     well: 'bg-emerald-500/20',
+    glow: 'shadow-[0_18px_50px_-12px_rgba(52,211,153,0.5)]',
+    orb: 'bg-emerald-400',
   },
   History: {
     icon: Landmark,
@@ -65,6 +71,8 @@ export const SUBJECT_THEME: Record<SubjectType, SubjectTheme> = {
     overlay: 'from-amber-400/25 to-orange-500/10',
     accentText: 'text-amber-300',
     well: 'bg-amber-500/20',
+    glow: 'shadow-[0_18px_50px_-12px_rgba(251,191,36,0.5)]',
+    orb: 'bg-amber-400',
   },
   Bible: {
     icon: BookMarked,
@@ -78,6 +86,8 @@ export const SUBJECT_THEME: Record<SubjectType, SubjectTheme> = {
     overlay: 'from-violet-400/25 to-indigo-500/10',
     accentText: 'text-violet-300',
     well: 'bg-violet-500/20',
+    glow: 'shadow-[0_18px_50px_-12px_rgba(167,139,250,0.5)]',
+    orb: 'bg-violet-400',
   },
   'Language Arts': {
     icon: PenLine,
@@ -91,5 +101,7 @@ export const SUBJECT_THEME: Record<SubjectType, SubjectTheme> = {
     overlay: 'from-fuchsia-400/25 to-pink-500/10',
     accentText: 'text-pink-300',
     well: 'bg-fuchsia-500/20',
+    glow: 'shadow-[0_18px_50px_-12px_rgba(244,114,182,0.55)]',
+    orb: 'bg-fuchsia-400',
   },
 };
