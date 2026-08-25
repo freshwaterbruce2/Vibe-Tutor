@@ -6,6 +6,7 @@ export interface AvatarCharacter {
   id: string;
   name: string;
   imagePath: string;
+  fallbackEmoji: string;
   rarity: AvatarRarity;
   unlockLevel: number;
   description: string;

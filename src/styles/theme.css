@@ -1,20 +1,25 @@
 :root {
-  /* Vibe Neon Chip — bright violet / cyan processor glass (2026) */
+  /* Processor chip canvas + translucent nebula-glass chrome */
   --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
   --font-ui: 'Outfit', 'Inter', system-ui, sans-serif;
   --background-main: #050816;
   --background-card: #0b1233;
   --background-surface: #151c48;
   --background: var(--background-main);
-  --glass-surface: rgba(8, 16, 48, 0.58);
+  --glass-surface: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(167, 139, 250, 0.1) 52%,
+    rgba(34, 211, 238, 0.06) 100%
+  );
   --glass-border: rgba(34, 211, 238, 0.32);
 
-  /* Primary accents */
-  --primary-accent: #a78bfa; /* Electric violet */
-  --secondary-accent: #22d3ee; /* Neon cyan traces */
-  --tertiary-accent: #f472b6; /* Hot pink */
-  --quaternary-accent: #67e8f9; /* Ice cyan */
-  --energy-accent: #84cc16; /* Electric lime — achievement bursts */
+  /* Primary accents — electric violet / cyan traces, magenta spark */
+  --primary-accent: #a78bfa;
+  --secondary-accent: #22d3ee;
+  --tertiary-accent: #f472b6;
+  --quaternary-accent: #67e8f9;
+  --energy-accent: #84cc16;
   --circuit-cyan: #22d3ee;
   --circuit-violet: #c084fc;
 
@@ -27,7 +32,9 @@
   /* Border & Effects */
   --border-color: rgba(34, 211, 238, 0.28);
   --border-hover: rgba(167, 139, 250, 0.7);
-  --shadow-glow: 0 16px 42px rgba(2, 6, 23, 0.55);
+  --shadow-glow:
+    0 16px 42px rgba(2, 6, 23, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
@@ -56,12 +63,12 @@
   --token-surface: rgba(251, 191, 36, 0.15);
 
   /* Extended text grays */
-  --text-tertiary: #475569;
-  --text-placeholder: #334155;
+  --text-tertiary: #7c7399;
+  --text-placeholder: #5b5470;
 
   /* Extended borders */
-  --border-subtle: rgba(148, 163, 184, 0.12);
-  --border-secondary: rgba(148, 163, 184, 0.24);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-secondary: rgba(167, 139, 250, 0.24);
 
   /* Animation Timings */
   --transition-fast: 0.15s ease-out;
@@ -79,8 +86,8 @@ body {
 /* Glassmorphism Classes */
 .glass-card {
   background: var(--glass-surface);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   box-shadow: var(--shadow-glow);
@@ -88,17 +95,104 @@ body {
 }
 
 .glass-card:hover {
-  background: rgba(14, 24, 64, 0.72);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(167, 139, 250, 0.14) 50%,
+    rgba(34, 211, 238, 0.1) 100%
+  );
   border-color: var(--border-hover);
-  box-shadow: var(--neon-glow-soft);
+  box-shadow: var(--neon-glow-soft), var(--shadow-glow);
   transform: translateY(-2px) scale(1.01);
+}
+
+/* Subject hub cards keep their own hue instead of the pink hover wash */
+.glass-card.subject-card:hover {
+  background: var(--glass-surface);
+  border-color: inherit;
+  transform: translateY(-6px) scale(1.02);
+}
+
+.subject-card {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.subject-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    rgba(255, 255, 255, 0.16) 48%,
+    transparent 68%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.subject-card:hover::after {
+  transform: translateX(130%);
+}
+
+/* Large shells (onboarding, sidebar) — frost without the lift */
+.glass-panel {
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Subject hub + shop: soft color wash over the processor backdrop. */
+.vibe-page-shell {
+  min-height: 100%;
+  background:
+    radial-gradient(ellipse 80% 50% at 12% -6%, rgba(236, 72, 153, 0.16), transparent 55%),
+    radial-gradient(ellipse 70% 48% at 92% 0%, rgba(167, 139, 250, 0.18), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(34, 211, 238, 0.1), transparent 50%),
+    transparent;
+}
+
+.vibe-hero-title {
+  background-image: linear-gradient(120deg, #f9a8d4 0%, #a78bfa 48%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.45));
+}
+
+.vibe-cta {
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow:
+    0 10px 36px -8px rgba(244, 114, 182, 0.62),
+    0 0 22px rgba(232, 121, 249, 0.28);
+}
+
+.vibe-cta:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 12px 42px -6px rgba(244, 114, 182, 0.75),
+    0 0 28px rgba(232, 121, 249, 0.4);
+}
+
+.vibe-chip {
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .glass-button {
   background: var(--gradient-primary);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
   transition: all var(--transition-fast);
   position: relative;
@@ -326,13 +420,13 @@ body {
   width: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(18, 10, 46, 0.8);
+  background: rgba(12, 6, 24, 0.8);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--gradient-primary);
   border-radius: 10px;
-  border: 2px solid rgba(18, 10, 46, 0.8);
+  border: 2px solid rgba(12, 6, 24, 0.8);
   box-shadow: var(--shadow-glow);
 }
 ::-webkit-scrollbar-thumb:hover {

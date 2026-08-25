@@ -70,14 +70,14 @@ const WorksheetResults = ({
       <div className="max-w-2xl w-full">
         {/* Level Up Animation */}
         {leveledUp && (
-          <div className="mb-8 glass-card p-8 rounded-2xl border-2 border-yellow-500 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 animate-[bounce_1s_ease-in-out_3]">
+          <div className="mb-8 glass-card p-8 rounded-2xl border-2 border-[var(--secondary-accent)] bg-gradient-to-br from-pink-400/20 to-fuchsia-500/20 animate-[bounce_1s_ease-in-out_3]">
             <div className="text-center space-y-4">
-              <Sparkles className="w-16 h-16 mx-auto text-yellow-400 animate-spin" />
-              <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
+              <Sparkles className="w-16 h-16 mx-auto text-[var(--secondary-accent)] animate-spin" />
+              <h2 className="vibe-hero-title text-4xl font-bold">
                 Level Up!
               </h2>
               <p className="text-2xl text-white">
-                You advanced to <span className="font-bold text-yellow-400">{newDifficulty}</span>{' '}
+                You advanced to <span className="font-bold text-[var(--secondary-accent)]">{newDifficulty}</span>{' '}
                 level!
               </p>
               <div className="text-6xl">🎊</div>
@@ -100,7 +100,7 @@ const WorksheetResults = ({
 
           {/* Score Display */}
           <div className="text-center py-6">
-            <div className="text-7xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-sky-500 mb-2">
+            <div className="vibe-hero-title text-7xl md:text-8xl font-bold mb-2">
               {score}%
             </div>
             <p className="text-text-secondary">
@@ -124,8 +124,8 @@ const WorksheetResults = ({
                     size={48}
                     className={
                       num <= (starsEarned || 0)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-600'
+                        ? 'fill-pink-300 text-pink-300 drop-shadow-[0_0_8px_rgba(249,168,212,0.85)]'
+                        : 'text-purple-800'
                     }
                   />
                 </div>
@@ -143,7 +143,7 @@ const WorksheetResults = ({
               <p className="text-xl font-bold">{5 - starsToNextLevel} / 5 stars</p>
               <div className="max-w-md mx-auto h-4 bg-surface-lighter rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-pink-400 to-fuchsia-500 transition-all duration-1000"
                   style={{ width: `${((5 - starsToNextLevel) / 5) * 100}%` }}
                 />
               </div>

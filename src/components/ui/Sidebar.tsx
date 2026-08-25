@@ -40,7 +40,7 @@ const navItems = [
   },
   { view: 'tutor', icon: GraduationCap, label: 'Vibe Tutor', gradient: 'vibe-gradient-secondary' },
   { view: 'friend', icon: Heart, label: 'Vibe Buddy', gradient: 'vibe-gradient-accent' },
-  { view: 'cards', icon: Layers, label: 'Learning Realms', gradient: 'vibe-gradient-primary' },
+  { view: 'cards', icon: Layers, label: 'Subjects', gradient: 'vibe-gradient-primary' },
   { view: 'shop', icon: Coins, label: '🛒 Reward Shop', gradient: 'vibe-gradient-secondary' },
   { view: 'games', icon: Brain, label: 'Brain Gym', gradient: 'vibe-gradient-accent' },
   { view: 'schedules', icon: Calendar, label: 'Schedules', gradient: 'vibe-gradient-primary' },
@@ -95,7 +95,7 @@ const Sidebar = ({
 
       {/* Desktop Sidebar - hidden on mobile */}
       <div
-        className={`hidden md:flex ${isCollapsed ? 'w-[72px]' : 'w-64'} glass-card border-r border-[var(--glass-border)] flex-col shrink-0 relative overflow-hidden transition-[width] duration-300`}
+        className={`hidden md:flex ${isCollapsed ? 'w-[72px]' : 'w-64'} glass-panel border-r border-[var(--glass-border)] flex-col shrink-0 relative overflow-hidden transition-[width] duration-300`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--glass-surface)] to-transparent pointer-events-none"></div>
         <div className="relative z-10">
@@ -106,7 +106,7 @@ const Sidebar = ({
               <VibeTechLogo className="w-12 h-12 float-animation" />
               {!isCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold neon-text-primary">Vibe-Tech</h1>
+                  <h1 className="text-xl font-bold neon-text-primary leading-tight">Vibe Tutor</h1>
                   <p className="text-sm text-[var(--text-secondary)] opacity-80">
                     {welcomeMessage}
                   </p>

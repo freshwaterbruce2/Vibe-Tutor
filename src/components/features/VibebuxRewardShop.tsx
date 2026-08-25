@@ -29,10 +29,10 @@ const VibebuxRewardShop = ({
   } = useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete });
 
   return (
-    <div className="min-h-full bg-transparent p-4 md:p-6">
+    <div className="vibe-page-shell min-h-full bg-transparent p-4 md:p-6">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6 rounded-3xl border border-[var(--glass-border)] bg-gradient-to-br from-violet-500/10 via-slate-900/40 to-sky-500/10 p-4 md:p-6">
+        <div className="mb-6 glass-card rounded-3xl border border-[var(--glass-border)] bg-gradient-to-br from-pink-400/12 via-fuchsia-500/8 to-purple-500/12 p-4 md:p-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-8">
             <div className="min-w-0">
               <div className="flex items-center gap-3">
@@ -45,7 +45,7 @@ const VibebuxRewardShop = ({
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-secondary)] font-semibold">
                     Vibebux Marketplace
                   </p>
-                  <h1 className="text-2xl md:text-4xl font-black leading-tight text-transparent bg-clip-text bg-gradient-to-r from-[var(--token-color)] via-white to-[var(--secondary-accent)]">
+                  <h1 className="vibe-hero-title text-2xl md:text-4xl font-black leading-tight">
                     Vibebux Reward Shop
                   </h1>
                 </div>
@@ -57,7 +57,7 @@ const VibebuxRewardShop = ({
 
             <div className="flex flex-col sm:flex-row w-full lg:w-auto items-stretch sm:items-center gap-3">
               {/* Balance Display */}
-              <div className="bg-gray-800/50 backdrop-blur rounded-2xl px-6 py-4 flex-1 border border-[var(--glass-border)]">
+              <div className="vibe-chip glass-card rounded-2xl px-6 py-4 flex-1">
                 <div className="flex items-center justify-center sm:justify-start gap-3">
                   <Coins className="w-8 h-8 text-[var(--token-color)] shrink-0" />
                   <div className="text-white">
@@ -93,8 +93,8 @@ const VibebuxRewardShop = ({
               onClick={() => setSelectedCategory(category.id)}
               className={`px-5 py-2.5 rounded-full font-bold transition-all whitespace-nowrap shadow-sm snap-start shrink-0 flex items-center gap-2 ${
                 selectedCategory === category.id
-                  ? 'bg-gradient-to-r from-purple-500 to-sky-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] scale-105'
-                  : 'bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-gray-700 border border-gray-700'
+                  ? 'vibe-cta text-white scale-105'
+                  : 'vibe-chip text-[var(--text-secondary)] hover:text-white hover:border-[var(--secondary-accent)]/50'
               }`}
             >
               <div className="shrink-0">{category.icon}</div>
@@ -125,9 +125,9 @@ const VibebuxRewardShop = ({
                     return (
                       <div
                         key={item.id}
-                        className={`relative bg-gray-800/50 backdrop-blur rounded-3xl p-6 border-2 ${
+                        className={`relative glass-card rounded-3xl p-6 border-2 ${
                           isEquipped
-                            ? 'border-[var(--token-color)]/70 shadow-[0_0_20px_rgba(251,191,36,0.2)]'
+                            ? 'border-[var(--token-color)]/80 shadow-[0_0_20px_rgba(249,168,212,0.28)]'
                             : 'border-[var(--secondary-accent)]/50'
                         } transition-all duration-300`}
                       >
@@ -171,7 +171,7 @@ const VibebuxRewardShop = ({
                             className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
                               isEquipped
                                 ? 'bg-[var(--token-color)]/20 border border-[var(--token-color)]/50 text-[var(--token-color)] hover:bg-[var(--token-color)]/30'
-                                : 'bg-gradient-to-r from-purple-500 to-sky-500 text-white hover:scale-105'
+                                : 'vibe-cta text-white hover:scale-105'
                             }`}
                           >
                             {isEquipped ? 'Unequip' : 'Equip Avatar'}
@@ -196,13 +196,13 @@ const VibebuxRewardShop = ({
               return (
                 <div
                   key={item.id}
-                  className={`relative bg-gray-800/50 backdrop-blur rounded-3xl p-6 border-2
+                  className={`relative glass-card rounded-3xl p-6 border-2
                     ${
                       isOwned && !item.maxQuantity
                         ? 'border-[var(--secondary-accent)]/50'
                         : canPurchase
                           ? 'border-[var(--primary-accent)]/50 hover:border-[var(--primary-accent)]'
-                          : 'border-gray-700 opacity-60'
+                          : 'border-[var(--glass-border)] opacity-60'
                     } transition-all duration-300`}
                 >
                   {/* Owned Badge */}
@@ -244,10 +244,8 @@ const VibebuxRewardShop = ({
                       className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2
                         ${
                           canPurchase
-                            ? 'bg-gradient-to-r from-[var(--secondary-accent)] to-[var(--success-accent)] text-white hover:scale-105'
-                            : isOwned && !item.maxQuantity
-                              ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                            ? 'vibe-cta text-white hover:scale-105'
+                            : 'bg-[var(--background-surface)] text-[var(--text-muted)] cursor-not-allowed'
                         }`}
                     >
                       {isOwned && !item.maxQuantity ? (
@@ -273,7 +271,7 @@ const VibebuxRewardShop = ({
         {/* Purchase Animation */}
         {showPurchaseAnimation && lastPurchasedItem && (
           <div className="fixed inset-0 flex items-center justify-center z-[60] pointer-events-none p-4">
-            <div className="bg-gradient-to-r from-[var(--secondary-accent)] to-[var(--success-accent)] text-white px-8 py-6 rounded-3xl shadow-2xl animate-bounce max-w-sm w-full text-center">
+            <div className="vibe-cta text-white px-8 py-6 rounded-3xl shadow-2xl animate-bounce max-w-sm w-full text-center">
               <div className="text-3xl font-bold mb-2">🎉 Success!</div>
               <div className="text-xl">Got: {lastPurchasedItem.name}</div>
               {lastPurchasedItem.category === 'real-rewards' && (
@@ -286,7 +284,7 @@ const VibebuxRewardShop = ({
         )}
 
         {/* Tips */}
-        <div className="mt-12 bg-gray-800/30 backdrop-blur rounded-2xl p-6">
+        <div className="mt-12 glass-card rounded-2xl p-6">
           <h2 className="text-2xl font-bold text-white mb-4">💡 Shop Tips</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white/80">
             <div>

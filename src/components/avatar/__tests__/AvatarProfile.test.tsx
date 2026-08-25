@@ -38,7 +38,7 @@ describe('AvatarProfile', () => {
     expect(await screen.findByText('Neon Thinker')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /avatar/i })).toHaveAttribute(
       'src',
-      '/avatars/avatar-teen-neon-hair.png',
+      expect.stringMatching(/^data:image\/png;base64,/),
     );
   });
 

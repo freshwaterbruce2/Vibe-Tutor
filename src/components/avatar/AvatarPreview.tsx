@@ -1,4 +1,4 @@
-import { AvatarImage } from '@vibetech/avatars';
+import { AvatarImage, DEFAULT_AVATAR_IMAGE } from '@vibetech/avatars';
 import type { AvatarState, ShopItem } from '@vibetech/avatars';
 
 interface AvatarPreviewProps {
@@ -19,8 +19,8 @@ export function AvatarPreview({ avatarState, allItems, size = 120, className = '
   const avatarSrc =
     avatarState.selectedAvatarId
       ? (allItems.find((i) => i.id === avatarState.selectedAvatarId)?.imageUrl ??
-         '/avatars/avatar-boy-headphones.png')
-      : '/avatars/avatar-boy-headphones.png';
+         DEFAULT_AVATAR_IMAGE)
+      : DEFAULT_AVATAR_IMAGE;
 
   return (
     <div

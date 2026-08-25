@@ -53,7 +53,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 50,
       category: 'avatars',
       icon: <span className="text-3xl">👤</span>,
-      color: 'from-yellow-400 to-blue-500',
+      color: 'from-fuchsia-400 to-pink-400',
     },
     {
       id: 'avatar-pro',
@@ -62,7 +62,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 150,
       category: 'avatars',
       icon: <span className="text-3xl">😎</span>,
-      color: 'from-purple-500 to-sky-500',
+      color: 'from-violet-400 to-fuchsia-500',
     },
     {
       id: 'avatar-ninja',
@@ -71,7 +71,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 200,
       category: 'avatars',
       icon: <span className="text-3xl">🥷</span>,
-      color: 'from-gray-800 to-black',
+      color: 'from-purple-700 to-fuchsia-900',
     },
     {
       id: 'avatar-rainbow',
@@ -80,7 +80,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 300,
       category: 'avatars',
       icon: <span className="text-3xl">🌈</span>,
-      color: 'from-red-500 via-yellow-500 to-purple-500',
+      color: 'from-pink-400 via-fuchsia-400 to-violet-500',
     },
 
     // Game Passes
@@ -91,7 +91,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 100,
       category: 'game-passes',
       icon: <span className="text-3xl">⚡</span>,
-      color: 'from-yellow-400 to-orange-500',
+      color: 'from-pink-400 to-fuchsia-500',
     },
     {
       id: 'pass-jump',
@@ -100,7 +100,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 120,
       category: 'game-passes',
       icon: <span className="text-3xl">🚀</span>,
-      color: 'from-blue-400 to-cyan-500',
+      color: 'from-violet-400 to-pink-400',
     },
     {
       id: 'pass-vip',
@@ -109,7 +109,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 500,
       category: 'game-passes',
       icon: <Crown className="w-8 h-8" />,
-      color: 'from-yellow-500 to-yellow-600',
+      color: 'from-fuchsia-400 to-purple-500',
     },
     {
       id: 'pass-double-rewards',
@@ -118,7 +118,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 400,
       category: 'game-passes',
       icon: <span className="text-3xl">💎</span>,
-      color: 'from-blue-500 to-purple-600',
+      color: 'from-pink-500 to-purple-600',
     },
 
     // Special Perks
@@ -129,7 +129,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 250,
       category: 'perks',
       icon: <span className="text-3xl">🚫</span>,
-      color: 'from-red-500 to-red-600',
+      color: 'from-rose-400 to-pink-600',
     },
     {
       id: 'perk-custom-music',
@@ -138,7 +138,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 180,
       category: 'perks',
       icon: <Music className="w-8 h-8" />,
-      color: 'from-violet-400 to-blue-500',
+      color: 'from-violet-400 to-fuchsia-400',
     },
     {
       id: 'perk-themes',
@@ -147,7 +147,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 150,
       category: 'perks',
       icon: <span className="text-3xl">🎨</span>,
-      color: 'from-sky-400 to-purple-500',
+      color: 'from-pink-300 to-purple-500',
     },
     {
       id: 'perk-badges',
@@ -156,7 +156,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 200,
       category: 'perks',
       icon: <Trophy className="w-8 h-8" />,
-      color: 'from-amber-400 to-orange-500',
+      color: 'from-fuchsia-300 to-pink-500',
     },
 
     // Real World Rewards (Parent Approved)
@@ -167,7 +167,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 300,
       category: 'real-rewards',
       icon: <GamepadIcon className="w-8 h-8" />,
-      color: 'from-purple-500 to-indigo-600',
+      color: 'from-purple-500 to-fuchsia-600',
       maxQuantity: 2,
     },
     {
@@ -177,7 +177,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 400,
       category: 'real-rewards',
       icon: <span className="text-3xl">🎬</span>,
-      color: 'from-red-500 to-sky-500',
+      color: 'from-rose-400 to-violet-500',
       maxQuantity: 1,
     },
     {
@@ -187,7 +187,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 200,
       category: 'real-rewards',
       icon: <span className="text-3xl">🍦</span>,
-      color: 'from-sky-400 to-yellow-400',
+      color: 'from-pink-300 to-fuchsia-400',
       maxQuantity: 3,
     },
     {
@@ -227,7 +227,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 450,
       category: 'real-rewards',
       icon: <span className="text-3xl">👨‍👩‍👧</span>,
-      color: 'from-rose-500 to-orange-500',
+      color: 'from-rose-400 to-pink-500',
       maxQuantity: 2,
     },
     {
@@ -237,7 +237,7 @@ export function useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete }:
       cost: 650,
       category: 'real-rewards',
       icon: <span className="text-3xl">🎡</span>,
-      color: 'from-orange-500 to-amber-500',
+      color: 'from-fuchsia-400 to-violet-500',
       maxQuantity: 1,
     },
   ];

@@ -44,4 +44,12 @@ describe('Sidebar', () => {
       true,
     );
   });
+
+  it('shows the Vibe Tutor app name in the header', () => {
+    render(<Sidebar {...defaultProps} />);
+
+    expect(screen.getByRole('heading', { name: 'Vibe Tutor' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Vibe Tutor' })).toBeInTheDocument();
+    expect(screen.queryByText('Vibe-Tech')).not.toBeInTheDocument();
+  });
 });

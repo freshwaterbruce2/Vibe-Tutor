@@ -214,7 +214,7 @@ const TokenWallet = ({ onClose, onNavigate, compact = false }: TokenWalletProps)
         {onNavigate && (
           <button
             onClick={() => onNavigate('shop')}
-            className="w-full glass-card p-4 flex items-center justify-center gap-3 bg-gradient-to-r from-violet-600/20 to-violet-600/20 border border-[var(--secondary-accent)]/30 hover:border-[var(--secondary-accent)]/50 transition-all active:scale-[0.98] group"
+            className="w-full glass-card p-4 flex items-center justify-center gap-3 bg-gradient-to-r from-pink-400/15 to-fuchsia-500/15 border border-[var(--secondary-accent)]/40 hover:border-[var(--secondary-accent)]/70 transition-all active:scale-[0.98] group"
           >
             <ShoppingBag className="w-6 h-6 text-[var(--secondary-accent)] group-hover:scale-110 transition-transform" />
             <span className="text-lg font-bold text-[var(--secondary-accent)]">
