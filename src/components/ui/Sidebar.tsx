@@ -56,6 +56,8 @@ const MOBILE_PRIMARY: View[] = ['dashboard', 'tutor', 'friend', 'music', 'sensor
 const primaryNavItems = navItems.filter((item) => MOBILE_PRIMARY.includes(item.view as View));
 const secondaryNavItems = navItems.filter((item) => !MOBILE_PRIMARY.includes(item.view as View));
 
+function navLabelClass(isActive: boolean): string {
+  return `nav-label transition-all duration-300 ${isActive ? 'nav-label--active' : 'nav-label--idle'}`;
 function navRowClass(active: boolean): string {
   return `w-full flex items-center gap-3 px-2.5 py-2 rounded-2xl text-left transition-colors duration-200 ${
     active
@@ -140,6 +142,16 @@ const Sidebar = ({
                 aria-label={label}
                 aria-current={currentView === view ? 'page' : undefined}
               >
+                <GradientIcon
+                  Icon={Icon}
+                  size={24}
+                  gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
+                  className="transition-all duration-300"
+                />
+                {!isCollapsed && <span className={navLabelClass(currentView === view)}>{label}</span>}
+                {currentView === view && (
+                  <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
+                )}
                 <NavGlyph icon={icon} active={currentView === view} />
                 {!isCollapsed && <span className="truncate text-sm tracking-tight">{label}</span>}
               </button>
@@ -154,6 +166,20 @@ const Sidebar = ({
               aria-label="Parent Zone"
               aria-current={currentView === 'parent' ? 'page' : undefined}
             >
+              <GradientIcon
+                Icon={Lock}
+                size={24}
+                gradientId={
+                  currentView === 'parent' ? 'vibe-gradient-mobile' : 'vibe-gradient-secondary'
+                }
+                className="transition-all duration-300"
+              />
+              {!isCollapsed && (
+                <span className={navLabelClass(currentView === 'parent')}>Parent Zone</span>
+              )}
+              {currentView === 'parent' && (
+                <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
+              )}
               <NavGlyph icon={Shield} active={currentView === 'parent'} />
               {!isCollapsed && <span className="truncate text-sm tracking-tight">Parent Zone</span>}
             </button>
@@ -192,6 +218,13 @@ const Sidebar = ({
                       : 'text-[var(--text-secondary)] hover:bg-white/5'
                   }`}
                 >
+                  <GradientIcon
+                    Icon={Icon}
+                    size={24}
+                    gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
+                    className="mb-1"
+                  />
+                  <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                   <NavGlyph icon={icon} active={currentView === view} size="sm" />
                   <span className="mt-1.5 text-[10px] font-medium leading-tight text-center break-words w-full">
                     {label}
@@ -207,6 +240,15 @@ const Sidebar = ({
                     : 'text-[var(--text-secondary)] hover:bg-white/5'
                 }`}
               >
+                <GradientIcon
+                  Icon={Lock}
+                  size={24}
+                  gradientId={
+                    currentView === 'parent' ? 'vibe-gradient-mobile' : 'vibe-gradient-secondary'
+                  }
+                  className="mb-1"
+                />
+                <span className={`${navLabelClass(currentView === 'parent')} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                 <NavGlyph icon={Shield} active={currentView === 'parent'} size="sm" />
                 <span className="mt-1.5 text-[10px] font-medium leading-tight text-center break-words w-full">
                   Parent
@@ -235,6 +277,13 @@ const Sidebar = ({
                     : 'text-[var(--text-secondary)]'
                 }`}
               >
+                <GradientIcon
+                  Icon={Icon}
+                  size={22}
+                  gradientId={currentView === view ? 'vibe-gradient-mobile' : gradient}
+                  className="mb-0.5"
+                />
+                <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
                 <NavGlyph icon={icon} active={currentView === view} size="sm" />
                 <span className="mt-0.5 text-[10px] font-medium leading-tight text-center break-words w-full truncate">
                   {label}
@@ -252,6 +301,8 @@ const Sidebar = ({
               aria-label="More navigation options"
               title="More"
             >
+              <Menu className="w-[22px] h-[22px] mb-0.5" />
+              <span className={`${navLabelClass(moreOpen)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
               <NavGlyph icon={Menu} active={moreOpen} size="sm" />
               <span className="mt-0.5 text-[10px] font-medium leading-tight text-center break-words w-full truncate">
                 More

@@ -130,7 +130,7 @@ const SchedulesHub = memo(function SchedulesHub({ onEarnTokens, onClose }: Sched
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--background-main)] overflow-hidden">
+    <div className="flex flex-col h-full bg-transparent overflow-hidden">
       {/* Header */}
       <div className="flex-none p-4 md:p-6 border-b border-[var(--glass-border)] bg-[var(--glass-surface)] backdrop-blur-md sticky top-0 z-20">
         <div className="flex items-center gap-4">

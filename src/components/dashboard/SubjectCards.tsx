@@ -91,6 +91,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
   );
 
   return (
+    <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 md:pb-8">
     <VibePageShell className="min-h-screen p-4 md:p-8 pb-36 md:pb-8">
       <div className="text-center mb-8 md:mb-10">
         <h1 className="vibe-hero-title text-4xl md:text-5xl lg:text-6xl font-black tracking-wide">

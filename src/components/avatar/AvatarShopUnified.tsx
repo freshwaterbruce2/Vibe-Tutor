@@ -156,9 +156,9 @@ export function AvatarShopUnified({
   const filteredItems = allItems.filter((item) => item.type === activeType);
 
   return (
-    <div className="min-h-full flex flex-col bg-[var(--background-main)]">
+    <div className="min-h-full flex flex-col bg-transparent">
       {/* Sticky header */}
-      <div className="sticky top-0 z-10 bg-[var(--background-main)] border-b border-[var(--glass-border)] px-4 py-3">
+      <div className="sticky top-0 z-10 border-b border-[var(--glass-border)] px-4 py-3 bg-[color-mix(in_srgb,var(--background-main)_72%,transparent)] backdrop-blur-md">
         <div className="flex items-center gap-3">
           {onClose && (
             <button

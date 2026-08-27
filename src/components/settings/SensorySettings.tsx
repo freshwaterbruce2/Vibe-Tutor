@@ -1,24 +1,12 @@
-import { Eye, Palette, RotateCcw, Smartphone, Type, Volume2 } from 'lucide-react';
+import { Cpu, Eye, Palette, RotateCcw, Smartphone, Type, Volume2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import type { SensoryPreferences } from '../../types';
+import {
+  applySensoryDom,
+  DEFAULT_SENSORY_PREFERENCES,
+  readSensoryPreferences,
+} from '../../utils/sensoryPrefs';
 import { appStore } from '../../utils/electronStore';
-
-interface SensoryPreferences {
-  animationSpeed: 'normal' | 'reduced' | 'none';
-  soundEnabled: boolean;
-  hapticEnabled: boolean;
-  fontSize: 'small' | 'medium' | 'large';
-  dyslexiaFont: boolean;
-  colorMode: 'default' | 'high-contrast' | 'warm' | 'cool';
-}
-
-const DEFAULTS: SensoryPreferences = {
-  animationSpeed: 'normal',
-  soundEnabled: true,
-  hapticEnabled: true,
-  fontSize: 'medium',
-  dyslexiaFont: false,
-  colorMode: 'default',
-};
 
 function Toggle({
   enabled,
@@ -81,22 +69,17 @@ function SegmentedControl<T extends string>({
 }
 
 const SensorySettings = () => {
-  const [prefs, setPrefs] = useState<SensoryPreferences>(() => {
-    const saved = appStore.get<SensoryPreferences>('sensory-prefs');
-    return saved ?? { ...DEFAULTS };
-  });
+  const [prefs, setPrefs] = useState<SensoryPreferences>(() => readSensoryPreferences());
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute('data-animation-speed', prefs.animationSpeed);
-    root.setAttribute('data-font-size', prefs.fontSize);
-    root.setAttribute('data-color-mode', prefs.colorMode);
-    document.body.classList.toggle('dyslexia-font', prefs.dyslexiaFont);
-
-    appStore.set('sensory-prefs', JSON.stringify(prefs));
+    applySensoryDom(prefs);
+    appStore.set('sensory-prefs', prefs);
   }, [prefs]);
 
-  const isDefaults = useMemo(() => JSON.stringify(prefs) === JSON.stringify(DEFAULTS), [prefs]);
+  const isDefaults = useMemo(
+    () => JSON.stringify(prefs) === JSON.stringify(DEFAULT_SENSORY_PREFERENCES),
+    [prefs],
+  );
 
   const update = <K extends keyof SensoryPreferences>(key: K, val: SensoryPreferences[K]) =>
     setPrefs((p) => ({ ...p, [key]: val }));
@@ -114,7 +97,7 @@ const SensorySettings = () => {
         </div>
         {!isDefaults && (
           <button
-            onClick={() => setPrefs({ ...DEFAULTS })}
+            onClick={() => setPrefs({ ...DEFAULT_SENSORY_PREFERENCES })}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
             title="Reset to defaults"
           >
@@ -127,10 +110,10 @@ const SensorySettings = () => {
       {/* Animation Speed */}
       <div className="glass-card p-5 rounded-xl space-y-3">
         <div className="flex items-center gap-2">
-          <Eye className="w-4 h-4 text-cyan-400" />
-          <h3 className="font-medium text-white">Animation Speed</h3>
+          <Cpu className="w-4 h-4 text-cyan-400" />
+          <h3 className="font-medium text-white">Motion</h3>
         </div>
-        <p className="text-sm text-gray-400">Reduce or disable animations and transitions</p>
+        <p className="text-sm text-gray-400">Reduce UI motion, or freeze just the processor backdrop</p>
         <SegmentedControl
           ariaLabel="Animation speed"
           options={[
@@ -141,6 +124,19 @@ const SensorySettings = () => {
           value={prefs.animationSpeed}
           onChange={(v) => update('animationSpeed', v)}
         />
+        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+          <div>
+            <p className="text-white text-sm">Moving background</p>
+            <p className="text-xs text-gray-500">
+              Traveling processor traces behind the screens. The chip grid stays either way.
+            </p>
+          </div>
+          <Toggle
+            enabled={prefs.circuitMotionEnabled}
+            onToggle={() => update('circuitMotionEnabled', !prefs.circuitMotionEnabled)}
+            label="Moving background"
+          />
+        </div>
       </div>
 
       {/* Sound & Haptics */}

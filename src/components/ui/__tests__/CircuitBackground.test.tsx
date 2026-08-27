@@ -10,6 +10,7 @@ describe('CircuitBackground', () => {
     expect(backdrop).toHaveAttribute('aria-hidden', 'true');
     expect(backdrop).toHaveClass('circuit-bg');
     expect(container.querySelector('.circuit-bg__grid')).not.toBeNull();
+    expect(container.querySelector('.circuit-bg__die')).not.toBeNull();
     expect(container.querySelectorAll('.circuit-bg__die').length).toBeGreaterThan(0);
     expect(container.querySelectorAll('.circuit-bg__trace').length).toBeGreaterThan(0);
   });

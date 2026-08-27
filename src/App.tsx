@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import AchievementToast from './components/ui/AchievementToast';
+import CircuitBackground from './components/ui/CircuitBackground';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import OfflineIndicator from './components/ui/OfflineIndicator';
 import { ResizableSplitPane } from './components/ui/ResizableSplitPane';
@@ -28,6 +29,7 @@ import {
 import { useTokenEconomy } from './hooks/useTokenEconomy';
 import { useWorksheet } from './hooks/useWorksheet';
 import { logger } from './utils/logger';
+import { applySensoryDom, readSensoryPreferences } from './utils/sensoryPrefs';
 
 // Static imports — core views needed at first paint
 import { TokenEarnAnimation } from './components/features/TokenEarnAnimation';
@@ -163,6 +165,10 @@ const App = () => {
   });
 
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
+
+  useEffect(() => {
+    applySensoryDom(readSensoryPreferences());
+  }, []);
 
   // Database Migration: Initialize dataStore and app integration
   useEffect(() => {
@@ -415,8 +421,10 @@ const App = () => {
   const isOnboardingView = view === 'onboarding';
 
   return (
-    <div className="relative flex h-screen overflow-hidden bg-[var(--background-main)] text-[var(--text-primary)]">
-      <TokenEarnAnimation amount={tokenEarnAmount} triggerId={tokenEarnTrigger} />
+    <div className="relative h-screen overflow-hidden text-[var(--text-primary)]">
+      <CircuitBackground />
+      <div className="relative z-10 flex h-full min-h-0 w-full overflow-hidden">
+        <TokenEarnAnimation amount={tokenEarnAmount} triggerId={tokenEarnTrigger} />
       <Sidebar
         currentView={view}
         onNavigate={setView}
@@ -440,8 +448,8 @@ const App = () => {
               initialLeftPercent={35}
               minLeftPercent={25}
               maxLeftPercent={55}
-              leftClassName="h-full overflow-hidden bg-[var(--background-main)]"
-              rightClassName="h-full overflow-hidden bg-[var(--background-main)]"
+              leftClassName="h-full overflow-hidden bg-cyan-950/10"
+              rightClassName="h-full overflow-hidden bg-slate-950/10"
               left={
                 <ErrorBoundary>
                   <div className="h-full overflow-hidden">
@@ -473,11 +481,12 @@ const App = () => {
           {!isOnline && <OfflineIndicator />}
         </div>
       </main>
-      <AchievementToast
-        achievement={newlyUnlocked}
-        bonusTokens={bonusTokens}
-        onClose={clearNotification}
-      />
+        <AchievementToast
+          achievement={newlyUnlocked}
+          bonusTokens={bonusTokens}
+          onClose={clearNotification}
+        />
+      </div>
     </div>
   );
 };

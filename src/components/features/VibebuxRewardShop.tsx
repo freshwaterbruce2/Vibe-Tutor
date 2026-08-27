@@ -30,6 +30,7 @@ const VibebuxRewardShop = ({
   } = useRewardShop({ userTokens, onSpendTokens, onPurchaseComplete });
 
   return (
+    <div className="vibe-page-shell min-h-full bg-transparent p-4 md:p-6">
     <VibePageShell className="min-h-full p-4 md:p-6">
       {/* Header */}
       <div className="max-w-7xl mx-auto">

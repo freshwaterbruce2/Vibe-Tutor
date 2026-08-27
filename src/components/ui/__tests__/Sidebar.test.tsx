@@ -35,6 +35,16 @@ describe('Sidebar', () => {
     expect(subtitles.length).toBeGreaterThan(0);
   });
 
+  it('styles desktop nav labels with the display type treatment', () => {
+    render(<Sidebar {...defaultProps} />);
+
+    const dashboardLabels = screen.getAllByText('Dashboard');
+    expect(dashboardLabels.some((label) => label.classList.contains('nav-label'))).toBe(true);
+    expect(dashboardLabels.some((label) => label.classList.contains('nav-label--active'))).toBe(
+      true,
+    );
+  });
+
   it('shows the Vibe Tutor app name in the header', () => {
     render(<Sidebar {...defaultProps} />);
 

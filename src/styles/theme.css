@@ -1,17 +1,25 @@
 :root {
-  /* 2026 nebula glass: night-sky base, magenta + violet orbs, cyan leak */
-  --background-main: #0c0618;
-  --background-card: #161025;
-  --background-surface: #1d1830;
+  /* Processor chip canvas + translucent nebula-glass chrome */
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-ui: 'Outfit', 'Inter', system-ui, sans-serif;
+  --background-main: #050816;
+  --background-card: #0b1233;
+  --background-surface: #151c48;
   --background: var(--background-main);
   --glass-surface: linear-gradient(
     165deg,
     rgba(255, 255, 255, 0.12) 0%,
-    rgba(167, 139, 250, 0.08) 52%,
-    rgba(236, 72, 153, 0.06) 100%
+    rgba(167, 139, 250, 0.1) 52%,
+    rgba(34, 211, 238, 0.06) 100%
   );
-  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(34, 211, 238, 0.32);
 
+  /* Primary accents — electric violet / cyan traces, magenta spark */
+  --primary-accent: #a78bfa;
+  --secondary-accent: #22d3ee;
+  --tertiary-accent: #f472b6;
+  --quaternary-accent: #67e8f9;
+  --energy-accent: #84cc16;
   /* Accents — electric magenta, soft pink, violet, aurora cyan */
   --primary-accent: #ec4899;
   --secondary-accent: #f9a8d4;
@@ -22,31 +30,33 @@
   --circuit-violet: #c084fc;
 
   /* Text Colors */
-  --text-primary: #f5f3ff;
-  --text-secondary: #ddd6fe;
-  --text-muted: #a99fce;
-  --text-glow: #ffffff;
+  --text-primary: #e0f2fe;
+  --text-secondary: #c4b5fd;
+  --text-muted: #7dd3fc;
+  --text-glow: #e0f2fe;
 
   /* Border & Effects */
-  --border-color: rgba(255, 255, 255, 0.12);
-  --border-hover: rgba(236, 72, 153, 0.55);
+  --border-color: rgba(34, 211, 238, 0.28);
+  --border-hover: rgba(167, 139, 250, 0.7);
   --shadow-glow:
-    0 16px 40px rgba(124, 58, 237, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 16px 42px rgba(2, 6, 23, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(167, 139, 250, 0.08));
-  --gradient-glow: linear-gradient(135deg, #a78bfa, #22d3ee);
+  --gradient-primary: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  --gradient-surface: linear-gradient(135deg, rgba(167, 139, 250, 0.18), rgba(34, 211, 238, 0.1));
+  --gradient-glow: linear-gradient(135deg, var(--primary-accent), var(--tertiary-accent));
 
   /* Neon effects */
   --neon-glow-primary:
-    0 0 10px var(--primary-accent), 0 0 22px rgba(236, 72, 153, 0.45);
+    0 0 10px var(--primary-accent), 0 0 22px var(--primary-accent), 0 0 42px var(--secondary-accent);
   --neon-glow-secondary:
-    0 0 10px var(--secondary-accent), 0 0 20px rgba(249, 168, 212, 0.35);
+    0 0 10px var(--secondary-accent), 0 0 22px var(--secondary-accent),
+    0 0 40px var(--secondary-accent);
   --neon-glow-accent:
-    0 0 10px var(--tertiary-accent), 0 0 22px rgba(167, 139, 250, 0.4);
-  --neon-glow-soft: 0 0 18px rgba(167, 139, 250, 0.28), 0 0 32px rgba(236, 72, 153, 0.2);
+    0 0 10px var(--tertiary-accent), 0 0 22px var(--tertiary-accent),
+    0 0 36px rgba(244, 114, 182, 0.55);
+  --neon-glow-soft: 0 0 18px rgba(34, 211, 238, 0.4), 0 0 34px rgba(167, 139, 250, 0.32);
 
   /* Semantic state colors */
   --error-accent: #ef4444;
@@ -55,8 +65,8 @@
   --success-surface: rgba(74, 222, 128, 0.12);
 
   /* Token economy */
-  --token-color: #f9a8d4;
-  --token-surface: rgba(236, 72, 153, 0.16);
+  --token-color: #fbbf24;
+  --token-surface: rgba(251, 191, 36, 0.15);
 
   /* Extended text grays */
   --text-tertiary: #7c7399;
@@ -72,20 +82,9 @@
   --transition-slow: 0.5s ease-out;
 }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-ui);
   background-color: var(--background-main);
   color: var(--text-primary);
-  background-image:
-    radial-gradient(circle at 14% 10%, rgba(236, 72, 153, 0.38) 0%, transparent 42%),
-    radial-gradient(circle at 84% 8%, rgba(124, 58, 237, 0.42) 0%, transparent 44%),
-    radial-gradient(circle at 72% 86%, rgba(34, 211, 238, 0.16) 0%, transparent 46%),
-    linear-gradient(180deg, rgba(12, 6, 24, 0.35) 0%, rgba(12, 6, 24, 0.92) 100%);
-  background-size:
-    100% 100%,
-    100% 100%,
-    100% 100%,
-    100% 100%;
-  background-attachment: fixed;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -105,8 +104,8 @@ body {
   background: linear-gradient(
     165deg,
     rgba(255, 255, 255, 0.16) 0%,
-    rgba(167, 139, 250, 0.12) 50%,
-    rgba(236, 72, 153, 0.1) 100%
+    rgba(167, 139, 250, 0.14) 50%,
+    rgba(34, 211, 238, 0.1) 100%
   );
   border-color: var(--border-hover);
   box-shadow: var(--neon-glow-soft), var(--shadow-glow);
@@ -170,12 +169,18 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
+/* Subject hub + shop: soft color wash over the processor backdrop. */
 /* Subjects + Shop: microchip canvas + vignette. Cards sit above the circuit.
    Onboarding stays on glass-panel + the body night-sky canvas. */
 .vibe-page-shell {
   position: relative;
   isolation: isolate;
   min-height: 100%;
+  background:
+    radial-gradient(ellipse 80% 50% at 12% -6%, rgba(236, 72, 153, 0.16), transparent 55%),
+    radial-gradient(ellipse 70% 48% at 92% 0%, rgba(167, 139, 250, 0.18), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(34, 211, 238, 0.1), transparent 50%),
+    transparent;
   background: transparent;
 }
 
@@ -266,15 +271,68 @@ body {
 
 /* Neon Text Effects */
 .neon-text-primary {
-  color: var(--text-glow);
-  text-shadow: var(--neon-glow-primary);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  color: #dbeafe;
+  text-shadow:
+    0 0 8px rgba(34, 211, 238, 0.55),
+    0 0 18px rgba(167, 139, 250, 0.4);
   transition: all var(--transition-normal);
 }
 
 .neon-text-secondary {
-  color: var(--text-glow);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  color: #a5f3fc;
   text-shadow: var(--neon-glow-secondary);
   transition: all var(--transition-normal);
+}
+
+.nav-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.nav-label--idle {
+  color: #c4b5fd;
+}
+
+.nav-label--active {
+  background-image: linear-gradient(120deg, #ecfeff 0%, #a5f3fc 38%, #ddd6fe 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.45));
+}
+
+.dyslexia-font,
+.dyslexia-font .nav-label,
+.dyslexia-font .neon-text-primary,
+.dyslexia-font .neon-text-secondary {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+}
+
+.dyslexia-font .nav-label--active {
+  background: none;
+  -webkit-text-fill-color: #ffff00;
+  color: #ffff00;
+  filter: none;
+}
+
+[data-color-mode='high-contrast'] .nav-label--active {
+  background: none;
+  -webkit-text-fill-color: #ffff00;
+  color: #ffff00;
+  filter: none;
+}
+
+[data-color-mode='high-contrast'] .circuit-bg {
+  opacity: 0.18;
 }
 
 .glow-on-hover:hover {
@@ -451,6 +509,7 @@ body {
   overscroll-behavior-y: contain;
 }
 
+/* ---- Microchip / processor backdrop ---- */
 /* ---- Microchip / processor backdrop (Subjects + Shop shells only) ---- */
 .circuit-bg {
   position: absolute;
@@ -459,6 +518,10 @@ body {
   overflow: hidden;
   pointer-events: none;
   background:
+    radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.22) 0%, transparent 36%),
+    radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.28) 0%, transparent 40%),
+    radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.16) 0%, transparent 38%),
+    linear-gradient(180deg, #07101f 0%, #050816 55%, #08061a 100%);
     radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.28) 0%, transparent 36%),
     radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.32) 0%, transparent 40%),
     radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.18) 0%, transparent 38%),
@@ -468,6 +531,11 @@ body {
 .circuit-bg__grid {
   position: absolute;
   inset: -48px;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.12) 1px, transparent 1px),
+    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
   opacity: 1;
   background-image:
     linear-gradient(rgba(34, 211, 238, 0.22) 1px, transparent 1px),
@@ -480,11 +548,33 @@ body {
     12px 12px,
     12px 12px;
   animation: circuit-grid-shift 22s linear infinite;
+  mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
   mask-image: radial-gradient(circle at center, black 58%, transparent 96%);
 }
 
 .circuit-bg__die {
   position: absolute;
+  top: 18%;
+  right: 12%;
+  width: min(280px, 32vw);
+  height: min(280px, 32vw);
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(34, 211, 238, 0.08) 0 10px,
+      transparent 10px 18px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(167, 139, 250, 0.08) 0 10px,
+      transparent 10px 18px
+    ),
+    rgba(8, 16, 48, 0.45);
+  box-shadow:
+    0 0 40px rgba(34, 211, 238, 0.18),
+    inset 0 0 30px rgba(167, 139, 250, 0.18);
   top: 8%;
   right: 4%;
   width: min(260px, 30vw);
@@ -514,6 +604,9 @@ body {
   position: absolute;
   inset: 22%;
   border-radius: 10px;
+  border: 1px solid rgba(165, 243, 252, 0.55);
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.28));
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
   border: 1px solid rgba(165, 243, 252, 0.5);
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(167, 139, 250, 0.24));
   box-shadow: 0 0 24px rgba(34, 211, 238, 0.3);
@@ -558,6 +651,11 @@ body {
 
 .circuit-bg__trace {
   fill: none;
+  stroke: url(#circuit-stroke);
+  stroke-width: 1.7;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 14 22;
   stroke-width: 2.2;
   stroke-linecap: square;
   stroke-linejoin: miter;
@@ -582,6 +680,9 @@ body {
 .circuit-bg__scan {
   position: absolute;
   display: block;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.9), rgba(167, 139, 250, 0.8), transparent);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+  opacity: 0.85;
   background: linear-gradient(
     90deg,
     transparent,
@@ -602,6 +703,7 @@ body {
 .circuit-bg__scan--v {
   width: 2px;
   height: 32%;
+  background: linear-gradient(180deg, transparent, rgba(167, 139, 250, 0.9), rgba(34, 211, 238, 0.7), transparent);
   background: linear-gradient(
     180deg,
     transparent,
@@ -655,6 +757,10 @@ body {
     opacity: 0;
   }
   12% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.9;
     opacity: 0.75;
   }
   88% {
@@ -672,6 +778,10 @@ body {
     opacity: 0;
   }
   12% {
+    opacity: 0.85;
+  }
+  88% {
+    opacity: 0.85;
     opacity: 0.7;
   }
   88% {
@@ -691,6 +801,9 @@ body {
   }
 }
 
+[data-circuit-motion='off'] .circuit-bg__grid,
+[data-circuit-motion='off'] .circuit-bg__trace,
+[data-circuit-motion='off'] .circuit-bg__scan,
 [data-color-mode='high-contrast'] .circuit-bg {
   opacity: 0.18;
 }

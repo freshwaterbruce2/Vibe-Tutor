@@ -10,6 +10,10 @@ describe('shared neon glass page chrome', () => {
     expect(theme).toContain('.vibe-page-shell');
     expect(theme).toContain('.vibe-hero-title');
     expect(theme).toContain('.vibe-cta');
+    expect(theme).toContain('--primary-accent: #a78bfa');
+    expect(theme).toContain('--secondary-accent: #22d3ee');
+    expect(theme).toContain('--background-main: #050816');
+    expect(theme).toContain('.circuit-bg');
     expect(theme).toContain('--primary-accent: #ec4899');
     expect(theme).toContain('--secondary-accent: #f9a8d4');
     expect(theme).toContain('--background-main: #0c0618');

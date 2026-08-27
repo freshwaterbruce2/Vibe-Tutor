@@ -193,6 +193,7 @@ export default function RealmView({
   const games = REALM_GAMES[subject] || [];
 
   return (
+    <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 font-sans">
     <VibePageShell className="min-h-screen p-4 md:p-8 pb-36 font-sans">
       <div className="max-w-4xl mx-auto">
         <button
