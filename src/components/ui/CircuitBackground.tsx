@@ -1,9 +1,23 @@
 /** Decorative microchip / processor backdrop with traveling trace pulses. */
 const CircuitBackground = () => {
+import { useId } from 'react';
+
+/** Decorative microchip / processor backdrop with traveling trace pulses. */
+const CircuitBackground = () => {
+  const rawId = useId();
+  const strokeId = `circuit-stroke-${rawId.replace(/:/g, '')}`;
+
   return (
     <div className="circuit-bg" aria-hidden="true">
       <div className="circuit-bg__grid" />
       <div className="circuit-bg__die">
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__pad" />
+        <span className="circuit-bg__core" />
+      </div>
+      <div className="circuit-bg__die circuit-bg__die--aux">
         <span className="circuit-bg__pad" />
         <span className="circuit-bg__pad" />
         <span className="circuit-bg__pad" />
@@ -25,26 +39,35 @@ const CircuitBackground = () => {
             <stop offset="0%" stopColor="var(--circuit-cyan)" stopOpacity="0.15" />
             <stop offset="50%" stopColor="var(--circuit-cyan)" stopOpacity="0.95" />
             <stop offset="100%" stopColor="var(--circuit-violet)" stopOpacity="0.2" />
+          <linearGradient id={strokeId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--circuit-cyan)" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="var(--circuit-cyan)" stopOpacity="1" />
+            <stop offset="100%" stopColor="var(--circuit-violet)" stopOpacity="0.45" />
           </linearGradient>
         </defs>
         <path
           className="circuit-bg__trace circuit-bg__trace--fast"
+          stroke={`url(#${strokeId})`}
           d="M80 120 H420 V260 H640 V180 H820 V320 H1100 V90 H1360"
         />
         <path
           className="circuit-bg__trace circuit-bg__trace--slow"
+          stroke={`url(#${strokeId})`}
           d="M40 760 H280 V620 H520 V740 H780 V540 H1020 V700 H1400"
         />
         <path
           className="circuit-bg__trace"
+          stroke={`url(#${strokeId})`}
           d="M180 40 V340 H340 V500 H180 V820"
         />
         <path
           className="circuit-bg__trace circuit-bg__trace--slow"
+          stroke={`url(#${strokeId})`}
           d="M1260 40 V220 H980 V400 H1260 V640 H900 V860"
         />
         <path
           className="circuit-bg__trace circuit-bg__trace--fast"
+          stroke={`url(#${strokeId})`}
           d="M0 450 H260 V380 H480 V520 H720 V430 H960 V560 H1440"
         />
         <circle className="circuit-bg__via" cx="420" cy="120" r="4" />

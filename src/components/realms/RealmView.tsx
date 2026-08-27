@@ -17,6 +17,7 @@ import {
   type GameCompletionDetails,
 } from '../../services/gameProgression';
 import type { SubjectType } from '../../types';
+import VibePageShell from '../ui/VibePageShell';
 import { SUBJECT_THEME } from './subjectTheme';
 
 const AnagramsGame = lazy(async () => import('../games/AnagramsGame'));
@@ -193,6 +194,7 @@ export default function RealmView({
 
   return (
     <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 font-sans">
+    <VibePageShell className="min-h-screen p-4 md:p-8 pb-36 font-sans">
       <div className="max-w-4xl mx-auto">
         <button
           type="button"
@@ -226,7 +228,7 @@ export default function RealmView({
           >
             {subject}
           </h1>
-          <p className="text-[var(--text-secondary)] text-lg mb-8 relative z-10">
+          <p className="text-[var(--text-primary)]/90 text-lg mb-8 relative z-10">
             Practice 10 questions to earn stars
             {games.length > 0 ? ', or play a game below.' : '.'}
           </p>
@@ -234,7 +236,7 @@ export default function RealmView({
           <button
             type="button"
             onClick={() => onStartWorksheet(subject)}
-            className={`relative z-10 w-full md:w-auto md:px-12 px-6 py-4 rounded-2xl font-black text-xl inline-flex items-center justify-center gap-3 active:scale-95 transition-all text-white group bg-gradient-to-r ${theme.gradient} shadow-lg`}
+            className={`relative z-10 w-full md:w-auto md:px-12 px-6 py-4 rounded-2xl font-black text-xl inline-flex items-center justify-center gap-3 active:scale-95 transition-all text-white group bg-gradient-to-r ${theme.gradient} shadow-[0_12px_28px_-8px_rgba(0,0,0,0.65)] ring-1 ring-white/25`}
           >
             <PlayCircle size={28} className="group-hover:animate-pulse" /> Practice 10 questions
           </button>
@@ -262,7 +264,7 @@ export default function RealmView({
                       />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">{game.name}</h3>
-                    <p className="text-[var(--text-secondary)] text-sm flex-grow leading-relaxed">
+                    <p className="text-[var(--text-primary)]/85 text-sm flex-grow leading-relaxed">
                       {game.desc}
                     </p>
                   </button>
@@ -272,6 +274,6 @@ export default function RealmView({
           </div>
         )}
       </div>
-    </div>
+    </VibePageShell>
   );
 }

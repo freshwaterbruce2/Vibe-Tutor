@@ -24,6 +24,7 @@ describe('RealmView', () => {
     );
 
     expect(screen.getByRole('heading', { name: 'Math' })).toBeInTheDocument();
+    expect(document.querySelector('.circuit-bg')).toHaveAttribute('aria-hidden', 'true');
     expect(screen.getByText(/Practice 10 questions to earn stars/)).toBeInTheDocument();
     expect(screen.queryByText(/Embark on Quest/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Side Quests/)).not.toBeInTheDocument();

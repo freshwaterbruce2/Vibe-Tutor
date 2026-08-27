@@ -20,6 +20,12 @@
   --tertiary-accent: #f472b6;
   --quaternary-accent: #67e8f9;
   --energy-accent: #84cc16;
+  /* Accents — electric magenta, soft pink, violet, aurora cyan */
+  --primary-accent: #ec4899;
+  --secondary-accent: #f9a8d4;
+  --tertiary-accent: #a78bfa;
+  --quaternary-accent: #22d3ee;
+  --energy-accent: #f472b6;
   --circuit-cyan: #22d3ee;
   --circuit-violet: #c084fc;
 
@@ -94,7 +100,7 @@ body {
   transition: all var(--transition-normal);
 }
 
-.glass-card:hover {
+.glass-card:hover:not(.subject-card) {
   background: linear-gradient(
     165deg,
     rgba(255, 255, 255, 0.16) 0%,
@@ -107,8 +113,24 @@ body {
 }
 
 /* Subject hub cards keep their own hue instead of the pink hover wash */
+.glass-card.subject-card {
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  background-image: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 48%,
+    transparent 100%
+  );
+}
+
 .glass-card.subject-card:hover {
-  background: var(--glass-surface);
+  background-image: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.06) 48%,
+    transparent 100%
+  );
   border-color: inherit;
   transform: translateY(-6px) scale(1.02);
 }
@@ -148,13 +170,41 @@ body {
 }
 
 /* Subject hub + shop: soft color wash over the processor backdrop. */
+/* Subjects + Shop: microchip canvas + vignette. Cards sit above the circuit.
+   Onboarding stays on glass-panel + the body night-sky canvas. */
 .vibe-page-shell {
+  position: relative;
+  isolation: isolate;
   min-height: 100%;
   background:
     radial-gradient(ellipse 80% 50% at 12% -6%, rgba(236, 72, 153, 0.16), transparent 55%),
     radial-gradient(ellipse 70% 48% at 92% 0%, rgba(167, 139, 250, 0.18), transparent 52%),
     radial-gradient(ellipse 50% 40% at 80% 100%, rgba(34, 211, 238, 0.1), transparent 50%),
     transparent;
+  background: transparent;
+}
+
+.vibe-page-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 88% 78% at 50% 38%,
+    transparent 42%,
+    rgba(12, 6, 24, 0.28) 78%,
+    rgba(12, 6, 24, 0.55) 100%
+  );
+}
+
+.vibe-page-shell__content {
+  position: relative;
+  z-index: 2;
+}
+
+.vibe-page-shell .glass-card:not(.subject-card) {
+  background-color: rgba(16, 10, 32, 0.82);
 }
 
 .vibe-hero-title {
@@ -460,6 +510,7 @@ body {
 }
 
 /* ---- Microchip / processor backdrop ---- */
+/* ---- Microchip / processor backdrop (Subjects + Shop shells only) ---- */
 .circuit-bg {
   position: absolute;
   inset: 0;
@@ -471,6 +522,10 @@ body {
     radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.28) 0%, transparent 40%),
     radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.16) 0%, transparent 38%),
     linear-gradient(180deg, #07101f 0%, #050816 55%, #08061a 100%);
+    radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.28) 0%, transparent 36%),
+    radial-gradient(circle at 82% 18%, rgba(167, 139, 250, 0.32) 0%, transparent 40%),
+    radial-gradient(circle at 70% 78%, rgba(244, 114, 182, 0.18) 0%, transparent 38%),
+    linear-gradient(180deg, #07101f 0%, #0c0618 55%, #08061a 100%);
 }
 
 .circuit-bg__grid {
@@ -481,6 +536,12 @@ body {
     linear-gradient(90deg, rgba(167, 139, 250, 0.12) 1px, transparent 1px),
     linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+  opacity: 1;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.2) 1px, transparent 1px),
+    linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px);
   background-size:
     48px 48px,
     48px 48px,
@@ -488,6 +549,7 @@ body {
     12px 12px;
   animation: circuit-grid-shift 22s linear infinite;
   mask-image: radial-gradient(circle at center, black 42%, transparent 88%);
+  mask-image: radial-gradient(circle at center, black 58%, transparent 96%);
 }
 
 .circuit-bg__die {
@@ -513,6 +575,29 @@ body {
   box-shadow:
     0 0 40px rgba(34, 211, 238, 0.18),
     inset 0 0 30px rgba(167, 139, 250, 0.18);
+  top: 8%;
+  right: 4%;
+  width: min(260px, 30vw);
+  height: min(260px, 30vw);
+  border: 1px solid rgba(34, 211, 238, 0.55);
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(90deg, rgba(34, 211, 238, 0.14) 0 10px, transparent 10px 18px),
+    repeating-linear-gradient(0deg, rgba(167, 139, 250, 0.14) 0 10px, transparent 10px 18px),
+    rgba(8, 16, 48, 0.55);
+  box-shadow:
+    0 0 48px rgba(34, 211, 238, 0.28),
+    inset 0 0 30px rgba(167, 139, 250, 0.22);
+}
+
+.circuit-bg__die--aux {
+  top: auto;
+  right: auto;
+  bottom: 8%;
+  left: 5%;
+  width: min(170px, 22vw);
+  height: min(170px, 22vw);
+  opacity: 0.72;
 }
 
 .circuit-bg__core {
@@ -522,6 +607,9 @@ body {
   border: 1px solid rgba(165, 243, 252, 0.55);
   background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.28));
   box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+  border: 1px solid rgba(165, 243, 252, 0.5);
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(167, 139, 250, 0.24));
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.3);
 }
 
 .circuit-bg__pad {
@@ -536,14 +624,17 @@ body {
   top: -4px;
   left: 18%;
 }
+
 .circuit-bg__pad:nth-child(2) {
   top: -4px;
   right: 22%;
 }
+
 .circuit-bg__pad:nth-child(3) {
   bottom: -4px;
   left: 28%;
 }
+
 .circuit-bg__pad:nth-child(4) {
   right: -4px;
   top: 42%;
@@ -565,6 +656,10 @@ body {
   stroke-linecap: square;
   stroke-linejoin: miter;
   stroke-dasharray: 14 22;
+  stroke-width: 2.2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 16 18;
   animation: circuit-flow 9s linear infinite;
 }
 
@@ -588,6 +683,15 @@ body {
   background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.9), rgba(167, 139, 250, 0.8), transparent);
   box-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
   opacity: 0.85;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(34, 211, 238, 0.95),
+    rgba(167, 139, 250, 0.85),
+    transparent
+  );
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+  opacity: 0.9;
 }
 
 .circuit-bg__scan--h {
@@ -600,6 +704,13 @@ body {
   width: 2px;
   height: 32%;
   background: linear-gradient(180deg, transparent, rgba(167, 139, 250, 0.9), rgba(34, 211, 238, 0.7), transparent);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(167, 139, 250, 0.75),
+    rgba(34, 211, 238, 0.55),
+    transparent
+  );
   animation: circuit-scan-y 11s linear infinite;
 }
 
@@ -650,6 +761,10 @@ body {
   }
   88% {
     opacity: 0.9;
+    opacity: 0.75;
+  }
+  88% {
+    opacity: 0.75;
   }
   100% {
     transform: translateX(280%);
@@ -667,6 +782,10 @@ body {
   }
   88% {
     opacity: 0.85;
+    opacity: 0.7;
+  }
+  88% {
+    opacity: 0.7;
   }
   100% {
     transform: translateY(280%);
@@ -685,6 +804,10 @@ body {
 [data-circuit-motion='off'] .circuit-bg__grid,
 [data-circuit-motion='off'] .circuit-bg__trace,
 [data-circuit-motion='off'] .circuit-bg__scan,
+[data-color-mode='high-contrast'] .circuit-bg {
+  opacity: 0.18;
+}
+
 [data-animation-speed='none'] .circuit-bg__grid,
 [data-animation-speed='none'] .circuit-bg__trace,
 [data-animation-speed='none'] .circuit-bg__scan,

@@ -6,6 +6,7 @@ import {
   Sparkles,
   Store,
 } from 'lucide-react';
+import VibePageShell from '../ui/VibePageShell';
 import { useRewardShop } from './useRewardShop';
 
 interface VibebuxRewardShopProps {
@@ -30,6 +31,7 @@ const VibebuxRewardShop = ({
 
   return (
     <div className="vibe-page-shell min-h-full bg-transparent p-4 md:p-6">
+    <VibePageShell className="min-h-full p-4 md:p-6">
       {/* Header */}
       <div className="max-w-7xl mx-auto">
         <div className="mb-6 glass-card rounded-3xl border border-[var(--glass-border)] bg-gradient-to-br from-pink-400/12 via-fuchsia-500/8 to-purple-500/12 p-4 md:p-6">
@@ -304,7 +306,7 @@ const VibebuxRewardShop = ({
           </div>
         </div>
       </div>
-    </div>
+    </VibePageShell>
   );
 };
 

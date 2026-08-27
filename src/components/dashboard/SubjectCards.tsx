@@ -5,6 +5,7 @@ import { getAllProgress } from '../../services/progressionService';
 import { getTodayEarnings } from '../../services/tokenService';
 import type { SubjectProgress, SubjectType } from '../../types';
 import { logger } from '../../utils/logger';
+import VibePageShell from '../ui/VibePageShell';
 
 interface SubjectCardsProps {
   onStartWorksheet: (subject: SubjectType) => void;
@@ -42,7 +43,7 @@ function Stars({
         <Star
           key={i}
           size={size}
-          className={i < filled ? filledClass : 'text-white/20'}
+          className={i < filled ? filledClass : 'text-white/40'}
         />
       ))}
     </div>
@@ -91,6 +92,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
 
   return (
     <div className="vibe-page-shell min-h-screen p-4 md:p-8 pb-36 md:pb-8">
+    <VibePageShell className="min-h-screen p-4 md:p-8 pb-36 md:pb-8">
       <div className="text-center mb-8 md:mb-10">
         <h1 className="vibe-hero-title text-4xl md:text-5xl lg:text-6xl font-black tracking-wide">
           Pick a subject
@@ -204,7 +206,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                       {progress.currentDifficulty}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--text-secondary)]">{theme.prompt}</p>
+                  <p className="text-sm text-[var(--text-primary)]/90">{theme.prompt}</p>
 
                   <div
                     className={`mt-3 ${isRecommended ? 'flex justify-center md:justify-start' : 'flex justify-center'}`}
@@ -215,7 +217,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                       size={isRecommended ? 26 : 22}
                     />
                   </div>
-                  <p className="mt-1 text-sm text-[var(--text-secondary)]">{starMessage}</p>
+                  <p className="mt-1 text-sm text-[var(--text-primary)]/85">{starMessage}</p>
 
                   {!isMaxLevel && (
                     <div className="mt-3 mb-4">
@@ -229,7 +231,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
                   )}
 
                   <span
-                    className={`px-6 py-4 rounded-2xl font-black text-lg inline-flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-lg ${
+                    className={`px-6 py-4 rounded-2xl font-black text-lg inline-flex items-center justify-center gap-3 bg-gradient-to-r ${theme.gradient} text-white shadow-[0_12px_28px_-8px_rgba(0,0,0,0.65)] ring-1 ring-white/25 ${
                       isRecommended ? 'w-full md:w-auto md:min-w-[240px]' : 'w-full'
                     }`}
                   >
@@ -242,7 +244,7 @@ const SubjectCards = ({ onStartWorksheet, userTokens }: SubjectCardsProps) => {
           );
         })}
       </div>
-    </div>
+    </VibePageShell>
   );
 };
 

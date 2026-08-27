@@ -1,26 +1,29 @@
 import {
+  Award,
   Brain,
-  Calendar,
+  CalendarDays,
   ChevronDown,
   ChevronUp,
-  Coins,
-  Eye,
   GraduationCap,
-  Heart,
-  Layers,
-  LayoutDashboard,
-  Lock,
+  Headphones,
+  HeartPulse,
+  LayoutGrid,
+  Library,
   Menu,
-  Music2,
-  Timer,
-  Trophy,
+  MessageCircle,
+  Shield,
+  Sparkles,
+  Store,
+  Target,
+  Wallet,
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getWelcomeMessage } from '../../config';
 import type { View } from '../../types';
-import { GradientDefs, GradientIcon } from './icons/GradientIcon';
+import { GradientDefs } from './icons/GradientIcon';
 import { VibeTechLogo } from './icons/VibeTechLogo';
+import NavGlyph from './NavGlyph';
 
 interface SidebarProps {
   currentView: View;
@@ -32,29 +35,19 @@ interface SidebarProps {
 
 /** All navigation items — desktop sidebar shows all, mobile shows primary 5 + "More" */
 const navItems = [
-  {
-    view: 'dashboard',
-    icon: LayoutDashboard,
-    label: 'Dashboard',
-    gradient: 'vibe-gradient-primary',
-  },
-  { view: 'tutor', icon: GraduationCap, label: 'Vibe Tutor', gradient: 'vibe-gradient-secondary' },
-  { view: 'friend', icon: Heart, label: 'Vibe Buddy', gradient: 'vibe-gradient-accent' },
-  { view: 'cards', icon: Layers, label: 'Subjects', gradient: 'vibe-gradient-primary' },
-  { view: 'shop', icon: Coins, label: '🛒 Reward Shop', gradient: 'vibe-gradient-secondary' },
-  { view: 'games', icon: Brain, label: 'Brain Gym', gradient: 'vibe-gradient-accent' },
-  { view: 'schedules', icon: Calendar, label: 'Schedules', gradient: 'vibe-gradient-primary' },
-  { view: 'tokens', icon: Coins, label: 'Tokens', gradient: 'vibe-gradient-accent' },
-  {
-    view: 'achievements',
-    icon: Trophy,
-    label: 'Achievements',
-    gradient: 'vibe-gradient-secondary',
-  },
-  { view: 'music', icon: Music2, label: 'Music', gradient: 'vibe-gradient-accent' },
-  { view: 'sensory', icon: Eye, label: 'Sensory', gradient: 'vibe-gradient-primary' },
-  { view: 'focus', icon: Timer, label: 'Focus', gradient: 'vibe-gradient-secondary' },
-  { view: 'wellness', icon: Heart, label: 'Wellness', gradient: 'vibe-gradient-accent' },
+  { view: 'dashboard', icon: LayoutGrid, label: 'Dashboard' },
+  { view: 'tutor', icon: GraduationCap, label: 'Vibe Tutor' },
+  { view: 'friend', icon: MessageCircle, label: 'Vibe Buddy' },
+  { view: 'cards', icon: Library, label: 'Subjects' },
+  { view: 'shop', icon: Store, label: 'Reward Shop' },
+  { view: 'games', icon: Brain, label: 'Brain Gym' },
+  { view: 'schedules', icon: CalendarDays, label: 'Schedules' },
+  { view: 'tokens', icon: Wallet, label: 'Tokens' },
+  { view: 'achievements', icon: Award, label: 'Achievements' },
+  { view: 'music', icon: Headphones, label: 'Music' },
+  { view: 'sensory', icon: Sparkles, label: 'Sensory' },
+  { view: 'focus', icon: Target, label: 'Focus' },
+  { view: 'wellness', icon: HeartPulse, label: 'Wellness' },
 ] as const;
 
 /** The 5 primary tabs shown in the mobile bottom nav */
@@ -65,6 +58,12 @@ const secondaryNavItems = navItems.filter((item) => !MOBILE_PRIMARY.includes(ite
 
 function navLabelClass(isActive: boolean): string {
   return `nav-label transition-all duration-300 ${isActive ? 'nav-label--active' : 'nav-label--idle'}`;
+function navRowClass(active: boolean): string {
+  return `w-full flex items-center gap-3 px-2.5 py-2 rounded-2xl text-left transition-colors duration-200 ${
+    active
+      ? 'bg-[var(--primary-accent)]/22 text-white font-semibold ring-1 ring-inset ring-white/15'
+      : 'text-[var(--text-secondary)] hover:bg-white/8 hover:text-[var(--text-primary)]'
+  }`;
 }
 
 const Sidebar = ({
@@ -93,23 +92,22 @@ const Sidebar = ({
     <>
       <GradientDefs />
 
-      {/* Desktop Sidebar - hidden on mobile */}
       <div
         className={`hidden md:flex ${isCollapsed ? 'w-[72px]' : 'w-64'} glass-panel border-r border-[var(--glass-border)] flex-col shrink-0 relative overflow-hidden transition-[width] duration-300`}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--glass-surface)] to-transparent pointer-events-none"></div>
-        <div className="relative z-10">
+        <div className="relative z-10 flex h-full min-h-0 flex-col">
           <div
-            className={`p-6 flex items-center gap-3 border-b border-[var(--glass-border)] backdrop-blur-sm ${isCollapsed ? 'justify-center' : 'justify-between'}`}
+            className={`p-5 flex items-center gap-3 border-b border-[var(--glass-border)] shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}
           >
-            <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-              <VibeTechLogo className="w-12 h-12 float-animation" />
+            <div className={`flex items-center gap-3 min-w-0 ${isCollapsed ? 'justify-center' : ''}`}>
+              <VibeTechLogo className="w-11 h-11 shrink-0" />
               {!isCollapsed && (
-                <div>
-                  <h1 className="text-xl font-bold neon-text-primary leading-tight">Vibe Tutor</h1>
-                  <p className="text-sm text-[var(--text-secondary)] opacity-80">
-                    {welcomeMessage}
-                  </p>
+                <div className="min-w-0">
+                  <h1 className="text-lg font-semibold text-[var(--text-primary)] leading-tight tracking-tight">
+                    Vibe Tutor
+                  </h1>
+                  <p className="text-xs text-[var(--text-secondary)] truncate">{welcomeMessage}</p>
                 </div>
               )}
             </div>
@@ -117,30 +115,32 @@ const Sidebar = ({
             <button
               type="button"
               onClick={onToggle}
-              className={`glass-card border border-[var(--glass-border)] rounded-lg w-10 h-10 flex items-center justify-center hover:scale-105 transition-all duration-200 focus-glow ${isCollapsed ? 'absolute top-4 right-4' : ''}`}
+              className={`rounded-lg w-9 h-9 shrink-0 flex items-center justify-center hover:bg-white/10 transition-colors focus-glow ${isCollapsed ? 'absolute top-4 right-3' : ''}`}
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               aria-expanded={!isCollapsed}
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isCollapsed ? (
-                <ChevronDown className="w-5 h-5 text-[var(--text-primary)]" />
+                <ChevronDown className="w-4 h-4 text-[var(--text-primary)]" />
               ) : (
-                <ChevronUp className="w-5 h-5 text-[var(--text-primary)]" />
+                <ChevronUp className="w-4 h-4 text-[var(--text-primary)]" />
               )}
             </button>
           </div>
-          <nav role="navigation" aria-label="Desktop navigation" className="flex-1 p-4 space-y-3">
-            {navItems.map(({ view, icon: Icon, label, gradient }) => (
+          <nav
+            role="navigation"
+            aria-label="Desktop navigation"
+            className="flex-1 min-h-0 overflow-y-auto p-3 space-y-1"
+          >
+            {navItems.map(({ view, icon, label }) => (
               <button
                 key={view}
+                type="button"
                 onClick={() => onNavigate(view as View)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${
-                  currentView === view
-                    ? 'glass-button text-white font-semibold shadow-[var(--neon-glow-primary)] border-[var(--primary-accent)]'
-                    : 'glass-card hover:glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 focus-glow'
-                }`}
+                className={navRowClass(currentView === view)}
                 title={isCollapsed ? label : undefined}
-                aria-label={isCollapsed ? label : undefined}
+                aria-label={label}
+                aria-current={currentView === view ? 'page' : undefined}
               >
                 <GradientIcon
                   Icon={Icon}
@@ -152,19 +152,19 @@ const Sidebar = ({
                 {currentView === view && (
                   <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
                 )}
+                <NavGlyph icon={icon} active={currentView === view} />
+                {!isCollapsed && <span className="truncate text-sm tracking-tight">{label}</span>}
               </button>
             ))}
           </nav>
-          <div className="p-4 border-t border-[var(--glass-border)]">
+          <div className="p-3 border-t border-[var(--glass-border)] shrink-0">
             <button
+              type="button"
               onClick={() => onNavigate('parent')}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-left transition-all duration-300 group relative overflow-hidden ${
-                currentView === 'parent'
-                  ? 'glass-button text-white font-semibold shadow-[var(--neon-glow-secondary)] border-[var(--secondary-accent)]'
-                  : 'glass-card hover:glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:scale-105 focus-glow'
-              }`}
+              className={navRowClass(currentView === 'parent')}
               title={isCollapsed ? 'Parent Zone' : undefined}
-              aria-label={isCollapsed ? 'Parent Zone' : undefined}
+              aria-label="Parent Zone"
+              aria-current={currentView === 'parent' ? 'page' : undefined}
             >
               <GradientIcon
                 Icon={Lock}
@@ -180,24 +180,24 @@ const Sidebar = ({
               {currentView === 'parent' && (
                 <div className="absolute right-3 w-2 h-2 bg-white rounded-full shadow-lg animate-pulse"></div>
               )}
+              <NavGlyph icon={Shield} active={currentView === 'parent'} />
+              {!isCollapsed && <span className="truncate text-sm tracking-tight">Parent Zone</span>}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile "More" drawer — slides up from bottom nav */}
       {!shouldHideMobileNav && moreOpen && (
         <div className="md:hidden fixed inset-0 z-[70]">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setMoreOpen(false)}
           />
-          {/* Drawer */}
           <div className="absolute bottom-0 left-0 right-0 glass-card border-t border-[var(--glass-border)] rounded-t-2xl p-4 animate-[slideUp_0.2s_ease-out]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-[var(--text-primary)]">More</h2>
               <button
+                type="button"
                 onClick={() => setMoreOpen(false)}
                 className="min-h-[44px] min-w-[44px] p-2 rounded-lg hover:bg-white/10 transition-colors"
                 aria-label="Close menu"
@@ -207,13 +207,14 @@ const Sidebar = ({
               </button>
             </div>
             <div className="grid grid-cols-4 gap-3">
-              {secondaryNavItems.map(({ view, icon: Icon, label, gradient }) => (
+              {secondaryNavItems.map(({ view, icon, label }) => (
                 <button
                   key={view}
+                  type="button"
                   onClick={() => handleMoreNavigate(view as View)}
-                  className={`flex flex-col items-center justify-center min-h-[64px] p-3 rounded-xl transition-all duration-200 touch-manipulation ${
+                  className={`flex flex-col items-center justify-center min-h-[64px] p-3 rounded-xl transition-colors duration-200 touch-manipulation ${
                     currentView === view
-                      ? 'bg-[var(--primary-accent)]/20 text-[var(--primary-accent)]'
+                      ? 'bg-[var(--primary-accent)]/20 text-white'
                       : 'text-[var(--text-secondary)] hover:bg-white/5'
                   }`}
                 >
@@ -224,16 +225,18 @@ const Sidebar = ({
                     className="mb-1"
                   />
                   <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
+                  <NavGlyph icon={icon} active={currentView === view} size="sm" />
+                  <span className="mt-1.5 text-[10px] font-medium leading-tight text-center break-words w-full">
                     {label}
                   </span>
                 </button>
               ))}
-              {/* Parent Zone in More menu */}
               <button
+                type="button"
                 onClick={() => handleMoreNavigate('parent')}
-                className={`flex flex-col items-center justify-center min-h-[64px] p-3 rounded-xl transition-all duration-200 touch-manipulation ${
+                className={`flex flex-col items-center justify-center min-h-[64px] p-3 rounded-xl transition-colors duration-200 touch-manipulation ${
                   currentView === 'parent'
-                    ? 'bg-[var(--secondary-accent)]/20 text-[var(--secondary-accent)]'
+                    ? 'bg-[var(--secondary-accent)]/20 text-white'
                     : 'text-[var(--text-secondary)] hover:bg-white/5'
                 }`}
               >
@@ -246,6 +249,8 @@ const Sidebar = ({
                   className="mb-1"
                 />
                 <span className={`${navLabelClass(currentView === 'parent')} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
+                <NavGlyph icon={Shield} active={currentView === 'parent'} size="sm" />
+                <span className="mt-1.5 text-[10px] font-medium leading-tight text-center break-words w-full">
                   Parent
                 </span>
               </button>
@@ -254,7 +259,6 @@ const Sidebar = ({
         </div>
       )}
 
-      {/* Mobile Bottom Navigation — 5 primary tabs + More */}
       {!shouldHideMobileNav && (
         <nav
           role="navigation"
@@ -262,13 +266,14 @@ const Sidebar = ({
           className="md:hidden fixed bottom-0 left-0 right-0 glass-card border-t border-[var(--glass-border)] z-50 sidebar-safe-bottom"
         >
           <div className="max-w-lg mx-auto grid grid-cols-6 gap-0.5 px-2 pt-2 pb-1">
-            {primaryNavItems.map(({ view, icon: Icon, label, gradient }) => (
+            {primaryNavItems.map(({ view, icon, label }) => (
               <button
                 key={view}
+                type="button"
                 onClick={() => onNavigate(view as View)}
-                className={`flex flex-col items-center justify-center min-h-[52px] px-1 py-1.5 rounded-lg transition-all duration-200 touch-manipulation ${
+                className={`flex flex-col items-center justify-center min-h-[52px] px-1 py-1.5 rounded-lg transition-colors duration-200 touch-manipulation ${
                   currentView === view
-                    ? 'text-[var(--primary-accent)]'
+                    ? 'text-[var(--text-primary)]'
                     : 'text-[var(--text-secondary)]'
                 }`}
               >
@@ -279,16 +284,18 @@ const Sidebar = ({
                   className="mb-0.5"
                 />
                 <span className={`${navLabelClass(currentView === view)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
+                <NavGlyph icon={icon} active={currentView === view} size="sm" />
+                <span className="mt-0.5 text-[10px] font-medium leading-tight text-center break-words w-full truncate">
                   {label}
                 </span>
               </button>
             ))}
-            {/* More button */}
             <button
+              type="button"
               onClick={() => setMoreOpen((prev) => !prev)}
-              className={`flex flex-col items-center justify-center min-h-[52px] px-1 py-1.5 rounded-lg transition-all duration-200 touch-manipulation ${
+              className={`flex flex-col items-center justify-center min-h-[52px] px-1 py-1.5 rounded-lg transition-colors duration-200 touch-manipulation ${
                 moreOpen || (!MOBILE_PRIMARY.includes(currentView) && currentView !== 'parent')
-                  ? 'text-[var(--primary-accent)]'
+                  ? 'text-[var(--text-primary)]'
                   : 'text-[var(--text-secondary)]'
               }`}
               aria-label="More navigation options"
@@ -296,6 +303,8 @@ const Sidebar = ({
             >
               <Menu className="w-[22px] h-[22px] mb-0.5" />
               <span className={`${navLabelClass(moreOpen)} text-[10px] leading-tight text-center break-words w-full truncate text-wrap`}>
+              <NavGlyph icon={Menu} active={moreOpen} size="sm" />
+              <span className="mt-0.5 text-[10px] font-medium leading-tight text-center break-words w-full truncate">
                 More
               </span>
             </button>

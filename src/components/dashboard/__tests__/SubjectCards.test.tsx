@@ -45,6 +45,7 @@ describe('SubjectCards', () => {
     render(<SubjectCards onStartWorksheet={vi.fn()} userTokens={12} />);
 
     expect(screen.getByText('Pick a subject')).toBeInTheDocument();
+    expect(document.querySelector('.circuit-bg')).toHaveAttribute('aria-hidden', 'true');
     for (const subject of SUBJECTS) {
       expect(screen.getByRole('button', { name: new RegExp(`Practice ${subject}`) })).toBeInTheDocument();
     }
